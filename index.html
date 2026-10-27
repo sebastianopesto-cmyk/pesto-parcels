@@ -66,11 +66,11 @@ main { max-width: 1200px; margin: 0 auto; padding-block: 22px 48px }
 .shoot { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
 label.big, button.big { display: grid; place-items: center; gap: 10px; padding: 26px 12px; border-radius: 18px; cursor: pointer; text-align: center;
   font: 700 1.05rem var(--body); border: 0 }
-label.big.primary { background: var(--red); color: #fff; box-shadow: 0 10px 24px -12px rgba(227,38,27,.7) }
+label.big.primary, button.big.primary { background: var(--red); color: #fff; box-shadow: 0 10px 24px -12px rgba(227,38,27,.7) }
 label.big.secondary { background: var(--surface); color: var(--navy); border: 2px solid var(--line) }
 :root:not([data-theme="light"]) label.big.secondary { color: var(--ink) }
-label.big svg { width: 38px; height: 38px }
-label.big small { font-weight: 500; font-size: .8rem; opacity: .85 }
+label.big svg, button.big svg { width: 38px; height: 38px }
+label.big small, button.big small { font-weight: 500; font-size: .8rem; opacity: .85 }
 input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none }
 .busy { display: grid; gap: 8px }
 .busy p { margin: 0; color: var(--muted); font-size: .92rem }
@@ -176,6 +176,15 @@ a.track { font: 600 .78rem var(--body); color: var(--red); text-decoration: none
 a.track:hover { text-decoration: underline }
 td.cour .pill { margin-bottom: 4px }
 @media (max-width: 760px) { td.stat { grid-column: 1 / -1; padding-top: 4px } }
+.cam { position: fixed; inset: 0; z-index: 30; background: #000; display: grid; grid-template-rows: 1fr auto }
+.cam video { width: 100%; height: 100%; object-fit: cover; grid-row: 1 / 3; grid-column: 1 }
+.cam .frame { grid-row: 1; grid-column: 1; align-self: center; justify-self: center; width: min(78vw, 420px); aspect-ratio: 2 / 3; max-height: 70vh;
+  border: 3px solid rgba(255,255,255,.9); border-radius: 14px; box-shadow: 0 0 0 100vmax rgba(0,0,0,.35); pointer-events: none }
+.cam .hint { grid-row: 1; grid-column: 1; align-self: start; justify-self: center; margin: calc(18px + env(safe-area-inset-top, 0px)) 16px 0; color: #fff; font-weight: 600; background: rgba(0,0,0,.45); padding: 6px 12px; border-radius: 999px; font-size: .9rem }
+.camBar { grid-row: 2; grid-column: 1; display: flex; align-items: center; justify-content: space-around; padding: 18px 16px calc(22px + env(safe-area-inset-bottom, 0px)); z-index: 1 }
+.shutter { width: 74px; height: 74px; border-radius: 50%; border: 5px solid #fff; background: var(--red); cursor: pointer }
+.shutter:active { transform: scale(.94) }
+.camSide { background: none; border: 0; color: #fff; font: 600 1rem var(--body); padding: 10px; cursor: pointer; min-width: 80px }
 .setup { display: grid; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; max-width: 520px; margin: 0 auto 18px }
 .setup h2 { font: 800 1.05rem var(--display); text-transform: uppercase; letter-spacing: .05em; margin: 0 }
 .setup input { width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px }
@@ -205,10 +214,10 @@ td.cour .pill { margin-bottom: 4px }
   <!-- SCAN (phone) -->
   <section id="scanView" class="col">
     <div class="shoot">
-      <label class="big primary" for="cam">
+      <button type="button" class="big primary" id="camBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.8l1.4-2h6.6l1.4 2h1.8A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="12.5" r="3.8"/></svg>
         <span>Scan label<br><small>open camera</small></span>
-      </label>
+      </button>
       <label class="big secondary" for="pick">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="m21 16-5-5-9 9"/></svg>
         <span>Upload photo<br><small>from gallery</small></span>
@@ -285,6 +294,16 @@ td.cour .pill { margin-bottom: 4px }
     <span class="conn" id="conn2"></span>
   </section>
 </main>
+<div class="cam" id="camView" hidden role="dialog" aria-label="Camera">
+  <video id="camVideo" playsinline autoplay muted></video>
+  <div class="frame" aria-hidden="true"></div>
+  <p class="hint" id="camHint">Fit the whole label in the frame</p>
+  <div class="camBar">
+    <button type="button" class="camSide" id="camClose">Cancel</button>
+    <button type="button" class="shutter" id="camShoot" aria-label="Take photo"></button>
+    <button type="button" class="camSide" id="camGallery">Gallery</button>
+  </div>
+</div>
 <div class="toast" id="toast" hidden></div>
 <textarea id="csvText" hidden readonly aria-label="Parcels as CSV"></textarea>
 
@@ -626,6 +645,31 @@ const Parser = (() => {
     e.target.value = '';
   }
   $('cam').addEventListener('change', onFile); $('pick').addEventListener('change', onFile);
+  // Live camera inside the app; falls back to the phone's own camera app if the browser refuses
+  let stream = null;
+  function closeCam() { if (stream) stream.getTracks().forEach(t => t.stop()); stream = null; $('camVideo').srcObject = null; $('camView').hidden = true; }
+  $('camBtn').addEventListener('click', async () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { $('cam').click(); return; }
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+      $('camVideo').srcObject = stream; $('camView').hidden = false;
+      await $('camVideo').play().catch(() => {});
+    } catch (e) {
+      closeCam();
+      if (e && e.name === 'NotAllowedError') toast('Camera blocked. Allow it in your browser settings, or use Upload photo.');
+      $('cam').click();
+    }
+  });
+  $('camClose').addEventListener('click', closeCam);
+  $('camGallery').addEventListener('click', () => { closeCam(); $('pick').click(); });
+  $('camShoot').addEventListener('click', async () => {
+    const v = $('camVideo'); if (!v.videoWidth) return;
+    const c = document.createElement('canvas'); c.width = v.videoWidth; c.height = v.videoHeight;
+    c.getContext('2d').drawImage(v, 0, 0);
+    closeCam();
+    try { await run(await loadImage(c.toDataURL('image/jpeg', 0.92))); } catch (err) { status(err.message, 0); }
+  });
+  document.addEventListener('visibilitychange', () => { if (document.hidden && stream) closeCam(); });
   document.querySelectorAll('[data-sample]').forEach(b => b.addEventListener('click', async () => {
     try { await run(await loadImage(b.dataset.sample)); } catch (err) { status(err.message, 0); }
   }));
