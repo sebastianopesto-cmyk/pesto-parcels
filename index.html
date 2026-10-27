@@ -29,16 +29,17 @@
   --warn: #9a5a00;
   --warn-bg: #fdefd7;
   --on-navy: #ffffff;
+  --in-bg: #e3ecff; --in-fg: #1f3380; --out-bg: #ffe5e2; --out-fg: #b31d14;
   --display: "Archivo", "Arial Narrow", Arial, sans-serif;
   --body: "Public Sans", "Segoe UI", Roboto, Arial, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #0c1228; --surface: #141c3a; --ink: #e9ecf6; --muted: #9aa3c2; --line: #27315a; --soft: #1c2650;
-  --good: #6fd6a0; --good-bg: #133524; --warn: #f3b860; --warn-bg: #3a2a10; --navy-2: #2a3f94; color-scheme: dark } }
+  --good: #6fd6a0; --good-bg: #133524; --warn: #f3b860; --warn-bg: #3a2a10; --navy-2: #2a3f94; --in-bg: #22336f; --in-fg: #cfdcff; --out-bg: #4a1d1a; --out-fg: #ffc9c4; color-scheme: dark } }
 :root[data-theme="dark"] {
   --bg: #0c1228; --surface: #141c3a; --ink: #e9ecf6; --muted: #9aa3c2; --line: #27315a; --soft: #1c2650;
-  --good: #6fd6a0; --good-bg: #133524; --warn: #f3b860; --warn-bg: #3a2a10; --navy-2: #2a3f94; color-scheme: dark }
+  --good: #6fd6a0; --good-bg: #133524; --warn: #f3b860; --warn-bg: #3a2a10; --navy-2: #2a3f94; --in-bg: #22336f; --in-fg: #cfdcff; --out-bg: #4a1d1a; --out-fg: #ffc9c4; color-scheme: dark }
 
 * { box-sizing: border-box }
 [hidden] { display: none !important }
@@ -50,7 +51,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 /* Brand bar */
 .brand { background: var(--navy); color: var(--on-navy); position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5 }
 .brand .wrap { display: flex; align-items: center; gap: 12px; padding-block: 10px; max-width: 1200px; margin: 0 auto }
-.brand img { height: 42px; width: auto; display: block }
+.brand img { height: 48px; width: auto; display: block }
 .brand .name { font-family: var(--display); font-weight: 800; font-stretch: 80%; font-size: 1.35rem; letter-spacing: .02em; line-height: 1; text-transform: uppercase; margin-right: auto }
 .brand .name small { display: block; font-weight: 500; font-stretch: 100%; font-size: .68rem; letter-spacing: .16em; opacity: .7; margin-top: 3px }
 .tabs { display: flex; background: rgba(255,255,255,.1); border-radius: 999px; padding: 3px }
@@ -77,18 +78,18 @@ input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; poin
 .bar i { display: block; height: 100%; width: 0; background: var(--red); transition: width .25s }
 
 /* Result card */
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; box-shadow: 0 12px 30px -22px rgba(20,36,94,.45) }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; overflow: clip; box-shadow: 0 12px 30px -22px rgba(20,36,94,.45) }
 .card .head { display: flex; gap: 12px; align-items: center; padding: 14px 16px; background: var(--soft) }
 .card .head img { width: 54px; height: 72px; object-fit: cover; border-radius: 6px; background: #fff; border: 1px solid var(--line) }
 .card .head .who { min-width: 0; flex: 1; display: grid; gap: 2px }
-select.courier { font: 800 1.5rem var(--display); font-stretch: 85%; color: var(--ink); background: transparent; border: 0; padding: 0; max-width: 100%; text-transform: uppercase; letter-spacing: .02em }
+select.courier { width: 100%; font: 800 1.5rem var(--display); font-stretch: 85%; color: var(--ink); background: transparent; border: 0; padding: 0; max-width: 100%; text-transform: uppercase; letter-spacing: .02em }
 .fields { display: grid; gap: 14px; padding: 16px }
 .f { display: grid; gap: 5px; min-width: 0 }
 .f .lab { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted) }
 .f input, .f textarea { width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; resize: vertical }
 .f input.code { font-family: var(--mono); font-size: 1.05rem; letter-spacing: .03em }
 .f textarea.rec { font-weight: 600 }
-.dot { display: inline-flex; align-items: center; gap: 5px; font-size: .7rem; letter-spacing: .04em; text-transform: none; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--soft); color: var(--muted) }
+.dot { justify-self: start; display: inline-flex; align-items: center; gap: 5px; font-size: .7rem; letter-spacing: .04em; text-transform: none; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--soft); color: var(--muted) }
 .dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor }
 .dot.good { background: var(--good-bg); color: var(--good) }
 .dot.warn { background: var(--warn-bg); color: var(--warn) }
@@ -162,6 +163,19 @@ td.row-acts { white-space: nowrap; text-align: right }
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg);
   padding: 11px 18px; border-radius: 12px; font-weight: 600; max-width: calc(100% - 32px); z-index: 20; box-shadow: 0 10px 30px -10px rgba(0,0,0,.5) }
 @media (prefers-reduced-motion: reduce) { .bar i { transition: none } }
+/* Direction + status */
+.dirrow { display: flex; align-items: center; gap: 10px; padding: 12px 16px 0; flex-wrap: wrap }
+.seg { display: inline-flex; background: var(--soft); border-radius: 999px; padding: 3px; gap: 2px }
+.seg button { appearance: none; border: 0; background: transparent; color: var(--muted); font: 600 .9rem var(--body); padding: 7px 14px; border-radius: 999px; cursor: pointer }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 4px rgba(20,36,94,.18) }
+.pill { display: inline-block; font: 700 .7rem var(--body); letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; white-space: nowrap }
+.pill.in { background: var(--in-bg); color: var(--in-fg) }
+.pill.out { background: var(--out-bg); color: var(--out-fg) }
+td.stat select { font: 600 .85rem var(--body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px }
+a.track { font: 600 .78rem var(--body); color: var(--red); text-decoration: none; white-space: nowrap }
+a.track:hover { text-decoration: underline }
+td.cour .pill { margin-bottom: 4px }
+@media (max-width: 760px) { td.stat { grid-column: 1 / -1; padding-top: 4px } }
 .setup { display: grid; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; max-width: 520px; margin: 0 auto 18px }
 .setup h2 { font: 800 1.05rem var(--display); text-transform: uppercase; letter-spacing: .05em; margin: 0 }
 .setup input { width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px }
@@ -216,6 +230,9 @@ td.row-acts { white-space: nowrap; text-align: right }
           <select class="courier" id="courier" aria-label="Courier"></select>
         </div>
       </div>
+      <div class="dirrow"><div class="seg" id="dirSeg" role="group" aria-label="Direction">
+        <button type="button" data-dir="in" aria-pressed="true">Arriving</button><button type="button" data-dir="out" aria-pressed="false">Sending</button></div>
+        <span class="dot" id="dirChip"></span></div>
       <div class="fields">
         <div class="f"><div class="lab"><label for="tracking">Tracking</label><span class="dot" id="trackingChip"></span></div>
           <input id="tracking" class="code" spellcheck="false" autocapitalize="characters"></div>
@@ -247,10 +264,12 @@ td.row-acts { white-space: nowrap; text-align: right }
     <div class="top">
       <div class="stats">
         <div class="stat"><b id="statToday">0</b><span>Today</span></div>
-        <div class="stat"><b id="statOpen">0</b><span>To handle</span></div>
+        <div class="stat"><b id="statIn">0</b><span>Arriving</span></div>
+        <div class="stat"><b id="statOut">0</b><span>Sending</span></div>
         <div class="stat"><b id="statAll">0</b><span>All</span></div>
       </div>
       <div class="tools">
+        <div class="seg" id="filterSeg" role="group" aria-label="Show"><button type="button" data-f="all" aria-pressed="true">All</button><button type="button" data-f="in" aria-pressed="false">Arriving</button><button type="button" data-f="out" aria-pressed="false">Sending</button></div>
         <input class="search" id="search" type="search" placeholder="Search name, tracking…" aria-label="Search parcels">
         <button class="btn" id="copyBtn" type="button">Copy for Excel</button>
         <button class="btn" id="csvBtn" type="button">Download CSV</button>
@@ -258,7 +277,7 @@ td.row-acts { white-space: nowrap; text-align: right }
     </div>
     <div class="tablebox">
       <table>
-        <thead><tr><th>When</th><th>Courier</th><th>Tracking</th><th>To</th><th>From</th><th>Scanned by</th><th></th></tr></thead>
+        <thead><tr><th>When</th><th>Courier</th><th>Tracking</th><th>Status</th><th>To</th><th>From</th><th>Scanned by</th><th></th></tr></thead>
         <tbody id="rows"></tbody>
       </table>
       <div class="empty" id="officeEmpty" hidden><b>No parcels yet</b>Scan a label on a phone with this same link and it appears here straight away.</div>
@@ -456,6 +475,39 @@ const Parser = (() => {
 
   const sel = $('courier');
   sel.innerHTML = '<option value="">Courier?</option>' + Parser.COURIERS.map(c => `<option value="${c.id}">${c.name}</option>`).join('') + '<option value="other">Other</option>';
+  // Direction and status
+  const OUR = ((window.PARCEL_CONFIG && window.PARCEL_CONFIG.ourNames) || ['pesto']).map(x => x.toLowerCase());
+  const STATUS = {
+    in: [['expected', 'Expected'], ['arrived', 'Arrived'], ['handed', 'Handed over']],
+    out: [['ready', 'Ready to send'], ['picked', 'Picked up'], ['delivered', 'Delivered']],
+  };
+  const dirOf = r => r.dir === 'out' ? 'out' : 'in';
+  const statusOf = r => r.status || (dirOf(r) === 'in' ? 'arrived' : 'ready');
+  const isClosed = r => { const st = STATUS[dirOf(r)]; return statusOf(r) === st[st.length - 1][0]; };
+  function detectDir(sender, recipient) {
+    const has = t => OUR.some(n => n && (t || '').toLowerCase().includes(n));
+    if (has(recipient) && !has(sender)) return { dir: 'in', sure: true };
+    if (has(sender) && !has(recipient)) return { dir: 'out', sure: true };
+    return { dir: 'in', sure: false };
+  }
+  // Courier tracking pages; anything else goes to 17TRACK, which covers most carriers
+  const TRACK = {
+    ups: 'https://www.ups.com/track?loc=it_IT&tracknum=',
+    dhl: 'https://www.dhl.com/it-it/home/tracking.html?tracking-id=',
+    tnt: 'https://www.tnt.com/express/it_it/site/shipping-tools/tracking.html?searchType=con&cons=',
+    fedex: 'https://www.fedex.com/fedextrack/?trknbr=',
+    dpd: 'https://tracking.dpd.de/status/it_IT/parcel/',
+    poste: 'https://www.poste.it/cerca/index.html#/risultati-spedizioni/',
+    gls: 'https://gls-group.com/IT/it/servizi-online/ricerca-spedizioni?match=',
+  };
+  const trackUrl = r => r.tracking ? (TRACK[r.courier] || 'https://t.17track.net/en#nums=') + encodeURIComponent(r.tracking) : '';
+  let dir = 'in';
+  function setDir(d, sure) {
+    dir = d;
+    document.querySelectorAll('#dirSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.dir === d)));
+    if (sure !== undefined) chip('dirChip', sure ? 'good' : 'warn', sure ? 'sure' : 'check');
+  }
+  document.querySelectorAll('#dirSeg button').forEach(b => b.addEventListener('click', () => setDir(b.dataset.dir, true)));
   const courierName = id => (Parser.COURIERS.find(c => c.id === id) || {}).name || (id === 'other' ? 'Other' : id || '');
 
   function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, 3000); }
@@ -560,6 +612,7 @@ const Parser = (() => {
   function fill(p) {
     sel.value = p.courier || '';
     $('tracking').value = p.tracking; $('recipient').value = p.recipient; $('sender').value = p.sender;
+    const d = detectDir(p.sender, p.recipient); setDir(d.dir, d.sure);
     chip('courierChip', p.courier ? (p.courierWhy.includes('barcode format') ? 'good' : 'warn') : 'warn', p.courier ? (p.courierWhy.includes('barcode format') ? 'sure' : 'check') : 'pick one');
     const th = { barcode: ['good', 'from barcode'], text: ['warn', 'check'], 'barcode-unknown': ['warn', 'check'], none: ['warn', 'missing'] }[p.trackingHow];
     chip('trackingChip', ...th);
@@ -613,7 +666,8 @@ const Parser = (() => {
   $('result').addEventListener('submit', async e => {
     e.preventDefault();
     const rec = { at: new Date().toISOString(), courier: sel.value, tracking: $('tracking').value.trim().toUpperCase(),
-      recipient: $('recipient').value.trim(), sender: $('sender').value.trim(), done: false };
+      recipient: $('recipient').value.trim(), sender: $('sender').value.trim(), dir };
+    rec.status = dir === 'in' ? 'arrived' : 'ready';
     if (cfg().me) rec.by = cfg().me;
     if (!rec.tracking && !rec.recipient) { toast('Add a tracking number or a recipient first.'); return; }
     // learn from corrections: the heading printed above the corrected text
@@ -639,7 +693,7 @@ const Parser = (() => {
     } finally { $('sendBtn').disabled = false; }
   });
 
-  async function updateRow(id, patch) { try { await api('POST', { op: 'done', id, done: patch.done }); } catch (e) { toast('Could not save that change.'); } refresh(); }
+  async function updateRow(id, patch) { try { await api('POST', { op: 'set', id, ...patch }); } catch (e) { toast('Could not save that change.'); } refresh(); }
   async function deleteRow(id) { try { await api('POST', { op: 'delete', id }); } catch (e) { toast('Could not delete.'); } refresh(); }
 
   /* ---------- rendering ---------- */
@@ -649,49 +703,62 @@ const Parser = (() => {
   function render() { renderRecent(); renderOffice(); }
   function renderRecent() {
     const today = rows.filter(r => isToday(r.at)).slice(0, 6);
-    $('recentList').innerHTML = today.length ? today.map(r => `<div class="mini"><span class="c">${esc(courierName(r.courier) || '?')}</span>
-      <div class="t"><span>${esc((r.recipient || '').split('\n')[0] || 'No recipient')}</span><span class="code">${esc(r.tracking || '-')}</span></div><time>${esc(fmtTime(r.at))}</time></div>`).join('')
+    $('recentList').innerHTML = today.length ? today.map(r => `<div class="mini"><span class="pill ${dirOf(r)}">${dirOf(r) === 'in' ? 'In' : 'Out'}</span>
+      <div class="t"><span>${esc((r.recipient || '').split('\n')[0] || 'No recipient')}</span><span class="code">${esc(courierName(r.courier) || '?')} · ${esc(r.tracking || '-')}</span></div><time>${esc(fmtTime(r.at))}</time></div>`).join('')
       : '<div class="mini" style="grid-template-columns:1fr;color:var(--muted)">Nothing yet today.</div>';
   }
   function renderOffice() {
     const q = $('search').value.trim().toLowerCase();
-    const list = q ? rows.filter(r => [r.tracking, r.recipient, r.sender, courierName(r.courier)].join(' ').toLowerCase().includes(q)) : rows;
+    const f = officeFilter;
+    const list = rows.filter(r => (f === 'all' || dirOf(r) === f) && (!q || [r.tracking, r.recipient, r.sender, courierName(r.courier)].join(' ').toLowerCase().includes(q)));
     $('statToday').textContent = rows.filter(r => isToday(r.at)).length;
-    $('statOpen').textContent = rows.filter(r => !r.done).length;
+    $('statIn').textContent = rows.filter(r => dirOf(r) === 'in' && !isClosed(r)).length;
+    $('statOut').textContent = rows.filter(r => dirOf(r) === 'out' && !isClosed(r)).length;
     $('statAll').textContent = rows.length;
     $('officeEmpty').hidden = list.length > 0;
     if (!rows.length) $('officeEmpty').innerHTML = '<b>No parcels yet</b>Scan a label on a phone with this same link and it appears here straight away.';
     else if (!list.length) $('officeEmpty').innerHTML = '<b>No match</b>Nothing matches that search.';
-    $('rows').innerHTML = list.map(r => `<tr class="${r.done ? 'done' : ''}" data-id="${esc(r.id)}">
+    $('rows').innerHTML = list.map(r => `<tr class="${isClosed(r) ? 'done' : ''}" data-id="${esc(r.id)}">
       <td class="when">${esc(fmtTime(r.at))}</td>
-      <td class="cour"><span class="c">${esc(courierName(r.courier) || '?')}</span></td>
-      <td class="code">${esc(r.tracking || '-')}</td>
+      <td class="cour"><span class="pill ${dirOf(r)}">${dirOf(r) === 'in' ? 'Arriving' : 'Sending'}</span> <span class="c">${esc(courierName(r.courier) || '?')}</span></td>
+      <td class="code">${esc(r.tracking || '-')}${r.tracking ? `<br><a class="track" href="${esc(trackUrl(r))}" target="_blank" rel="noopener">Live tracking ↗</a>` : ''}</td>
+      <td class="stat"><select data-act="status" aria-label="Status">${STATUS[dirOf(r)].map(([v, l]) => `<option value="${v}"${statusOf(r) === v ? ' selected' : ''}>${l}</option>`).join('')}</select></td>
       <td class="addr rec">${esc(r.recipient || '')}</td>
       <td class="addr snd">${esc(r.sender || '')}</td>
       <td class="by">${esc(r.by || '')}</td>
       <td class="row-acts">${confirmId === r.id
         ? `<span class="confirm">Delete? <button class="btn" data-act="yes">Delete</button><button class="btn" data-act="no">Keep</button></span>`
-        : `<label class="chk"><input type="checkbox" data-act="done" ${r.done ? 'checked' : ''}> Handled</label>
+        : `<button class="link" data-act="flip">${dirOf(r) === 'in' ? 'Mark as sending' : 'Mark as arriving'}</button>
            <button class="link" data-act="del">Delete</button>`}</td></tr>`).join('');
   }
   $('rows').addEventListener('click', e => {
     const t = e.target.closest('[data-act]'); if (!t) return;
     const id = t.closest('tr').dataset.id, act = t.dataset.act;
-    if (act === 'done') updateRow(id, { done: t.checked });
+    if (act === 'flip') { const r = rows.find(x => x.id === id); const d = dirOf(r) === 'in' ? 'out' : 'in'; updateRow(id, { dir: d, status: d === 'in' ? 'arrived' : 'ready' }); }
     else if (act === 'del') { confirmId = id; renderOffice(); }
     else if (act === 'no') { confirmId = null; renderOffice(); }
     else if (act === 'yes') { confirmId = null; deleteRow(id); }
   });
+  $('rows').addEventListener('change', e => {
+    const t = e.target.closest('[data-act="status"]'); if (!t) return;
+    updateRow(t.closest('tr').dataset.id, { status: t.value });
+  });
+  let officeFilter = 'all';
+  document.querySelectorAll('#filterSeg button').forEach(b => b.addEventListener('click', () => {
+    officeFilter = b.dataset.f;
+    document.querySelectorAll('#filterSeg button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    renderOffice();
+  }));
   $('search').addEventListener('input', renderOffice);
 
   function csv() {
     const q = s => '"' + String(s ?? '').replace(/\r?\n/g, ', ').replace(/"/g, '""') + '"';
-    return ['Data;Corriere;Tracking;Destinatario;Mittente;Gestito'].concat(rows.map(r =>
-      [new Date(r.at).toLocaleString('it-IT'), courierName(r.courier), r.tracking, r.recipient, r.sender, r.done ? 'si' : 'no'].map(q).join(';'))).join('\r\n');
+    return ['Data;Direzione;Corriere;Tracking;Destinatario;Mittente;Stato'].concat(rows.map(r =>
+      [new Date(r.at).toLocaleString('it-IT'), dirOf(r) === 'in' ? 'In arrivo' : 'In uscita', courierName(r.courier), r.tracking, r.recipient, r.sender, (STATUS[dirOf(r)].find(x => x[0] === statusOf(r)) || ['', ''])[1]].map(q).join(';'))).join('\r\n');
   }
   $('copyBtn').addEventListener('click', () => {
-    const tsv = ['Data\tCorriere\tTracking\tDestinatario\tMittente\tGestito'].concat(rows.map(r =>
-      [new Date(r.at).toLocaleString('it-IT'), courierName(r.courier), r.tracking, r.recipient, r.sender, r.done ? 'si' : 'no'].map(v => String(v ?? '').replace(/\s*\n\s*/g, ', ').replace(/\t/g, ' ')).join('\t'))).join('\n');
+    const tsv = ['Data\tDirezione\tCorriere\tTracking\tDestinatario\tMittente\tStato'].concat(rows.map(r =>
+      [new Date(r.at).toLocaleString('it-IT'), dirOf(r) === 'in' ? 'In arrivo' : 'In uscita', courierName(r.courier), r.tracking, r.recipient, r.sender, (STATUS[dirOf(r)].find(x => x[0] === statusOf(r)) || ['', ''])[1]].map(v => String(v ?? '').replace(/\s*\n\s*/g, ', ').replace(/\t/g, ' ')).join('\t'))).join('\n');
     const fallback = () => { const ta = $('csvText'); ta.hidden = false; ta.value = tsv; ta.select(); toast('Select all and copy the text below.'); };
     if (navigator.clipboard) navigator.clipboard.writeText(tsv).then(() => toast('Copied. Paste into Excel.'), fallback); else fallback();
   });

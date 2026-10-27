@@ -10,7 +10,8 @@
  * 4. Copy the web app URL into the app's settings (or config.js).
  */
 const SHEET = 'Parcels';
-const HEAD = ['id', 'at', 'courier', 'tracking', 'recipient', 'sender', 'by', 'done'];
+const HEAD = ['id', 'at', 'dir', 'courier', 'tracking', 'recipient', 'sender', 'by', 'status'];
+const EDITABLE = ['dir', 'status'];
 
 function sheet_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -31,12 +32,12 @@ function doGet(e) {
   if (!ok_(e.parameter.code)) return out_({ error: 'bad_code' });
   const values = sheet_().getDataRange().getValues();
   const rows = values.slice(1).map(r => Object.fromEntries(HEAD.map((h, i) => [h, r[i]])))
-    .map(r => ({ ...r, at: r.at instanceof Date ? r.at.toISOString() : String(r.at), done: r.done === true || r.done === 'TRUE' }));
+    .map(r => ({ ...r, at: r.at instanceof Date ? r.at.toISOString() : String(r.at), tracking: String(r.tracking) }));
   rows.reverse();
   return out_({ rows: rows.slice(0, 500) });
 }
 
-// POST body (text/plain JSON): {code, op:'add'|'done'|'delete', ...}
+// POST body (text/plain JSON): {code, op:'add'|'set'|'delete', ...}
 function doPost(e) {
   const b = JSON.parse(e.postData.contents || '{}');
   if (!ok_(b.code)) return out_({ error: 'bad_code' });
@@ -46,13 +47,13 @@ function doPost(e) {
     if (b.op === 'add') {
       const id = Utilities.getUuid();
       const r = b.row || {};
-      sh.appendRow([id, new Date(r.at || Date.now()), r.courier || '', "'" + (r.tracking || ''), r.recipient || '', r.sender || '', r.by || '', false]);
+      sh.appendRow([id, new Date(r.at || Date.now()), r.dir === 'out' ? 'out' : 'in', r.courier || '', "'" + (r.tracking || ''), r.recipient || '', r.sender || '', r.by || '', String(r.status || '')]);
       return out_({ id });
     }
     const ids = sh.getRange(2, 1, Math.max(sh.getLastRow() - 1, 1), 1).getValues().map(x => x[0]);
     const i = ids.indexOf(b.id);
     if (i < 0) return out_({ error: 'not_found' });
-    if (b.op === 'done') sh.getRange(i + 2, 8).setValue(!!b.done);
+    if (b.op === 'set') EDITABLE.forEach(f => { if (f in b) sh.getRange(i + 2, HEAD.indexOf(f) + 1).setValue(String(b[f])); });
     if (b.op === 'delete') sh.deleteRow(i + 2);
     return out_({ ok: true });
   } finally { lock.releaseLock(); }
