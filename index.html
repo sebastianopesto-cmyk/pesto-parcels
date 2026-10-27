@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14245e">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/app-icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Parcels">
+<title>Pesto Parcel Scanner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: navy brand bar on top, then one calm column on the phone (scan) and a full-width live table on the PC (office). */
+:root {
+  --navy: #14245e;
+  --navy-2: #1f3380;
+  --red: #e3261b;
+  --bg: #f3f5f9;
+  --surface: #ffffff;
+  --ink: #111a33;
+  --muted: #5b6480;
+  --line: #dde2ec;
+  --soft: #e9edf6;
+  --good: #187a4a;
+  --good-bg: #ddf3e7;
+  --warn: #9a5a00;
+  --warn-bg: #fdefd7;
+  --on-navy: #ffffff;
+  --display: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --body: "Public Sans", "Segoe UI", Roboto, Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0c1228; --surface: #141c3a; --ink: #e9ecf6; --muted: #9aa3c2; --line: #27315a; --soft: #1c2650;
+  --good: #6fd6a0; --good-bg: #133524; --warn: #f3b860; --warn-bg: #3a2a10; --navy-2: #2a3f94; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0c1228; --surface: #141c3a; --ink: #e9ecf6; --muted: #9aa3c2; --line: #27315a; --soft: #1c2650;
+  --good: #6fd6a0; --good-bg: #133524; --warn: #f3b860; --warn-bg: #3a2a10; --navy-2: #2a3f94; color-scheme: dark }
+
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { min-height: 100% }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.45 var(--body) }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--navy) }
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+
+/* Brand bar */
+.brand { background: var(--navy); color: var(--on-navy); position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5 }
+.brand .wrap { display: flex; align-items: center; gap: 12px; padding-block: 10px; max-width: 1200px; margin: 0 auto }
+.brand img { height: 42px; width: auto; display: block }
+.brand .name { font-family: var(--display); font-weight: 800; font-stretch: 80%; font-size: 1.35rem; letter-spacing: .02em; line-height: 1; text-transform: uppercase; margin-right: auto }
+.brand .name small { display: block; font-weight: 500; font-stretch: 100%; font-size: .68rem; letter-spacing: .16em; opacity: .7; margin-top: 3px }
+.tabs { display: flex; background: rgba(255,255,255,.1); border-radius: 999px; padding: 3px }
+.tabs a { color: var(--on-navy); text-decoration: none; font-weight: 600; font-size: .9rem; padding: 7px 14px; border-radius: 999px; opacity: .8 }
+.tabs a[aria-current="page"] { background: var(--on-navy); color: var(--navy); opacity: 1 }
+.tabs a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible, label.big:focus-within { outline: 3px solid var(--red); outline-offset: 2px }
+
+main { max-width: 1200px; margin: 0 auto; padding-block: 22px 48px }
+.col { max-width: 520px; margin: 0 auto; display: grid; gap: 18px }
+
+/* Scan buttons */
+.shoot { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+label.big, button.big { display: grid; place-items: center; gap: 10px; padding: 26px 12px; border-radius: 18px; cursor: pointer; text-align: center;
+  font: 700 1.05rem var(--body); border: 0 }
+label.big.primary { background: var(--red); color: #fff; box-shadow: 0 10px 24px -12px rgba(227,38,27,.7) }
+label.big.secondary { background: var(--surface); color: var(--navy); border: 2px solid var(--line) }
+:root:not([data-theme="light"]) label.big.secondary { color: var(--ink) }
+label.big svg { width: 38px; height: 38px }
+label.big small { font-weight: 500; font-size: .8rem; opacity: .85 }
+input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none }
+.busy { display: grid; gap: 8px }
+.busy p { margin: 0; color: var(--muted); font-size: .92rem }
+.bar { height: 6px; background: var(--soft); border-radius: 3px; overflow: hidden }
+.bar i { display: block; height: 100%; width: 0; background: var(--red); transition: width .25s }
+
+/* Result card */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; box-shadow: 0 12px 30px -22px rgba(20,36,94,.45) }
+.card .head { display: flex; gap: 12px; align-items: center; padding: 14px 16px; background: var(--soft) }
+.card .head img { width: 54px; height: 72px; object-fit: cover; border-radius: 6px; background: #fff; border: 1px solid var(--line) }
+.card .head .who { min-width: 0; flex: 1; display: grid; gap: 2px }
+select.courier { font: 800 1.5rem var(--display); font-stretch: 85%; color: var(--ink); background: transparent; border: 0; padding: 0; max-width: 100%; text-transform: uppercase; letter-spacing: .02em }
+.fields { display: grid; gap: 14px; padding: 16px }
+.f { display: grid; gap: 5px; min-width: 0 }
+.f .lab { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted) }
+.f input, .f textarea { width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; resize: vertical }
+.f input.code { font-family: var(--mono); font-size: 1.05rem; letter-spacing: .03em }
+.f textarea.rec { font-weight: 600 }
+.dot { display: inline-flex; align-items: center; gap: 5px; font-size: .7rem; letter-spacing: .04em; text-transform: none; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--soft); color: var(--muted) }
+.dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor }
+.dot.good { background: var(--good-bg); color: var(--good) }
+.dot.warn { background: var(--warn-bg); color: var(--warn) }
+.card .acts { display: flex; gap: 10px; padding: 0 16px 16px }
+.btn { appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 600 .95rem var(--body); padding: 10px 14px; border-radius: 12px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px }
+.btn.send { flex: 1; background: var(--navy); border-color: var(--navy); color: #fff; font-size: 1.05rem; padding: 14px }
+:root:not([data-theme="light"]) .btn.send { background: var(--navy-2); border-color: var(--navy-2) }
+.btn.icon { width: 48px; padding: 0 }
+.btn svg { width: 20px; height: 20px }
+.btn[disabled] { opacity: .5; cursor: default }
+.link { background: none; border: 0; padding: 0; color: var(--muted); font: inherit; font-size: .88rem; text-decoration: underline; text-underline-offset: 3px; cursor: pointer }
+
+/* Recent list on phone */
+.recent { display: grid; gap: 8px }
+.recent h2, .office h2 { font: 800 1.05rem var(--display); font-stretch: 85%; text-transform: uppercase; letter-spacing: .05em; margin: 0 }
+.mini { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; min-width: 0 }
+.mini .c { font: 800 .8rem var(--display); text-transform: uppercase; background: var(--soft); color: var(--navy); border-radius: 6px; padding: 4px 7px }
+:root:not([data-theme="light"]) .mini .c { color: var(--ink) }
+.mini .t { min-width: 0; display: grid }
+.mini .t span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.mini .t .code { font-family: var(--mono); font-size: .8rem; color: var(--muted) }
+.mini time { font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums }
+.samples { text-align: center; font-size: .88rem; color: var(--muted) }
+.samples button { margin: 0 4px }
+.conn { justify-self: center; font-size: .78rem; color: var(--muted); display: inline-flex; gap: 6px; align-items: center }
+.conn::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--muted) }
+.conn.live::before { background: var(--good) }
+
+/* Office view */
+.office { display: grid; gap: 16px }
+.office .top { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; justify-content: space-between }
+.office .stats { display: flex; gap: 22px; flex-wrap: wrap }
+.stat b { display: block; font: 800 2rem var(--display); font-stretch: 85%; color: var(--navy); line-height: 1; font-variant-numeric: tabular-nums }
+:root:not([data-theme="light"]) .stat b { color: var(--ink) }
+.stat span { font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em }
+.office .tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center }
+.office input.search { font: inherit; padding: 9px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); min-width: 0; width: 220px; max-width: 100% }
+.tablebox { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow-x: auto }
+table { width: 100%; border-collapse: collapse; font-size: .92rem }
+th { text-align: left; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 12px 14px; border-bottom: 1px solid var(--line); white-space: nowrap }
+td { padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top }
+tr:last-child td { border-bottom: 0 }
+tr.done td { opacity: .5 }
+td.code { font-family: var(--mono); font-size: .85rem; white-space: nowrap }
+td.addr { white-space: pre-line; min-width: 180px }
+td.addr.rec { font-weight: 600 }
+td.when { white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--muted) }
+td .c { font: 800 .82rem var(--display); text-transform: uppercase; color: var(--navy); white-space: nowrap }
+:root:not([data-theme="light"]) td .c { color: var(--ink) }
+td.row-acts { white-space: nowrap; text-align: right }
+.chk { display: inline-flex; gap: 6px; align-items: center; font-size: .85rem; cursor: pointer }
+.chk input { width: 18px; height: 18px; accent-color: var(--navy) }
+.empty { padding: 36px 16px; text-align: center; color: var(--muted) }
+.empty b { display: block; color: var(--ink); font-size: 1.05rem; margin-bottom: 4px }
+.confirm { display: inline-flex; gap: 6px; align-items: center; font-size: .85rem }
+
+/* Phone: table rows become cards */
+@media (max-width: 760px) {
+  table, tbody, tr, td { display: block }
+  thead { display: none }
+  tr { padding: 12px 14px; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 1fr auto; gap: 2px 10px }
+  td { padding: 0; border: 0 }
+  td.when { grid-column: 2; grid-row: 1 }
+  td.cour { grid-column: 1; grid-row: 1 }
+  td.code, td.addr, td.by, td.row-acts { grid-column: 1 / -1 }
+  td.addr.snd, td.by { font-size: .82rem; color: var(--muted) }
+  td.addr.snd::before { content: "From: " }
+  td.row-acts { text-align: left; padding-top: 6px }
+}
+
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg);
+  padding: 11px 18px; border-radius: 12px; font-weight: 600; max-width: calc(100% - 32px); z-index: 20; box-shadow: 0 10px 30px -10px rgba(0,0,0,.5) }
+@media (prefers-reduced-motion: reduce) { .bar i { transition: none } }
+.setup { display: grid; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; max-width: 520px; margin: 0 auto 18px }
+.setup h2 { font: 800 1.05rem var(--display); text-transform: uppercase; letter-spacing: .05em; margin: 0 }
+.setup input { width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px }
+.setup label { display: grid; gap: 4px; font-size: .85rem; color: var(--muted) }
+.conn { cursor: pointer }
+</style>
+</head>
+<body>
+
+<header class="brand"><div class="wrap">
+  <img src="logo-white.png" alt="Pesto Sea Group">
+  <div class="name">Parcel Scanner<small>Pesto Sea Group</small></div>
+  <nav class="tabs" aria-label="Views">
+    <a href="#scan" id="tabScan">Scan</a>
+    <a href="#office" id="tabOffice">Office</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <form class="setup" id="setup" hidden autocomplete="off">
+    <h2>Connect to the office</h2>
+    <label>Office sheet link<input id="cfgUrl" type="url" placeholder="https://script.google.com/macros/s/…/exec"></label>
+    <label>Team code<input id="cfgCode" type="password"></label>
+    <label>Your name (shown in the office)<input id="cfgMe" type="text"></label>
+    <div class="row" style="display:flex;gap:8px"><button class="btn send" type="submit">Save</button><button class="btn" type="button" id="cfgCancel">Cancel</button></div>
+  </form>
+  <!-- SCAN (phone) -->
+  <section id="scanView" class="col">
+    <div class="shoot">
+      <label class="big primary" for="cam">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.8l1.4-2h6.6l1.4 2h1.8A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="12.5" r="3.8"/></svg>
+        <span>Scan label<br><small>open camera</small></span>
+      </label>
+      <label class="big secondary" for="pick">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="m21 16-5-5-9 9"/></svg>
+        <span>Upload photo<br><small>from gallery</small></span>
+      </label>
+      <input type="file" id="cam" accept="image/*" capture="environment">
+      <input type="file" id="pick" accept="image/*">
+    </div>
+
+    <div class="busy" id="busy" hidden>
+      <div class="bar"><i id="barFill"></i></div>
+      <p id="status" role="status"></p>
+    </div>
+
+    <form class="card" id="result" hidden autocomplete="off">
+      <div class="head">
+        <img id="thumb" alt="Scanned label">
+        <div class="who">
+          <span class="dot" id="courierChip"></span>
+          <select class="courier" id="courier" aria-label="Courier"></select>
+        </div>
+      </div>
+      <div class="fields">
+        <div class="f"><div class="lab"><label for="tracking">Tracking</label><span class="dot" id="trackingChip"></span></div>
+          <input id="tracking" class="code" spellcheck="false" autocapitalize="characters"></div>
+        <div class="f"><div class="lab"><label for="recipient">To</label><span class="dot" id="recipientChip"></span></div>
+          <textarea id="recipient" class="rec" rows="4"></textarea></div>
+        <div class="f"><div class="lab"><label for="sender">From</label><span class="dot" id="senderChip"></span></div>
+          <textarea id="sender" rows="3"></textarea></div>
+      </div>
+      <div class="acts">
+        <button type="submit" class="btn send" id="sendBtn">Send to office</button>
+        <button type="button" class="btn icon" id="rotateBtn" title="Rotate and read again" aria-label="Rotate and read again">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>
+        <button type="button" class="btn icon" id="discardBtn" title="Discard" aria-label="Discard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+    </form>
+
+    <div class="recent">
+      <h2>Sent today</h2>
+      <div id="recentList" class="recent"></div>
+    </div>
+    <p class="samples">No label at hand? Try
+      <button class="link" data-sample="samples/sample-ups.jpg">UPS</button>·<button class="link" data-sample="samples/sample-amazon.jpg">Amazon</button>·<button class="link" data-sample="samples/sample-tnt.jpg">TNT</button></p>
+    <span class="conn" id="conn">Connecting…</span>
+  </section>
+
+  <!-- OFFICE (PC) -->
+  <section id="officeView" class="office" hidden>
+    <div class="top">
+      <div class="stats">
+        <div class="stat"><b id="statToday">0</b><span>Today</span></div>
+        <div class="stat"><b id="statOpen">0</b><span>To handle</span></div>
+        <div class="stat"><b id="statAll">0</b><span>All</span></div>
+      </div>
+      <div class="tools">
+        <input class="search" id="search" type="search" placeholder="Search name, tracking…" aria-label="Search parcels">
+        <button class="btn" id="copyBtn" type="button">Copy for Excel</button>
+        <button class="btn" id="csvBtn" type="button">Download CSV</button>
+      </div>
+    </div>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th>When</th><th>Courier</th><th>Tracking</th><th>To</th><th>From</th><th>Scanned by</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="empty" id="officeEmpty" hidden><b>No parcels yet</b>Scan a label on a phone with this same link and it appears here straight away.</div>
+    </div>
+    <span class="conn" id="conn2"></span>
+  </section>
+</main>
+<div class="toast" id="toast" hidden></div>
+<textarea id="csvText" hidden readonly aria-label="Parcels as CSV"></textarea>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+<script>
+/* ===== PARSER (pure functions, no DOM) ===== */
+const Parser = (() => {
+  const COURIERS = [
+    { id: 'ups', name: 'UPS', kw: [/\bU\s?P\s?S\b/], track: [{ re: /^1Z[0-9A-Z]{16}$/, strong: true }] },
+    { id: 'amazon', name: 'Amazon Logistics', kw: [/\bamazon\b/i], track: [{ re: /^TB[ACM]\d{12}$/, strong: true }] },
+    { id: 'dhl', name: 'DHL', kw: [/\bD\s?H\s?L\b/], track: [{ re: /^J[JV]?D\d{16,20}$/, strong: true }, { re: /^\d{10}$/ }, { re: /^\d{20}$/ }] },
+    { id: 'tnt', name: 'TNT', kw: [/\bT\s?N\s?T\b/], track: [{ re: /^[A-Z]{2}\d{9}WW$/, strong: true }, { re: /^\d{9}$/ }] },
+    { id: 'fedex', name: 'FedEx', kw: [/\bfed\s?ex\b/i], track: [{ re: /^\d{12}$/ }, { re: /^\d{15}$/ }] },
+    { id: 'gls', name: 'GLS', kw: [/\bGLS\b/], track: [{ re: /^[A-Z]{2}\d{9}$/ }, { re: /^\d{11,12}$/ }] },
+    { id: 'brt', name: 'BRT', kw: [/\bBRT\b/, /bartolini/i], track: [{ re: /^\d{12,18}$/ }] },
+    { id: 'dpd', name: 'DPD', kw: [/\bDPD\b/], track: [{ re: /^\d{14}$/ }] },
+    { id: 'poste', name: 'Poste Italiane / SDA', kw: [/poste\s*italiane/i, /\bSDA\b/, /poste\s*delivery/i], track: [{ re: /^[A-Z]{2}\d{9}IT$/, strong: true }, { re: /^\d{12,13}$/ }] },
+    { id: 'inpost', name: 'InPost', kw: [/\binpost\b/i], track: [{ re: /^\d{24}$/ }] },
+  ];
+  const TRACK_HINT = /(tracking|track|awb|waybill|lettera di vettura|ldv|spedizione|segnacollo|n\.?\s*collo|shipment)/i;
+
+  const SENDER_KW = ['mittente', 'sender', 'ship from', 'shipper', 'spedito da', 'return address', 'return to', 'reso a', 'expediteur', 'expéditeur', 'absender', 'remitente', 'from:', 'da:'];
+  const RECIP_KW = ['destinatario', 'ship to', 'deliver to', 'delivery to', 'delivery address', 'consignee', 'recipient', 'indirizzo di consegna', 'consegnare a', 'destinataire', 'empfänger', 'empfanger', 'to:', 'a:'];
+  const STOP = /(tracking|\bawb\b|waybill|sample|fictional|\bpeso\b|weight|\bkg\b|colli|\bpcs\b|ordine|order|ref\.?|riferimento|\bcod\b|contrassegno|\bdata\b|date:)/i;
+  const POSTCODE = /(\b\d{5}\b\s+[A-Za-z\u00C0-\u00FF'.\-]{2,})|(\b[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}\b)/;
+
+  function normCode(s) {
+    let c = String(s || '').toUpperCase().replace(/[\s\-.]/g, '');
+    if (/^%[0-9A-Z]{7}\d{14}\d{6}$/.test(c)) c = c.slice(8, 22); // DPD barcode: %, postcode, parcel no., service, country
+    if (/^\d{34}$/.test(c)) c = c.slice(-12);                    // FedEx 34-digit barcode ends with the 12-digit tracking no.
+    return c;
+  }
+  function ocrFix(tok) { // common OCR confusions inside codes; returns a few readings to try
+    const t = tok.toUpperCase().replace(/[\s\-.]/g, '');
+    if (/^1Z/.test(t)) return [t.slice(0, 2) + t.slice(2).replace(/O/g, '0')];
+    const digits = x => x.replace(/[OQD]/g, '0').replace(/[IL]/g, '1').replace(/Z/g, '2').replace(/A/g, '4').replace(/S/g, '5').replace(/G/g, '6').replace(/T/g, '7').replace(/B/g, '8');
+    const tail = t.match(/[A-Z]{2}$/)?.[0] || '';
+    const out = [];
+    for (const n of [0, 2, 3]) {
+      if (n > t.length - tail.length) continue;
+      out.push(t.slice(0, n) + digits(t.slice(n, t.length - tail.length)) + tail);
+      out.push(t.slice(0, n) + digits(t.slice(n)));
+    }
+    return out;
+  }
+  function matchCourier(code) {
+    const out = [];
+    for (const c of COURIERS) for (const t of c.track) if (t.re.test(code)) out.push({ courier: c.id, strong: !!t.strong });
+    return out;
+  }
+  function kwHeader(line, list) {
+    const low = line.toLowerCase().trim();
+    for (const k of list) {
+      const kk = k.toLowerCase();
+      if (low.startsWith(kk)) {
+        const rest = line.trim().slice(kk.length);
+        if (kk.endsWith(':') || rest === '' || /^[\s:.\-]/.test(rest)) return rest.replace(/^[\s:.\-]+/, '').trim();
+      }
+    }
+    return null;
+  }
+
+  function extractBlocks(lines, learned) {
+    const sKw = SENDER_KW.concat(learned?.sender || []);
+    const rKw = RECIP_KW.concat(learned?.recipient || []);
+    const headers = [];
+    lines.forEach((l, i) => {
+      const s = kwHeader(l.text, sKw), r = kwHeader(l.text, rKw);
+      if (r !== null && (s === null || r.length <= s.length)) headers.push({ i, role: 'recipient', rest: r });
+      else if (s !== null) headers.push({ i, role: 'sender', rest: s });
+    });
+    const res = { sender: '', recipient: '', senderHow: 'none', recipientHow: 'none' };
+    for (const h of headers) {
+      const out = [];
+      if (h.rest && h.rest.length > 1) out.push(h.rest);
+      let sawPost = false;
+      for (let j = h.i + 1; j < lines.length && out.length < 6; j++) {
+        const t = lines[j].text.trim();
+        if (headers.some(x => x.i === j)) break;
+        if (!t || STOP.test(t) || !/[A-Za-z\u00C0-\u00FF]{2}/.test(t)) { if (out.length) break; else continue; }
+        if (sawPost && !/^[A-Za-z\u00C0-\u00FF .'-]{2,24}$/.test(t)) break;
+        out.push(t);
+        if (POSTCODE.test(t)) { sawPost = true; }
+        if (sawPost && out.length && /^[A-Za-z\u00C0-\u00FF .'-]{2,24}$/.test(t) && !POSTCODE.test(t)) break;
+      }
+      if (out.length && !res[h.role]) { res[h.role] = out.join('\n'); res[h.role + 'How'] = 'heading'; }
+    }
+    if (!res.recipient || !res.sender) { // fallback: address blocks around postcode lines, bigger text = recipient
+      const blocks = [];
+      lines.forEach((l, i) => {
+        if (!POSTCODE.test(l.text)) return;
+        const start = Math.max(0, i - 3);
+        const blk = [];
+        for (let j = start; j <= i; j++) {
+          const t = lines[j].text.trim();
+          if (!t || STOP.test(t) || !/[A-Za-z\u00C0-\u00FF]{2}/.test(t) || kwHeader(t, sKw) !== null || kwHeader(t, rKw) !== null) { blk.length = 0; continue; }
+          blk.push(lines[j]);
+        }
+        if (blk.length) blocks.push({ text: blk.map(b => b.text.trim()).join('\n'), h: blk.reduce((a, b) => a + (b.h || 0), 0) / blk.length });
+      });
+      const used = new Set([res.sender, res.recipient]);
+      const free = blocks.filter(b => !used.has(b.text) && ![...used].some(u => u && (u.includes(b.text) || b.text.includes(u))));
+      if (!res.recipient && free.length) {
+        const big = free.slice().sort((a, b) => b.h - a.h)[0];
+        res.recipient = big.text; res.recipientHow = 'guess';
+        free.splice(free.indexOf(big), 1);
+      }
+      if (!res.sender && free.length) { res.sender = free[0].text; res.senderHow = 'guess'; }
+    }
+    return res;
+  }
+
+  function parse({ lines = [], barcodes = [], learned = {} }) {
+    const text = lines.map(l => l.text).join('\n');
+    const score = {}; const why = {};
+    const add = (c, n, w) => { score[c] = (score[c] || 0) + n; (why[c] = why[c] || []).push(w); };
+    for (const c of COURIERS) if (c.kw.some(r => r.test(text))) add(c.id, 3, 'name on label');
+    const cands = [];
+    for (const b of barcodes) {
+      const code = normCode(b.text);
+      const m = matchCourier(code);
+      m.forEach(x => add(x.courier, x.strong ? 4 : 1, 'barcode format'));
+      cands.push({ code, src: 'barcode', m, format: b.format });
+    }
+    lines.forEach(l => {
+      const toks = (l.text.match(/1Z(?:\s?[0-9A-Z]){16}|[A-Z0-9%][A-Z0-9 \-]{7,40}[A-Z0-9]/gi) || []);
+      for (const tok of toks) {
+        const variants = [normCode(tok), ...ocrFix(tok).map(normCode)];
+        for (const code of new Set(variants)) {
+          const m = matchCourier(code);
+          if (!m.length) continue;
+          const strong = m.some(x => x.strong);
+          if (!strong && !TRACK_HINT.test(l.text)) continue;
+          m.forEach(x => add(x.courier, x.strong ? 2 : 0.5, 'number format in text'));
+          cands.push({ code, src: 'text', m });
+        }
+      }
+    });
+    let courier = '';
+    const best = Object.entries(score).sort((a, b) => b[1] - a[1])[0];
+    if (best) courier = best[0];
+    const rank = c => {
+      const mm = c.m.find(x => x.courier === courier);
+      if (!mm) return -1;
+      return (mm.strong ? 2 : 0) + (c.src === 'barcode' ? 1 : 0);
+    };
+    let tracking = '', trackingHow = 'none';
+    const ranked = cands.map(c => ({ c, r: rank(c) })).filter(x => x.r >= 0).sort((a, b) => b.r - a.r);
+    if (ranked.length) { tracking = ranked[0].c.code; trackingHow = ranked[0].c.src; }
+    else {
+      const bc = cands.find(c => c.src === 'barcode' && /^[A-Z0-9]{8,30}$/.test(c.code));
+      if (bc) { tracking = bc.code; trackingHow = 'barcode-unknown'; }
+    }
+    const addr = extractBlocks(lines, learned);
+    return { courier, courierWhy: why[courier] || [], tracking, trackingHow, ...addr, candidates: cands };
+  }
+
+  // After a user fix: find the heading line printed just above the corrected text, so it can be reused.
+  function learnHeading(lines, corrected, knownLists) {
+    const first = (corrected || '').split('\n')[0].trim().toLowerCase();
+    if (first.length < 3) return null;
+    const idx = lines.findIndex(l => l.text.trim().toLowerCase().includes(first) || first.includes(l.text.trim().toLowerCase()) && l.text.trim().length > 3);
+    if (idx < 1) return null;
+    const head = lines[idx - 1].text.trim().replace(/[:.\s]+$/, '');
+    if (head.length < 2 || head.length > 30 || /\d{3,}/.test(head)) return null;
+    const low = head.toLowerCase();
+    if (knownLists.some(list => list.some(k => k.replace(/:$/, '') === low))) return null;
+    return low;
+  }
+
+  return { COURIERS, parse, learnHeading, normCode };
+})();
+
+</script>
+<script>
+/* ===== APP ===== */
+(() => {
+  const $ = id => document.getElementById(id);
+  const local = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+  let rows = [];                       // parcels, newest first
+  let learned = { sender: [], recipient: [] };
+  let last = null, busy = false;
+
+  const sel = $('courier');
+  sel.innerHTML = '<option value="">Courier?</option>' + Parser.COURIERS.map(c => `<option value="${c.id}">${c.name}</option>`).join('') + '<option value="other">Other</option>';
+  const courierName = id => (Parser.COURIERS.find(c => c.id === id) || {}).name || (id === 'other' ? 'Other' : id || '');
+
+  function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, 3000); }
+  function status(msg, pct) { $('busy').hidden = false; $('status').textContent = msg; if (pct != null) $('barFill').style.width = Math.round(pct * 100) + '%'; }
+  function chip(id, kind, text) { const c = $(id); c.className = 'dot' + (kind ? ' ' + kind : ''); c.textContent = text; }
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+
+  /* ---------- views ---------- */
+  function route() {
+    let v = location.hash.replace('#', '');
+    if (v !== 'scan' && v !== 'office') v = window.innerWidth >= 900 ? 'office' : 'scan';
+    $('scanView').hidden = v !== 'scan'; $('officeView').hidden = v !== 'office';
+    $('tabScan').toggleAttribute('aria-current', v === 'scan'); $('tabOffice').toggleAttribute('aria-current', v === 'office');
+    if (v === 'scan') $('tabScan').setAttribute('aria-current', 'page'); else $('tabOffice').setAttribute('aria-current', 'page');
+  }
+  window.addEventListener('hashchange', route); route();
+
+  /* ---------- images, barcodes, text ---------- */
+  function loadImage(src) {
+    return new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('Could not open that photo')); im.src = src; });
+  }
+  function toCanvas(img, maxSide, rot = 0) {
+    const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+    const s = Math.min(1, maxSide / Math.max(iw, ih)), w = Math.round(iw * s), h = Math.round(ih * s);
+    const c = document.createElement('canvas'), side = rot % 180 !== 0;
+    c.width = side ? h : w; c.height = side ? w : h;
+    const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+    g.translate(c.width / 2, c.height / 2); g.rotate(rot * Math.PI / 180); g.drawImage(img, -w / 2, -h / 2, w, h);
+    return c;
+  }
+  function crop(src, x, y, w, h, maxSide) {
+    const s = Math.min(1, maxSide / Math.max(w, h));
+    const c = document.createElement('canvas'); c.width = Math.round(w * s); c.height = Math.round(h * s);
+    c.getContext('2d').drawImage(src, x, y, w, h, 0, 0, c.width, c.height);
+    return c;
+  }
+  async function readBarcodes(canvas) {
+    const found = new Map();
+    const put = (text, format) => { if (text && !found.has(text)) found.set(text, { text, format }); };
+    if ('BarcodeDetector' in window) {
+      try { (await new BarcodeDetector().detect(canvas)).forEach(b => put(b.rawValue, b.format)); } catch (e) {}
+    }
+    if (window.ZXing) {
+      const Z = window.ZXing, hints = new Map();
+      hints.set(Z.DecodeHintType.TRY_HARDER, true);
+      const reader = new Z.MultiFormatReader(); reader.setHints(hints);
+      const W = canvas.width, H = canvas.height;
+      const regions = [[0, 0, W, H], [0, 0, W, H / 2], [0, H / 2, W, H / 2], [0, 0, W, H / 3], [0, H / 3, W, H / 3], [0, 2 * H / 3, W, H / 3],
+        [0, 0, W / 2, H], [W / 2, 0, W / 2, H], [0, H / 4, W, H / 2]];
+      const tries = regions.map(r => [r, 1400]).concat([[[0, 0, W, H], 800], [[0, H / 3, W, 2 * H / 3], 700]]);
+      for (const [[x, y, w, h], max] of tries) {
+        try {
+          const r = reader.decode(new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.HTMLCanvasElementLuminanceSource(crop(canvas, x, y, w, h, max)))));
+          put(r.getText(), Z.BarcodeFormat[r.getBarcodeFormat()]);
+        } catch (e) {}
+        reader.reset();
+        await new Promise(r => setTimeout(r, 0));
+      }
+    }
+    return [...found.values()];
+  }
+  let workerP = null;
+  function getWorker() {
+    if (!workerP) {
+      workerP = Tesseract.createWorker('ita+eng', 1, {
+        logger: m => {
+          if (m.status === 'recognizing text') status('Reading the label… ' + Math.round(m.progress * 100) + '%', 0.45 + m.progress * 0.5);
+          else if (/loading|initializ/i.test(m.status)) status('Getting ready (first time only)…', 0.1 + (m.progress || 0) * 0.3);
+        }
+      });
+      workerP.catch(() => { workerP = null; });
+    }
+    return workerP;
+  }
+  async function readText(canvas) {
+    const { data } = await (await getWorker()).recognize(canvas);
+    const lines = (data.lines || []).map(l => ({ text: l.text.replace(/\s+/g, ' ').trim(), h: l.bbox ? l.bbox.y1 - l.bbox.y0 : 0 })).filter(l => l.text);
+    return { lines, conf: data.confidence };
+  }
+
+  async function run(img, rot = 0) {
+    if (busy) return; busy = true;
+    try {
+      $('result').hidden = true;
+      status('Looking for the barcode…', 0.05);
+      const big = toCanvas(img, 2000, rot);
+      $('thumb').src = toCanvas(img, 300, rot).toDataURL('image/jpeg', 0.7);
+      const barcodes = await readBarcodes(big);
+      status(barcodes.length ? 'Barcode found. Reading the label…' : 'Reading the label…', 0.4);
+      const { lines, conf } = await readText(toCanvas(img, 1800, rot));
+      const parsed = Parser.parse({ lines, barcodes, learned });
+      last = { lines, barcodes, parsed, img, rot, conf };
+      fill(parsed);
+      $('result').hidden = false; $('busy').hidden = true;
+      if (conf < 45) toast('Hard to read. Try a sharper photo, or rotate.');
+      $('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) {
+      console.error(e);
+      status('Could not read it: ' + (e.message || e) + '. The first scan needs internet.', 0);
+    } finally { busy = false; }
+  }
+  function fill(p) {
+    sel.value = p.courier || '';
+    $('tracking').value = p.tracking; $('recipient').value = p.recipient; $('sender').value = p.sender;
+    chip('courierChip', p.courier ? (p.courierWhy.includes('barcode format') ? 'good' : 'warn') : 'warn', p.courier ? (p.courierWhy.includes('barcode format') ? 'sure' : 'check') : 'pick one');
+    const th = { barcode: ['good', 'from barcode'], text: ['warn', 'check'], 'barcode-unknown': ['warn', 'check'], none: ['warn', 'missing'] }[p.trackingHow];
+    chip('trackingChip', ...th);
+    const ah = { heading: ['good', 'found'], guess: ['warn', 'check'], none: ['warn', 'missing'] };
+    chip('recipientChip', ...ah[p.recipientHow]); chip('senderChip', ...ah[p.senderHow]);
+  }
+
+  async function onFile(e) {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    try { await run(await loadImage(URL.createObjectURL(f))); } catch (err) { status(err.message, 0); }
+    e.target.value = '';
+  }
+  $('cam').addEventListener('change', onFile); $('pick').addEventListener('change', onFile);
+  document.querySelectorAll('[data-sample]').forEach(b => b.addEventListener('click', async () => {
+    try { await run(await loadImage(b.dataset.sample)); } catch (err) { status(err.message, 0); }
+  }));
+  $('rotateBtn').addEventListener('click', () => { if (last) run(last.img, (last.rot + 90) % 360); });
+  $('discardBtn').addEventListener('click', () => { $('result').hidden = true; last = null; });
+
+  /* ---------- storage: shared office database, or this phone only ---------- */
+  function setConn(live, text) { ['conn', 'conn2'].forEach(id => { const c = $(id); c.className = 'conn' + (live ? ' live' : ''); c.textContent = text; }); }
+  // Office inbox = a Google Sheet behind a small Apps Script web app (see Code.gs)
+  const cfg = () => ({ url: (window.PARCEL_CONFIG && window.PARCEL_CONFIG.sheetUrl) || local.get('pp.url', ''), code: local.get('pp.code', ''), me: local.get('pp.me', '') });
+  async function api(method, body) {
+    const { url, code } = cfg();
+    if (!url || !code) throw Object.assign(new Error('Not set up'), { code: 'setup' });
+    const r = method === 'GET'
+      ? await fetch(url + (url.includes('?') ? '&' : '?') + 'code=' + encodeURIComponent(code))
+      : await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ code, ...body }) });
+    const j = await r.json();
+    if (j.error) throw Object.assign(new Error(j.error === 'bad_code' ? 'Wrong team code' : j.error), { code: j.error });
+    return j;
+  }
+  let polling = null;
+  async function refresh() {
+    try { const j = await api('GET'); rows = j.rows || []; setConn(true, 'Live: scans go straight to the office sheet'); render(); }
+    catch (e) { setConn(false, e.code === 'setup' ? 'Not set up yet: tap here to connect' : 'Office not reachable: ' + e.message); if (e.code === 'setup' || e.code === 'bad_code') rows = local.get('pp.rows', []), render(); }
+  }
+  function initStore() {
+    learned = local.get('pp.learned', learned);
+    refresh(); clearInterval(polling); polling = setInterval(() => { if (!document.hidden) refresh(); }, 20000);
+  }
+  ['conn', 'conn2'].forEach(id => $(id).addEventListener('click', () => { $('setup').hidden = false; const c = cfg(); $('cfgUrl').value = c.url; $('cfgCode').value = c.code; $('cfgMe').value = c.me; }));
+  $('setup').addEventListener('submit', e => {
+    e.preventDefault();
+    local.set('pp.url', $('cfgUrl').value.trim()); local.set('pp.code', $('cfgCode').value.trim()); local.set('pp.me', $('cfgMe').value.trim());
+    $('setup').hidden = true; refresh();
+  });
+  $('cfgCancel').addEventListener('click', () => $('setup').hidden = true);
+
+  $('result').addEventListener('submit', async e => {
+    e.preventDefault();
+    const rec = { at: new Date().toISOString(), courier: sel.value, tracking: $('tracking').value.trim().toUpperCase(),
+      recipient: $('recipient').value.trim(), sender: $('sender').value.trim(), done: false };
+    if (cfg().me) rec.by = cfg().me;
+    if (!rec.tracking && !rec.recipient) { toast('Add a tracking number or a recipient first.'); return; }
+    // learn from corrections: the heading printed above the corrected text
+    let learnedMsg = '';
+    if (last) {
+      const next = { sender: [...learned.sender], recipient: [...learned.recipient] };
+      for (const role of ['recipient', 'sender']) {
+        if (rec[role] && rec[role] !== (last.parsed[role] || '').trim()) {
+          const h = Parser.learnHeading(last.lines, rec[role], [next.sender, next.recipient]);
+          if (h && !next[role].includes(h)) { next[role].push(h); learnedMsg = ` · learned "${h.toUpperCase()}"`; }
+        }
+      }
+      if (learnedMsg) { learned = next; local.set('pp.learned', next); }
+    }
+    $('sendBtn').disabled = true;
+    try {
+      await api('POST', { op: 'add', row: rec });
+      $('result').hidden = true; last = null;
+      toast('Sent to office' + learnedMsg); refresh();
+    } catch (err) {
+      if (err.code === 'setup' || err.code === 'bad_code') { $('conn').click(); toast(err.code === 'setup' ? 'Connect to the office first.' : 'Wrong team code.'); }
+      else toast('Not sent: ' + (err.message || err) + '. Try again.');
+    } finally { $('sendBtn').disabled = false; }
+  });
+
+  async function updateRow(id, patch) { try { await api('POST', { op: 'done', id, done: patch.done }); } catch (e) { toast('Could not save that change.'); } refresh(); }
+  async function deleteRow(id) { try { await api('POST', { op: 'delete', id }); } catch (e) { toast('Could not delete.'); } refresh(); }
+
+  /* ---------- rendering ---------- */
+  const isToday = iso => new Date(iso).toDateString() === new Date().toDateString();
+  const fmtTime = iso => { const d = new Date(iso); return isToday(iso) ? d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) : d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); };
+  let confirmId = null;
+  function render() { renderRecent(); renderOffice(); }
+  function renderRecent() {
+    const today = rows.filter(r => isToday(r.at)).slice(0, 6);
+    $('recentList').innerHTML = today.length ? today.map(r => `<div class="mini"><span class="c">${esc(courierName(r.courier) || '?')}</span>
+      <div class="t"><span>${esc((r.recipient || '').split('\n')[0] || 'No recipient')}</span><span class="code">${esc(r.tracking || '-')}</span></div><time>${esc(fmtTime(r.at))}</time></div>`).join('')
+      : '<div class="mini" style="grid-template-columns:1fr;color:var(--muted)">Nothing yet today.</div>';
+  }
+  function renderOffice() {
+    const q = $('search').value.trim().toLowerCase();
+    const list = q ? rows.filter(r => [r.tracking, r.recipient, r.sender, courierName(r.courier)].join(' ').toLowerCase().includes(q)) : rows;
+    $('statToday').textContent = rows.filter(r => isToday(r.at)).length;
+    $('statOpen').textContent = rows.filter(r => !r.done).length;
+    $('statAll').textContent = rows.length;
+    $('officeEmpty').hidden = list.length > 0;
+    if (!rows.length) $('officeEmpty').innerHTML = '<b>No parcels yet</b>Scan a label on a phone with this same link and it appears here straight away.';
+    else if (!list.length) $('officeEmpty').innerHTML = '<b>No match</b>Nothing matches that search.';
+    $('rows').innerHTML = list.map(r => `<tr class="${r.done ? 'done' : ''}" data-id="${esc(r.id)}">
+      <td class="when">${esc(fmtTime(r.at))}</td>
+      <td class="cour"><span class="c">${esc(courierName(r.courier) || '?')}</span></td>
+      <td class="code">${esc(r.tracking || '-')}</td>
+      <td class="addr rec">${esc(r.recipient || '')}</td>
+      <td class="addr snd">${esc(r.sender || '')}</td>
+      <td class="by">${esc(r.by || '')}</td>
+      <td class="row-acts">${confirmId === r.id
+        ? `<span class="confirm">Delete? <button class="btn" data-act="yes">Delete</button><button class="btn" data-act="no">Keep</button></span>`
+        : `<label class="chk"><input type="checkbox" data-act="done" ${r.done ? 'checked' : ''}> Handled</label>
+           <button class="link" data-act="del">Delete</button>`}</td></tr>`).join('');
+  }
+  $('rows').addEventListener('click', e => {
+    const t = e.target.closest('[data-act]'); if (!t) return;
+    const id = t.closest('tr').dataset.id, act = t.dataset.act;
+    if (act === 'done') updateRow(id, { done: t.checked });
+    else if (act === 'del') { confirmId = id; renderOffice(); }
+    else if (act === 'no') { confirmId = null; renderOffice(); }
+    else if (act === 'yes') { confirmId = null; deleteRow(id); }
+  });
+  $('search').addEventListener('input', renderOffice);
+
+  function csv() {
+    const q = s => '"' + String(s ?? '').replace(/\r?\n/g, ', ').replace(/"/g, '""') + '"';
+    return ['Data;Corriere;Tracking;Destinatario;Mittente;Gestito'].concat(rows.map(r =>
+      [new Date(r.at).toLocaleString('it-IT'), courierName(r.courier), r.tracking, r.recipient, r.sender, r.done ? 'si' : 'no'].map(q).join(';'))).join('\r\n');
+  }
+  $('copyBtn').addEventListener('click', () => {
+    const tsv = ['Data\tCorriere\tTracking\tDestinatario\tMittente\tGestito'].concat(rows.map(r =>
+      [new Date(r.at).toLocaleString('it-IT'), courierName(r.courier), r.tracking, r.recipient, r.sender, r.done ? 'si' : 'no'].map(v => String(v ?? '').replace(/\s*\n\s*/g, ', ').replace(/\t/g, ' ')).join('\t'))).join('\n');
+    const fallback = () => { const ta = $('csvText'); ta.hidden = false; ta.value = tsv; ta.select(); toast('Select all and copy the text below.'); };
+    if (navigator.clipboard) navigator.clipboard.writeText(tsv).then(() => toast('Copied. Paste into Excel.'), fallback); else fallback();
+  });
+  $('csvBtn').addEventListener('click', () => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['\ufeff' + csv()], { type: 'text/csv' }));
+    a.download = 'pacchi-' + new Date().toISOString().slice(0, 10) + '.csv'; a.click();
+  });
+  render();
+  initStore();
+  window.__pp = { run, loadImage, Parser, get last() { return last; } };
+})();
+
+</script>
+
+</body>
+</html>
