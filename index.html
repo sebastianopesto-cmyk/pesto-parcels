@@ -89,6 +89,10 @@ select.courier { width: 100%; font: 800 1.5rem var(--display); font-stretch: 85%
 .f input, .f textarea { width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; resize: vertical }
 .f input.code { font-family: var(--mono); font-size: 1.05rem; letter-spacing: .03em }
 .f textarea.rec { font-weight: 600 }
+#costChip:empty { display: none }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+td.cost input { width: 5.5em; font: 500 .9rem var(--mono); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; text-align: right }
+.note { margin: 0 0 12px; padding: 10px 14px; border-radius: 10px; background: var(--in-bg); color: var(--in-fg); font-size: .85rem }
 .dot { justify-self: start; display: inline-flex; align-items: center; gap: 5px; font-size: .7rem; letter-spacing: .04em; text-transform: none; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--soft); color: var(--muted) }
 .dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor }
 .dot.good { background: var(--good-bg); color: var(--good) }
@@ -175,7 +179,7 @@ td.stat select { font: 600 .85rem var(--body); color: var(--ink); background: va
 a.track { font: 600 .78rem var(--body); color: var(--red); text-decoration: none; white-space: nowrap }
 a.track:hover { text-decoration: underline }
 td.cour .pill { margin-bottom: 4px }
-@media (max-width: 760px) { td.stat { grid-column: 1 / -1; padding-top: 4px } }
+@media (max-width: 760px) { td.stat { grid-column: 1 / -1; padding-top: 4px } td.cost { grid-column: 1 / -1 } }
 .cam { position: fixed; inset: 0; z-index: 30; background: #000; display: grid; grid-template-rows: 1fr auto }
 .cam video { width: 100%; height: 100%; object-fit: cover; grid-row: 1 / 3; grid-column: 1 }
 .cam .frame { grid-row: 1; grid-column: 1; align-self: center; justify-self: center; width: min(78vw, 420px); aspect-ratio: 2 / 3; max-height: 70vh;
@@ -249,6 +253,12 @@ td.cour .pill { margin-bottom: 4px }
           <textarea id="recipient" class="rec" rows="4"></textarea></div>
         <div class="f"><div class="lab"><label for="sender">From</label><span class="dot" id="senderChip"></span></div>
           <textarea id="sender" rows="3"></textarea></div>
+        <div class="pair">
+          <div class="f"><div class="lab"><label for="kg">Weight kg</label></div>
+            <input id="kg" inputmode="decimal" placeholder="optional"></div>
+          <div class="f"><div class="lab"><label for="cost">Cost €</label><span class="dot" id="costChip"></span></div>
+            <input id="cost" inputmode="decimal" placeholder="optional"></div>
+        </div>
       </div>
       <div class="acts">
         <button type="submit" class="btn send" id="sendBtn">Send to office</button>
@@ -276,6 +286,7 @@ td.cour .pill { margin-bottom: 4px }
         <div class="stat"><b id="statIn">0</b><span>Arriving</span></div>
         <div class="stat"><b id="statOut">0</b><span>Sending</span></div>
         <div class="stat"><b id="statAll">0</b><span>All</span></div>
+        <div class="stat"><b id="statCost">€0</b><span>Shipping this month</span></div>
       </div>
       <div class="tools">
         <div class="seg" id="filterSeg" role="group" aria-label="Show"><button type="button" data-f="all" aria-pressed="true">All</button><button type="button" data-f="in" aria-pressed="false">Arriving</button><button type="button" data-f="out" aria-pressed="false">Sending</button></div>
@@ -284,9 +295,10 @@ td.cour .pill { margin-bottom: 4px }
         <button class="btn" id="csvBtn" type="button">Download CSV</button>
       </div>
     </div>
+    <p class="note" id="sheetNote" hidden>Costs aren't saved yet: the Google Sheet script needs updating (see SETUP-GOOGLE-SHEET.md, step "Update").</p>
     <div class="tablebox">
       <table>
-        <thead><tr><th>When</th><th>Courier</th><th>Tracking</th><th>Status</th><th>To</th><th>From</th><th>Scanned by</th><th></th></tr></thead>
+        <thead><tr><th>When</th><th>Courier</th><th>Tracking</th><th>Status</th><th>Cost €</th><th>To</th><th>From</th><th>Scanned by</th><th></th></tr></thead>
         <tbody id="rows"></tbody>
       </table>
       <div class="empty" id="officeEmpty" hidden><b>No parcels yet</b>Scan a label on a phone with this same link and it appears here straight away.</div>
@@ -527,6 +539,26 @@ const Parser = (() => {
     if (sure !== undefined) chip('dirChip', sure ? 'good' : 'warn', sure ? 'sure' : 'check');
   }
   document.querySelectorAll('#dirSeg button').forEach(b => b.addEventListener('click', () => setDir(b.dataset.dir, true)));
+  // Shipping cost: typed in, or suggested from config.js rates once the courier price lists are added
+  const RATES = (window.PARCEL_CONFIG && window.PARCEL_CONFIG.rates) || {};
+  const num = v => { const n = parseFloat(String(v ?? '').replace(/[€\s]/g, '').replace(',', '.')); return isFinite(n) ? n : null; };
+  const money = n => n == null ? '' : n.toFixed(2).replace('.', ',');
+  function rateFor(courier, kg) {
+    const bands = RATES[courier]; if (!bands || !bands.length) return null;
+    const w = kg == null ? 0 : kg;
+    const b = bands.find(([max]) => w <= max);
+    return b ? b[1] : null;
+  }
+  let costTyped = false;
+  function suggestCost() {
+    if (costTyped) return;
+    const c = rateFor(sel.value, num($('kg').value));
+    $('cost').value = c == null ? '' : money(c);
+    chip('costChip', c == null ? '' : 'warn', c == null ? '' : 'from price list');
+  }
+  $('cost').addEventListener('input', () => { costTyped = !!$('cost').value.trim(); chip('costChip', '', ''); });
+  $('kg').addEventListener('input', suggestCost);
+  sel.addEventListener('change', suggestCost);
   const courierName = id => (Parser.COURIERS.find(c => c.id === id) || {}).name || (id === 'other' ? 'Other' : id || '');
 
   function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, 3000); }
@@ -632,6 +664,7 @@ const Parser = (() => {
     sel.value = p.courier || '';
     $('tracking').value = p.tracking; $('recipient').value = p.recipient; $('sender').value = p.sender;
     const d = detectDir(p.sender, p.recipient); setDir(d.dir, d.sure);
+    $('kg').value = ''; $('cost').value = ''; costTyped = false; suggestCost();
     chip('courierChip', p.courier ? (p.courierWhy.includes('barcode format') ? 'good' : 'warn') : 'warn', p.courier ? (p.courierWhy.includes('barcode format') ? 'sure' : 'check') : 'pick one');
     const th = { barcode: ['good', 'from barcode'], text: ['warn', 'check'], 'barcode-unknown': ['warn', 'check'], none: ['warn', 'missing'] }[p.trackingHow];
     chip('trackingChip', ...th);
@@ -692,7 +725,7 @@ const Parser = (() => {
   }
   let polling = null;
   async function refresh() {
-    try { const j = await api('GET'); rows = j.rows || []; setConn(true, 'Live: scans go straight to the office sheet'); render(); }
+    try { const j = await api('GET'); rows = j.rows || []; $('sheetNote').hidden = !rows.length || 'cost' in rows[0]; setConn(true, 'Live: scans go straight to the office sheet'); if ((document.activeElement || {}).dataset?.act !== 'cost') render(); }
     catch (e) { setConn(false, e.code === 'setup' ? 'Not set up yet: tap here to connect' : 'Office not reachable: ' + e.message); if (e.code === 'setup' || e.code === 'bad_code') rows = local.get('pp.rows', []), render(); }
   }
   function initStore() {
@@ -712,6 +745,9 @@ const Parser = (() => {
     const rec = { at: new Date().toISOString(), courier: sel.value, tracking: $('tracking').value.trim().toUpperCase(),
       recipient: $('recipient').value.trim(), sender: $('sender').value.trim(), dir };
     rec.status = dir === 'in' ? 'arrived' : 'ready';
+    const kg = num($('kg').value), cost = num($('cost').value);
+    if (kg != null) rec.kg = kg;
+    if (cost != null) rec.cost = cost;
     if (cfg().me) rec.by = cfg().me;
     if (!rec.tracking && !rec.recipient) { toast('Add a tracking number or a recipient first.'); return; }
     // learn from corrections: the heading printed above the corrected text
@@ -759,6 +795,8 @@ const Parser = (() => {
     $('statIn').textContent = rows.filter(r => dirOf(r) === 'in' && !isClosed(r)).length;
     $('statOut').textContent = rows.filter(r => dirOf(r) === 'out' && !isClosed(r)).length;
     $('statAll').textContent = rows.length;
+    const ym = new Date().toISOString().slice(0, 7);
+    $('statCost').textContent = '€' + money(rows.filter(r => String(r.at).slice(0, 7) === ym).reduce((t, r) => t + (num(r.cost) || 0), 0)).replace(/,00$/, '');
     $('officeEmpty').hidden = list.length > 0;
     if (!rows.length) $('officeEmpty').innerHTML = '<b>No parcels yet</b>Scan a label on a phone with this same link and it appears here straight away.';
     else if (!list.length) $('officeEmpty').innerHTML = '<b>No match</b>Nothing matches that search.';
@@ -767,6 +805,7 @@ const Parser = (() => {
       <td class="cour"><span class="pill ${dirOf(r)}">${dirOf(r) === 'in' ? 'Arriving' : 'Sending'}</span> <span class="c">${esc(courierName(r.courier) || '?')}</span></td>
       <td class="code">${esc(r.tracking || '-')}${r.tracking ? `<br><a class="track" href="${esc(trackUrl(r))}" target="_blank" rel="noopener">Live tracking ↗</a>` : ''}</td>
       <td class="stat"><select data-act="status" aria-label="Status">${STATUS[dirOf(r)].map(([v, l]) => `<option value="${v}"${statusOf(r) === v ? ' selected' : ''}>${l}</option>`).join('')}</select></td>
+      <td class="cost"><input data-act="cost" inputmode="decimal" aria-label="Cost in euro" value="${esc(money(num(r.cost)))}" placeholder="–"></td>
       <td class="addr rec">${esc(r.recipient || '')}</td>
       <td class="addr snd">${esc(r.sender || '')}</td>
       <td class="by">${esc(r.by || '')}</td>
@@ -784,8 +823,10 @@ const Parser = (() => {
     else if (act === 'yes') { confirmId = null; deleteRow(id); }
   });
   $('rows').addEventListener('change', e => {
-    const t = e.target.closest('[data-act="status"]'); if (!t) return;
-    updateRow(t.closest('tr').dataset.id, { status: t.value });
+    const t = e.target.closest('[data-act]'); if (!t) return;
+    const id = t.closest('tr').dataset.id;
+    if (t.dataset.act === 'status') updateRow(id, { status: t.value });
+    if (t.dataset.act === 'cost') { const c = num(t.value); updateRow(id, { cost: c == null ? '' : c }); }
   });
   let officeFilter = 'all';
   document.querySelectorAll('#filterSeg button').forEach(b => b.addEventListener('click', () => {
@@ -797,12 +838,12 @@ const Parser = (() => {
 
   function csv() {
     const q = s => '"' + String(s ?? '').replace(/\r?\n/g, ', ').replace(/"/g, '""') + '"';
-    return ['Data;Direzione;Corriere;Tracking;Destinatario;Mittente;Stato'].concat(rows.map(r =>
-      [new Date(r.at).toLocaleString('it-IT'), dirOf(r) === 'in' ? 'In arrivo' : 'In uscita', courierName(r.courier), r.tracking, r.recipient, r.sender, (STATUS[dirOf(r)].find(x => x[0] === statusOf(r)) || ['', ''])[1]].map(q).join(';'))).join('\r\n');
+    return ['Data;Direzione;Corriere;Tracking;Destinatario;Mittente;Stato;Peso kg;Costo €'].concat(rows.map(r =>
+      [new Date(r.at).toLocaleString('it-IT'), dirOf(r) === 'in' ? 'In arrivo' : 'In uscita', courierName(r.courier), r.tracking, r.recipient, r.sender, (STATUS[dirOf(r)].find(x => x[0] === statusOf(r)) || ['', ''])[1], money(num(r.kg)), money(num(r.cost))].map(q).join(';'))).join('\r\n');
   }
   $('copyBtn').addEventListener('click', () => {
-    const tsv = ['Data\tDirezione\tCorriere\tTracking\tDestinatario\tMittente\tStato'].concat(rows.map(r =>
-      [new Date(r.at).toLocaleString('it-IT'), dirOf(r) === 'in' ? 'In arrivo' : 'In uscita', courierName(r.courier), r.tracking, r.recipient, r.sender, (STATUS[dirOf(r)].find(x => x[0] === statusOf(r)) || ['', ''])[1]].map(v => String(v ?? '').replace(/\s*\n\s*/g, ', ').replace(/\t/g, ' ')).join('\t'))).join('\n');
+    const tsv = ['Data\tDirezione\tCorriere\tTracking\tDestinatario\tMittente\tStato\tPeso kg\tCosto €'].concat(rows.map(r =>
+      [new Date(r.at).toLocaleString('it-IT'), dirOf(r) === 'in' ? 'In arrivo' : 'In uscita', courierName(r.courier), r.tracking, r.recipient, r.sender, (STATUS[dirOf(r)].find(x => x[0] === statusOf(r)) || ['', ''])[1], money(num(r.kg)), money(num(r.cost))].map(v => String(v ?? '').replace(/\s*\n\s*/g, ', ').replace(/\t/g, ' ')).join('\t'))).join('\n');
     const fallback = () => { const ta = $('csvText'); ta.hidden = false; ta.value = tsv; ta.select(); toast('Select all and copy the text below.'); };
     if (navigator.clipboard) navigator.clipboard.writeText(tsv).then(() => toast('Copied. Paste into Excel.'), fallback); else fallback();
   });

@@ -4,4 +4,8 @@ window.PARCEL_CONFIG = {
   sheetUrl: 'https://script.google.com/macros/s/AKfycbzLBP0Xk-kQqoH0ZBXSzyMb8aTseLZ6SjTydOJZ4UNu5QTNQ9fS9B-IBwuWw4g6OEIY/exec',
   // If one of these names is in the recipient, the parcel is "Arriving"; in the sender, "Sending".
   ourNames: ['pesto'],
+  // Courier price lists, to suggest the cost automatically. Per courier: [up to kg, price €], lightest first.
+  // Example: brt: [[3, 7.50], [10, 9.90], [30, 14.00]],
+  rates: {
+  },
 };

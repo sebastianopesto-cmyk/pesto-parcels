@@ -10,18 +10,24 @@
  * 4. Copy the web app URL into the app's settings (or config.js).
  */
 const SHEET = 'Parcels';
-const HEAD = ['id', 'at', 'dir', 'courier', 'tracking', 'recipient', 'sender', 'by', 'status'];
-const EDITABLE = ['dir', 'status'];
+const HEAD = ['id', 'at', 'dir', 'courier', 'tracking', 'recipient', 'sender', 'by', 'status', 'kg', 'cost'];
+const EDITABLE = ['dir', 'status', 'kg', 'cost'];
 
 function sheet_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sh = ss.getSheetByName(SHEET);
   if (!sh) { sh = ss.insertSheet(SHEET); sh.appendRow(HEAD); sh.setFrozenRows(1); }
+  // Sheets made by an older version get the new column headings added
+  if (sh.getLastColumn() < HEAD.length) sh.getRange(1, 1, 1, HEAD.length).setValues([HEAD]);
   return sh;
 }
 function ok_(code) {
   const want = PropertiesService.getScriptProperties().getProperty('TEAM_CODE');
   return want && String(code || '') === want;
+}
+function num_(v) {
+  const n = parseFloat(String(v == null ? '' : v).replace(',', '.'));
+  return isFinite(n) ? n : '';
 }
 function out_(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
@@ -30,7 +36,8 @@ function out_(obj) {
 // GET ?code=...  -> latest 500 parcels, newest first
 function doGet(e) {
   if (!ok_(e.parameter.code)) return out_({ error: 'bad_code' });
-  const values = sheet_().getDataRange().getValues();
+  const sh = sheet_();
+  const values = sh.getRange(1, 1, Math.max(sh.getLastRow(), 1), HEAD.length).getValues();
   const rows = values.slice(1).map(r => Object.fromEntries(HEAD.map((h, i) => [h, r[i]])))
     .map(r => ({ ...r, at: r.at instanceof Date ? r.at.toISOString() : String(r.at), tracking: String(r.tracking) }));
   rows.reverse();
@@ -47,13 +54,13 @@ function doPost(e) {
     if (b.op === 'add') {
       const id = Utilities.getUuid();
       const r = b.row || {};
-      sh.appendRow([id, new Date(r.at || Date.now()), r.dir === 'out' ? 'out' : 'in', r.courier || '', "'" + (r.tracking || ''), r.recipient || '', r.sender || '', r.by || '', String(r.status || '')]);
+      sh.appendRow([id, new Date(r.at || Date.now()), r.dir === 'out' ? 'out' : 'in', r.courier || '', "'" + (r.tracking || ''), r.recipient || '', r.sender || '', r.by || '', String(r.status || ''), num_(r.kg), num_(r.cost)]);
       return out_({ id });
     }
     const ids = sh.getRange(2, 1, Math.max(sh.getLastRow() - 1, 1), 1).getValues().map(x => x[0]);
     const i = ids.indexOf(b.id);
     if (i < 0) return out_({ error: 'not_found' });
-    if (b.op === 'set') EDITABLE.forEach(f => { if (f in b) sh.getRange(i + 2, HEAD.indexOf(f) + 1).setValue(String(b[f])); });
+    if (b.op === 'set') EDITABLE.forEach(f => { if (f in b) sh.getRange(i + 2, HEAD.indexOf(f) + 1).setValue(f === 'kg' || f === 'cost' ? num_(b[f]) : String(b[f])); });
     if (b.op === 'delete') sh.deleteRow(i + 2);
     return out_({ ok: true });
   } finally { lock.releaseLock(); }

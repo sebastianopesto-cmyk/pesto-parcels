@@ -14,3 +14,12 @@
 6. On each phone: open the app, tap the grey status line at the bottom, fill in team code and your name. Done.
 
 Every scan becomes a new row in the "Parcels" tab of the sheet. The app's Office tab reads the same rows.
+
+## Update (after a new version of Code.gs)
+
+The web address stays the same, so phones don't need anything new.
+
+1. Open the sheet, **Extensions → Apps Script**. Select all the code in `Code.gs`, delete it, paste the new `Code.gs`, click save.
+2. **Deploy → Manage deployments** → pencil icon (Edit) → Version: **New version** → **Deploy**.
+
+Do not use "New deployment" for an update: that makes a new web address.
