@@ -329,12 +329,12 @@ const Parser = (() => {
     { id: 'ups', name: 'UPS', kw: [/\bU\s?P\s?S\b/], track: [{ re: /^1Z[0-9A-Z]{16}$/, strong: true }] },
     { id: 'amazon', name: 'Amazon Logistics', kw: [/\bamazon\b/i], track: [{ re: /^TB[ACM]\d{12}$/, strong: true }] },
     { id: 'dhl', name: 'DHL', kw: [/\bD\s?H\s?L\b/], track: [{ re: /^J[JV]?D\d{16,20}$/, strong: true }, { re: /^\d{10}$/ }, { re: /^\d{20}$/ }] },
-    { id: 'tnt', name: 'TNT', kw: [/\bT\s?N\s?T\b/], track: [{ re: /^[A-Z]{2}\d{9}WW$/, strong: true }, { re: /^\d{9}$/ }] },
+    { id: 'tnt', name: 'TNT', kw: [/\bT\s?N\s?T\b/], track: [{ re: /^[A-Z]{2}\d{9}WW$/, strong: true }, { re: /^\d{9}$/ }, { re: /^[A-Z]{2}\d{8}$/ }] },
     { id: 'fedex', name: 'FedEx', kw: [/\bfed\s?ex\b/i], track: [{ re: /^\d{12}$/ }, { re: /^\d{15}$/ }] },
     { id: 'gls', name: 'GLS', kw: [/\bGLS\b/], track: [{ re: /^[A-Z]{2}\d{9}$/ }, { re: /^\d{11,12}$/ }] },
     { id: 'brt', name: 'BRT', kw: [/\bBRT\b/, /bartolini/i], track: [{ re: /^\d{12,18}$/ }] },
     { id: 'dpd', name: 'DPD', kw: [/\bDPD\b/], track: [{ re: /^\d{14}$/ }] },
-    { id: 'poste', name: 'Poste Italiane / SDA', kw: [/poste\s*italiane/i, /\bSDA\b/, /poste\s*delivery/i], track: [{ re: /^[A-Z]{2}\d{9}IT$/, strong: true }, { re: /^\d{12,13}$/ }] },
+    { id: 'poste', name: 'Poste Italiane / SDA', kw: [/poste\s*italiane/i, /\bSDA\b/, /poste\s*delivery/i], track: [{ re: /^[A-Z]{2}\d{9}IT$/, strong: true }, { re: /^\d{12,13}$/ }, { re: /^(?=(?:[A-Z]*\d){8})[0-9][0-9A-Z]{11,12}$|^[A-Z][0-9]{3}[A-Z][0-9]{8}$/ }] },
     { id: 'imile', name: 'iMile', kw: [/\bi\s?mile\b/i, /IMILE-IT/i], track: [{ re: /^6\d{12}$/ }] },
     { id: 'inpost', name: 'InPost', kw: [/\binpost\b/i], track: [{ re: /^\d{24}$/ }] },
   ];
@@ -364,6 +364,7 @@ const Parser = (() => {
     }
     return out;
   }
+  const looksLikeTracking = t => matchCourier(normCode(t)).length > 0;
   function matchCourier(code) {
     const out = [];
     for (const c of COURIERS) for (const t of c.track) if (t.re.test(code)) out.push({ courier: c.id, strong: !!t.strong });
@@ -436,14 +437,15 @@ const Parser = (() => {
     const score = {}; const why = {};
     const add = (c, n, w) => { score[c] = (score[c] || 0) + n; (why[c] = why[c] || []).push(w); };
     for (const c of COURIERS) if (c.kw.some(r => r.test(text))) add(c.id, 3, 'name on label');
-    const cands = [];
+    const cands = [], weak = [];
     for (const b of barcodes) {
       const code = normCode(b.text);
       const m = matchCourier(code);
       m.forEach(x => add(x.courier, x.strong ? 4 : 1, 'barcode format'));
       cands.push({ code, src: 'barcode', m, format: b.format });
     }
-    lines.forEach(l => {
+    lines.forEach((l, li) => {
+      const prevHint = li > 0 && TRACK_HINT.test(lines[li - 1].text);
       const toks = (l.text.match(/1Z(?:\s?[0-9A-Z]){16}|[A-Z0-9%][A-Z0-9 \-]{7,40}[A-Z0-9]/gi) || []);
       for (const tok of toks) {
         const parts = tok.split(/\s+/).filter(w => w.length >= 8);
@@ -454,7 +456,7 @@ const Parser = (() => {
           const strong = m.some(x => x.strong);
           // a weak number counts only beside a tracking word or the courier's own name (e.g. "IMILE-IT 6100826299815")
           const named = m.some(x => COURIERS.find(c => c.id === x.courier).kw.some(r => r.test(l.text)));
-          if (!strong && !named && !TRACK_HINT.test(l.text)) continue;
+          if (!strong && !named && !prevHint && !TRACK_HINT.test(l.text)) { weak.push({ code, src: 'text-weak', m }); continue; }
           m.forEach(x => add(x.courier, x.strong ? 2 : 0.5, 'number format in text'));
           cands.push({ code, src: 'text', m });
         }
@@ -470,6 +472,10 @@ const Parser = (() => {
     };
     let tracking = '', trackingHow = 'none';
     const ranked = cands.map(c => ({ c, r: rank(c) })).filter(x => x.r >= 0).sort((a, b) => b.r - a.r);
+    if (!ranked.length && courier) { // courier known from its name: accept a number in its format from anywhere on the label
+      const w = weak.find(c => c.m.some(x => x.courier === courier));
+      if (w) ranked.push({ c: w, r: 0 });
+    }
     if (ranked.length) { tracking = ranked[0].c.code; trackingHow = ranked[0].c.src; }
     else {
       const bc = cands.find(c => c.src === 'barcode' && /^[A-Z0-9]{8,30}$/.test(c.code));
@@ -492,7 +498,7 @@ const Parser = (() => {
     return low;
   }
 
-  return { COURIERS, parse, learnHeading, normCode };
+  return { COURIERS, parse, learnHeading, normCode, looksLikeTracking };
 })();
 
 </script>

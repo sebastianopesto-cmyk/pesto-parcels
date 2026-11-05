@@ -322,6 +322,50 @@ td.row-acts .link { display: block; margin: 2px 0 }
   td.num { text-align: left }
   td.row-acts .link { display: inline-block; margin-right: 12px }
 }
+/* login, office badge, live page additions */
+.login { position: fixed; inset: 0; z-index: 30; background: var(--navy); color: var(--on-navy); display: grid; place-items: center; padding: 24px 16px; overflow: auto }
+.login form { width: min(400px, 100%); display: grid; gap: 14px }
+.login img { height: 64px; justify-self: start }
+.login h1 { font: 800 1.9rem/1.05 var(--display); font-stretch: 80%; text-transform: uppercase; margin: 6px 0 0; letter-spacing: .02em }
+.login p { margin: 0; opacity: .8; line-height: 1.45 }
+.login label { display: grid; gap: 6px; font-weight: 600; font-size: .9rem }
+.login input { font: inherit; font-size: 1.05rem; padding: 13px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.08); color: #fff; width: 100% }
+.login input::placeholder { color: rgba(255,255,255,.45) }
+.login .go { background: var(--red); color: #fff; border: 0; border-radius: 12px; padding: 14px; font: 700 1.05rem var(--body); cursor: pointer }
+.login .err { background: rgba(227,38,27,.18); border: 1px solid rgba(227,38,27,.5); padding: 10px 12px; border-radius: 10px; font-size: .9rem }
+.login details { font-size: .85rem; opacity: .85 } .login summary { cursor: pointer }
+.login details label { margin-top: 10px }
+.login .demo { background: none; border: 0; color: #fff; opacity: .7; text-decoration: underline; cursor: pointer; font: inherit; font-size: .85rem; justify-self: start; padding: 0 }
+.brand .wrap { flex-wrap: wrap }
+.tabs { flex-shrink: 0 }
+.who2 { display: flex; align-items: center; gap: 8px; font-size: .8rem; line-height: 1.2; margin-left: auto }
+.who2 .off { background: rgba(255,255,255,.12); padding: 6px 10px; border-radius: 999px; font-weight: 600; white-space: nowrap }
+.who2 select { font: 600 .8rem var(--body); background: rgba(255,255,255,.12); color: #fff; border: 0; border-radius: 999px; padding: 6px 10px; max-width: 170px }
+.who2 select option { color: #111 }
+.who2 button { background: none; border: 1px solid rgba(255,255,255,.35); color: #fff; border-radius: 999px; padding: 5px 10px; font: 600 .78rem var(--body); cursor: pointer }
+@media (max-width: 700px) { .brand .name small { display: none } .who2 .off { max-width: 120px; overflow: hidden; text-overflow: ellipsis } }
+.ctl .livedot { display: inline-flex; align-items: center; gap: 6px; font: 700 .75rem var(--mono); color: var(--c-crit); letter-spacing: .14em }
+.ctl .livedot i { width: 8px; height: 8px; border-radius: 50%; background: var(--c-crit); animation: pulse 1.6s infinite }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,90,78,.6) } 70% { box-shadow: 0 0 0 8px rgba(255,90,78,0) } 100% { box-shadow: 0 0 0 0 rgba(255,90,78,0) } }
+@media (prefers-reduced-motion: reduce) { .ctl .livedot i { animation: none } }
+.ctl .offices { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px }
+.ctl .offc { text-align: left; color: inherit; font: inherit; background: #0d1427; border: 1px solid var(--c-line); border-radius: 12px; padding: 12px; cursor: pointer; display: grid; gap: 4px }
+.ctl .offc:hover, .ctl .offc[aria-pressed="true"] { border-color: var(--c-acc) }
+.ctl .offc b { font-size: .95rem } .ctl .offc small { font: 500 .72rem var(--mono); color: var(--c-mut) }
+.ctl .offc .nums { display: flex; gap: 14px; font: 600 1.05rem var(--mono) } .ctl .offc .nums span small { display: block; font-size: .62rem; letter-spacing: .08em; text-transform: uppercase }
+.ctl .feed { display: grid; gap: 6px; max-height: 340px; overflow: auto }
+.ctl .ev { display: grid; grid-template-columns: 48px 1fr auto; gap: 10px; align-items: center; font-size: .86rem; padding: 8px 10px; border-radius: 10px; background: #0d1427 }
+.ctl .ev code { font: 500 .75rem var(--mono); color: var(--c-mut) }
+.ctl .ev .st { font: 600 .72rem var(--mono); padding: 3px 8px; border-radius: 6px; border: 1px solid currentColor; white-space: nowrap }
+.ctl .st.ok { color: var(--c-ok) } .ctl .st.warn { color: var(--c-warn) } .ctl .st.crit { color: var(--c-crit) } .ctl .st.mut { color: var(--c-mut) }
+.ctl .refresh { background: none; border: 1px solid var(--c-line); color: var(--c-ink); border-radius: 8px; padding: 4px 10px; font: 600 .75rem var(--body); cursor: pointer; margin-left: auto }
+.tstat { display: inline-block; font: 600 .7rem var(--body); padding: 2px 7px; border-radius: 6px; background: var(--in-bg); color: var(--in-fg); margin-left: 6px; vertical-align: 1px }
+.tstat.ok { background: var(--good-bg); color: var(--good) } .tstat.warn { background: var(--warn-bg); color: var(--warn) } .tstat.crit { background: var(--out-bg); color: var(--out-fg) }
+tr.exp td { background: color-mix(in srgb, var(--in-bg) 35%, transparent) }
+.kind { margin-bottom: 4px }
+.offtab { width: 100%; border-collapse: collapse; font-size: .9rem } .offtab td, .offtab th { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left }
+.offtab code { font: 600 .95rem var(--mono); background: var(--soft); padding: 3px 8px; border-radius: 6px }
+.offadd { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px } .offadd input { flex: 1 1 150px }
 </style>
 </head>
 <body>
@@ -330,12 +374,13 @@ td.row-acts .link { display: block; margin: 2px 0 }
   <img src="../logo-white.png" alt="Pesto Sea Group">
   <div class="name">PIMPI<small>Pacchi e posta · Pesto Sea Group</small></div>
   <nav class="tabs" aria-label="Sezioni">
-    <a href="#ctl" id="tabCtl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/></svg><span>Panoramica</span></a>
+    <a href="#ctl" id="tabCtl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/></svg><span>Live</span></a>
     <a href="#in" id="tabIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Nuovo pacco</span></a>
     <a href="#mag" id="tabMag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l9-5 9 5v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M8 21v-8h8v8"/></svg><span>Magazzino</span></a>
     <a href="#yachts" id="tabYachts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l2 4h14l2-4z"/><path d="M12 3v14M12 4l7 10h-7"/></svg><span>Yacht</span></a>
     <a href="#rates" id="tabRates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15 9.5a3 3 0 1 0 0 5M8 11h5M8 13.5h5"/></svg><span>Tariffe</span></a>
   </nav>
+  <div class="who2" id="who2" hidden><select id="officePick" aria-label="Ufficio" hidden></select><span class="off" id="offName"></span><button type="button" id="logoutBtn">Esci</button></div>
 </div></header>
 
 <main class="wrap">
@@ -343,7 +388,7 @@ td.row-acts .link { display: block; margin: 2px 0 }
   <section id="ctlView" hidden>
     <div class="ctl">
       <div class="hd">
-        <div><h2>Pesto Sea Group · Controllo pacchi</h2><small>Magazzino Genova · <span id="cYachts">0</span> yacht · aggiornato <span id="cTime">–</span></small></div>
+        <div><h2><span class="livedot"><i></i>LIVE</span> Pesto Sea Group · Pacchi</h2><small><span id="cOffice">Magazzino</span> · <span id="cYachts">0</span> yacht · aggiornato alle <span id="cTime">–</span></small></div>
         <div class="posture">Stato magazzino <span class="chip ok" id="cPosture">Regolare</span></div>
       </div>
       <div class="kpis">
@@ -353,8 +398,12 @@ td.row-acts .link { display: block; margin: 2px 0 }
         <div class="kpi"><span>Storage maturato</span><b id="kSto">€0</b><i id="kStoBar"></i><em>sui colli ora in magazzino</em></div>
         <div class="kpi"><span>Canoni flat / mese</span><b id="kFlat">€0</b><i id="kFlatBar"></i><em id="kFlatSub">0 yacht con flat</em></div>
       </div>
-      <div class="grid2">
-        <div class="panel">
+      <div class="panel" id="cOffPanel" hidden>
+        <h3>Uffici <small>tocca un ufficio per vedere solo i suoi pacchi</small></h3>
+        <div class="offices" id="cOffices"></div>
+      </div>
+      <div class="grid2" id="cGrid">
+        <div class="panel" id="cMapPanel">
           <h3>Mappa yacht · Genova <small id="cMapSub"></small>
             <span class="legend"><span><i style="background:var(--c-ok)"></i>Regolare</span><span><i style="background:var(--c-warn)"></i>Attenzione</span><span><i style="background:var(--c-crit)"></i>Critico</span></span></h3>
           <svg class="map" id="cMap" viewBox="0 0 800 330" role="img" aria-label="Schema del porto di Genova con gli yacht"></svg>
@@ -363,6 +412,16 @@ td.row-acts .link { display: block; margin: 2px 0 }
         <div class="panel">
           <h3>Yacht con pacchi <small id="cBoatSub"></small></h3>
           <div class="boats" id="cBoats"></div>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="panel">
+          <h3>Corrieri in tempo reale <small id="cTrSub"></small><button type="button" class="refresh" id="cTrBtn" hidden>Aggiorna stato</button></h3>
+          <div class="feed" id="cTrack"></div>
+        </div>
+        <div class="panel">
+          <h3>Attività di oggi <small id="cFeedSub"></small></h3>
+          <div class="feed" id="cFeed"></div>
         </div>
       </div>
       <div class="panel">
@@ -407,6 +466,7 @@ td.row-acts .link { display: block; margin: 2px 0 }
           <div class="f"><div class="lab"><label for="recipient">Destinatario</label></div><textarea id="recipient" class="rec" rows="2" placeholder="Es. Chief Stew"></textarea></div>
         </fieldset>
         <fieldset class="step"><legend><b>2</b>Il pacco</legend>
+          <div class="seg kind" id="kindSeg" role="group" aria-label="Stato del pacco"><button type="button" data-kind="in" aria-pressed="true">Arrivato in ufficio</button><button type="button" data-kind="expected" aria-pressed="false">In arrivo (pre-avviso)</button></div>
           <div class="grid2">
             <div class="f"><div class="lab"><label for="courier">Corriere</label><span class="dot" id="courierChip" hidden></span></div>
               <select id="courier"></select></div>
@@ -457,7 +517,7 @@ td.row-acts .link { display: block; margin: 2px 0 }
         <div class="stat"><b id="statStorage">€0</b><span>Storage maturato</span></div>
       </div>
       <div class="tools">
-        <div class="seg" id="stateSeg" role="group" aria-label="Mostra"><button type="button" data-s="in" aria-pressed="true">In magazzino</button><button type="button" data-s="out" aria-pressed="false">Usciti</button><button type="button" data-s="all" aria-pressed="false">Tutti</button></div>
+        <div class="seg" id="stateSeg" role="group" aria-label="Mostra"><button type="button" data-s="in" aria-pressed="true">In magazzino</button><button type="button" data-s="expected" aria-pressed="false">In arrivo</button><button type="button" data-s="out" aria-pressed="false">Usciti</button><button type="button" data-s="all" aria-pressed="false">Tutti</button></div>
         <select class="flt" id="yachtFilter" aria-label="Yacht"></select>
         <input class="search" id="search" type="search" placeholder="Cerca yacht, tracking…" aria-label="Cerca">
         <button class="btn" id="csvBtn" type="button">Scarica CSV</button>
@@ -497,6 +557,14 @@ td.row-acts .link { display: block; margin: 2px 0 }
   <!-- TARIFFE -->
   <section id="ratesView" hidden>
     <header class="pagehd"><h1>Tariffe</h1><p>I prezzi usati in tutta l'app. Cambiali qui e premi Salva tariffe.</p></header>
+    <div class="rates" id="officesBox" hidden style="margin-bottom:16px">
+      <fieldset><legend>Uffici e accessi</legend>
+        <p>Ogni ufficio entra con il suo codice e vede solo i suoi pacchi. Manda il codice all'ufficio a voce o su WhatsApp. Il codice della sede centrale (quello nel foglio Google) vede tutti gli uffici.</p>
+        <table class="offtab"><thead><tr><th>Ufficio</th><th>Città</th><th>Codice di accesso</th><th></th></tr></thead><tbody id="officeRows"></tbody></table>
+        <form class="offadd" id="officeAdd"><input id="offNew" placeholder="Nome ufficio, es. PIMPI Genova" required><input id="offCity" placeholder="Città, es. Genova" required><button class="btn send" type="submit">Aggiungi ufficio</button></form>
+      </fieldset>
+    </div>
+    <p class="note" id="ratesFor" style="margin:0 0 10px"></p>
     <form class="rates" id="ratesForm">
       <p>Prezzi usati per storage e consegne, euro IVA esclusa. Partono dal listino PIMPI del 27 ottobre 2026; le caselle arancioni sono vuote.</p>
       <fieldset><legend>Storage al giorno</legend>
@@ -530,13 +598,19 @@ td.row-acts .link { display: block; margin: 2px 0 }
   </section>
 </main>
 
-<form class="setup" id="setup" hidden autocomplete="off" style="position:fixed;inset:auto 16px 16px;z-index:25;box-shadow:0 20px 50px -20px rgba(0,0,0,.5)">
-  <h2>Collega all'archivio</h2>
-  <label>Link del foglio Google<input id="cfgUrl" type="url" placeholder="https://script.google.com/macros/s/…/exec"></label>
-  <label>Codice team<input id="cfgCode" type="password"></label>
-  <label>Il tuo nome<input id="cfgMe" type="text"></label>
-  <div style="display:flex;gap:8px"><button class="btn send" type="submit">Salva</button><button class="btn" type="button" id="cfgCancel">Annulla</button></div>
-</form>
+<div class="login" id="login" hidden>
+  <form id="loginForm" autocomplete="on">
+    <img src="../logo-white.png" alt="Pesto Sea Group">
+    <h1>PIMPI<br>Pacchi e posta</h1>
+    <p>Entra con il codice del tuo ufficio. Lo trovi nel messaggio della sede centrale.</p>
+    <div class="err" id="loginErr" hidden></div>
+    <label>Codice ufficio<input id="cfgCode" type="password" autocomplete="current-password" required></label>
+    <label>Il tuo nome<input id="cfgMe" type="text" autocomplete="name" placeholder="Es. Roberta"></label>
+    <details id="cfgMore"><summary>Impostazioni avanzate</summary><label>Link dell'archivio (foglio Google)<input id="cfgUrl" type="url" placeholder="https://script.google.com/macros/s/…/exec"></label></details>
+    <button class="go" type="submit" id="loginBtn">Entra</button>
+    <button class="demo" type="button" id="demoBtn">Guarda la demo senza accedere</button>
+  </form>
+</div>
 <datalist id="yachtList"></datalist>
 <div class="cam" id="camView" hidden role="dialog" aria-label="Fotocamera">
   <video id="camVideo" playsinline autoplay muted></video>
@@ -559,12 +633,12 @@ const Parser = (() => {
     { id: 'ups', name: 'UPS', kw: [/\bU\s?P\s?S\b/], track: [{ re: /^1Z[0-9A-Z]{16}$/, strong: true }] },
     { id: 'amazon', name: 'Amazon Logistics', kw: [/\bamazon\b/i], track: [{ re: /^TB[ACM]\d{12}$/, strong: true }] },
     { id: 'dhl', name: 'DHL', kw: [/\bD\s?H\s?L\b/], track: [{ re: /^J[JV]?D\d{16,20}$/, strong: true }, { re: /^\d{10}$/ }, { re: /^\d{20}$/ }] },
-    { id: 'tnt', name: 'TNT', kw: [/\bT\s?N\s?T\b/], track: [{ re: /^[A-Z]{2}\d{9}WW$/, strong: true }, { re: /^\d{9}$/ }] },
+    { id: 'tnt', name: 'TNT', kw: [/\bT\s?N\s?T\b/], track: [{ re: /^[A-Z]{2}\d{9}WW$/, strong: true }, { re: /^\d{9}$/ }, { re: /^[A-Z]{2}\d{8}$/ }] },
     { id: 'fedex', name: 'FedEx', kw: [/\bfed\s?ex\b/i], track: [{ re: /^\d{12}$/ }, { re: /^\d{15}$/ }] },
     { id: 'gls', name: 'GLS', kw: [/\bGLS\b/], track: [{ re: /^[A-Z]{2}\d{9}$/ }, { re: /^\d{11,12}$/ }] },
     { id: 'brt', name: 'BRT', kw: [/\bBRT\b/, /bartolini/i], track: [{ re: /^\d{12,18}$/ }] },
     { id: 'dpd', name: 'DPD', kw: [/\bDPD\b/], track: [{ re: /^\d{14}$/ }] },
-    { id: 'poste', name: 'Poste Italiane / SDA', kw: [/poste\s*italiane/i, /\bSDA\b/, /poste\s*delivery/i], track: [{ re: /^[A-Z]{2}\d{9}IT$/, strong: true }, { re: /^\d{12,13}$/ }] },
+    { id: 'poste', name: 'Poste Italiane / SDA', kw: [/poste\s*italiane/i, /\bSDA\b/, /poste\s*delivery/i], track: [{ re: /^[A-Z]{2}\d{9}IT$/, strong: true }, { re: /^\d{12,13}$/ }, { re: /^(?=(?:[A-Z]*\d){8})[0-9][0-9A-Z]{11,12}$|^[A-Z][0-9]{3}[A-Z][0-9]{8}$/ }] },
     { id: 'imile', name: 'iMile', kw: [/\bi\s?mile\b/i, /IMILE-IT/i], track: [{ re: /^6\d{12}$/ }] },
     { id: 'inpost', name: 'InPost', kw: [/\binpost\b/i], track: [{ re: /^\d{24}$/ }] },
   ];
@@ -594,6 +668,7 @@ const Parser = (() => {
     }
     return out;
   }
+  const looksLikeTracking = t => matchCourier(normCode(t)).length > 0;
   function matchCourier(code) {
     const out = [];
     for (const c of COURIERS) for (const t of c.track) if (t.re.test(code)) out.push({ courier: c.id, strong: !!t.strong });
@@ -666,14 +741,15 @@ const Parser = (() => {
     const score = {}; const why = {};
     const add = (c, n, w) => { score[c] = (score[c] || 0) + n; (why[c] = why[c] || []).push(w); };
     for (const c of COURIERS) if (c.kw.some(r => r.test(text))) add(c.id, 3, 'name on label');
-    const cands = [];
+    const cands = [], weak = [];
     for (const b of barcodes) {
       const code = normCode(b.text);
       const m = matchCourier(code);
       m.forEach(x => add(x.courier, x.strong ? 4 : 1, 'barcode format'));
       cands.push({ code, src: 'barcode', m, format: b.format });
     }
-    lines.forEach(l => {
+    lines.forEach((l, li) => {
+      const prevHint = li > 0 && TRACK_HINT.test(lines[li - 1].text);
       const toks = (l.text.match(/1Z(?:\s?[0-9A-Z]){16}|[A-Z0-9%][A-Z0-9 \-]{7,40}[A-Z0-9]/gi) || []);
       for (const tok of toks) {
         const parts = tok.split(/\s+/).filter(w => w.length >= 8);
@@ -684,7 +760,7 @@ const Parser = (() => {
           const strong = m.some(x => x.strong);
           // a weak number counts only beside a tracking word or the courier's own name (e.g. "IMILE-IT 6100826299815")
           const named = m.some(x => COURIERS.find(c => c.id === x.courier).kw.some(r => r.test(l.text)));
-          if (!strong && !named && !TRACK_HINT.test(l.text)) continue;
+          if (!strong && !named && !prevHint && !TRACK_HINT.test(l.text)) { weak.push({ code, src: 'text-weak', m }); continue; }
           m.forEach(x => add(x.courier, x.strong ? 2 : 0.5, 'number format in text'));
           cands.push({ code, src: 'text', m });
         }
@@ -700,6 +776,10 @@ const Parser = (() => {
     };
     let tracking = '', trackingHow = 'none';
     const ranked = cands.map(c => ({ c, r: rank(c) })).filter(x => x.r >= 0).sort((a, b) => b.r - a.r);
+    if (!ranked.length && courier) { // courier known from its name: accept a number in its format from anywhere on the label
+      const w = weak.find(c => c.m.some(x => x.courier === courier));
+      if (w) ranked.push({ c: w, r: 0 });
+    }
     if (ranked.length) { tracking = ranked[0].c.code; trackingHow = ranked[0].c.src; }
     else {
       const bc = cands.find(c => c.src === 'barcode' && /^[A-Z0-9]{8,30}$/.test(c.code));
@@ -722,7 +802,7 @@ const Parser = (() => {
     return low;
   }
 
-  return { COURIERS, parse, learnHeading, normCode };
+  return { COURIERS, parse, learnHeading, normCode, looksLikeTracking };
 })();
 
 </script>
@@ -823,7 +903,8 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   };
   const P = Pricing;
-  let db = { Parcels: [], Yachts: [], Deliveries: [], Settings: [] };
+  let db = { Parcels: [], Yachts: [], Deliveries: [], Settings: [], Offices: [] };
+  let me = null, features = {}, officeSel = local.get('pp.office', ''), lastSync = null;
   let rates = P.merge({});
   let learned = local.get('pp.learned', { sender: [], recipient: [] });
   let last = null, busy = false, editingId = null, photoData = null;
@@ -855,6 +936,16 @@ if (typeof module !== 'undefined') module.exports = Pricing;
   };
   const trackUrl = r => r.tracking ? (TRACK[r.courier] || 'https://parcelsapp.com/en/tracking/') + encodeURIComponent(r.tracking) : '';
 
+  // 17TRACK main statuses, in plain Italian
+  const TSTAT = {
+    InfoReceived: ['Etichetta creata', 'mut'], InTransit: ['In viaggio', ''], OutForDelivery: ['In consegna oggi', 'warn'],
+    AvailableForPickup: ['Al punto di ritiro', 'warn'], Delivered: ['Consegnato dal corriere', 'ok'], DeliveryFailure: ['Consegna fallita', 'crit'],
+    Exception: ['Problema', 'crit'], Expired: ['Scaduto', 'mut'], NotFound: ['Non ancora nel sistema', 'mut'],
+  };
+  const tstat = r => r.trackStatus ? (TSTAT[r.trackStatus] || [r.trackStatus, '']) : null;
+  const ago = iso => { const m = Math.round((Date.now() - new Date(iso)) / 60000); return !isFinite(m) ? '' : m < 1 ? 'adesso' : m < 60 ? m + ' min fa' : m < 1440 ? Math.round(m / 60) + ' h fa' : Math.round(m / 1440) + ' gg fa'; };
+  const hhmm = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); };
+
   /* ---------- parcels as the app sees them (older rows from the first scanner are mapped in) ---------- */
   const OUT_OLD = ['handed', 'delivered', 'picked'];
   function view(r) {
@@ -864,11 +955,15 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     o.zone = o.zone === 'B' ? 'B' : 'A';
     o.kg = num(o.kg);
     o.colloN = parseInt(o.colloN) || 1; o.colloTot = parseInt(o.colloTot) || 1;
+    if (o.state === 'expected') { o.days = 0; o.storage = null; return o; }
     o.days = P.days(o.date, o.state === 'out' ? o.outDate : null);
     o.storage = P.storage(o.type, o.days, rates);
     return o;
   }
-  const parcels = () => db.Parcels.map(view).sort((a, b) => (b.date + b.at).localeCompare(a.date + a.at));
+  const inScope = r => !(me && me.admin && officeSel) || (r.office || firstOffice()) === officeSel;
+  const firstOffice = () => (db.Offices[0] && String(db.Offices[0].id)) || '';
+  const officeName = id => { const o = db.Offices.find(x => String(x.id) === String(id)); return o ? o.name : ''; };
+  const parcels = () => db.Parcels.filter(inScope).map(view).sort((a, b) => (b.date + b.at).localeCompare(a.date + a.at));
   const yachtNames = () => [...new Set(db.Yachts.map(y => y.name).concat(db.Parcels.map(p => p.yacht)).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   // Same yacht typed differently ("Saba I", "SABA I") is stored under the first spelling
   const knownYacht = name => yachtNames().find(n => canon(n) === canon(name));
@@ -887,7 +982,9 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     $('inView').hidden = v !== 'in'; $('magView').hidden = v !== 'mag'; $('ratesView').hidden = v !== 'rates'; $('yachtsView').hidden = v !== 'yachts'; $('ctlView').hidden = v !== 'ctl';
     [['tabCtl', 'ctl'], ['tabIn', 'in'], ['tabMag', 'mag'], ['tabYachts', 'yachts'], ['tabRates', 'rates']].forEach(([id, k]) => k === v ? $(id).setAttribute('aria-current', 'page') : $(id).removeAttribute('aria-current'));
     if (v === 'rates') fillRates();
+    curView = v;
   }
+  let curView = '';
   window.addEventListener('hashchange', route); route();
 
   /* ---------- images, barcodes, text ---------- */
@@ -909,6 +1006,11 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     c.getContext('2d').drawImage(src, x, y, w, h, 0, 0, c.width, c.height);
     return c;
   }
+  function turn(c) {
+    const o = document.createElement('canvas'); o.width = c.height; o.height = c.width;
+    const g = o.getContext('2d'); g.translate(o.width / 2, o.height / 2); g.rotate(Math.PI / 2); g.drawImage(c, -c.width / 2, -c.height / 2);
+    return o;
+  }
   async function readBarcodes(canvas) {
     const found = new Map();
     const put = (text, format) => { if (text && !found.has(text)) found.set(text, { text, format }); };
@@ -919,17 +1021,22 @@ if (typeof module !== 'undefined') module.exports = Pricing;
       const Z = window.ZXing, hints = new Map();
       hints.set(Z.DecodeHintType.TRY_HARDER, true);
       const reader = new Z.MultiFormatReader(); reader.setHints(hints);
-      const W = canvas.width, H = canvas.height;
-      const regions = [[0, 0, W, H], [0, 0, W, H / 2], [0, H / 2, W, H / 2], [0, 0, W, H / 3], [0, H / 3, W, H / 3], [0, 2 * H / 3, W, H / 3],
-        [0, 0, W / 2, H], [W / 2, 0, W / 2, H], [0, H / 4, W, H / 2]];
-      const tries = regions.map(r => [r, 1400]).concat([[[0, 0, W, H], 800], [[0, H / 3, W, 2 * H / 3], 700]]);
-      for (const [[x, y, w, h], max] of tries) {
-        try {
-          const r = reader.decode(new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.HTMLCanvasElementLuminanceSource(crop(canvas, x, y, w, h, max)))));
-          put(r.getText(), Z.BarcodeFormat[r.getBarcodeFormat()]);
-        } catch (e) {}
-        reader.reset();
-        await new Promise(r => setTimeout(r, 0));
+      // Phone photos are big and labels sit at any angle: scan the whole photo, then halves and a 3x3 grid
+      // of overlapping tiles, upright and turned 90 degrees, stopping once a code that looks like tracking turns up
+      const good = () => [...found.values()].some(b => Parser.looksLikeTracking(b.text));
+      for (const rot of [0, 90]) {
+        const src = rot ? turn(canvas) : canvas, W = src.width, H = src.height;
+        const regions = [[0, 0, W, H, 1600], [0, 0, W, H / 2, 1800], [0, H / 2, W, H / 2, 1800]];
+        for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) regions.push([j * W / 4, i * H / 4, W / 2, H / 2, 1400]);
+        for (const [x, y, w, h, max] of regions) {
+          try {
+            const r = reader.decode(new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.HTMLCanvasElementLuminanceSource(crop(src, x, y, w, h, max)))));
+            put(r.getText(), Z.BarcodeFormat[r.getBarcodeFormat()]);
+          } catch (e) {}
+          reader.reset();
+          await new Promise(r => setTimeout(r, 0));
+          if (good()) return [...found.values()];
+        }
       }
     }
     return [...found.values()];
@@ -957,15 +1064,24 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     if (busy) return; busy = true;
     try {
       status('Cerco il codice a barre…', 0.05);
-      const big = toCanvas(img, 2000, rot);
+      const big = toCanvas(img, 3000, rot);
       photoData = toCanvas(img, 1200, rot).toDataURL('image/jpeg', 0.72);
       $('thumb').src = toCanvas(img, 300, rot).toDataURL('image/jpeg', 0.7); $('thumb').hidden = false; $('rotateBtn').hidden = false;
+      if (features.ai) {
+        status('Leggo l\'etichetta con l\'AI…', 0.3);
+        try {
+          const j = await api('POST', { op: 'read', data: photoData, yachts: yachtNames() });
+          if (j.fields) { fillFromAI(j.fields); last.img = img; last.rot = rot; $('busy').hidden = true; $('entry').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+        } catch (e) { console.warn('AI read failed, using the free reader', e); }
+        status('Uso il lettore gratuito…', 0.35);
+      }
       const barcodes = await readBarcodes(big);
       status(barcodes.length ? 'Codice trovato. Leggo l\'etichetta…' : 'Leggo l\'etichetta…', 0.4);
-      const { lines, conf } = await readText(toCanvas(img, 1800, rot));
+      const { lines, conf } = await readText(toCanvas(img, 2400, rot));
       const parsed = Parser.parse({ lines, barcodes, learned });
       last = { lines, barcodes, parsed, img, rot, conf };
       fillFromScan(parsed, lines);
+      if (features.ai) chip('readChip', 'warn', 'lettore gratuito: controlla');
       $('busy').hidden = true;
       if (conf < 45) toast('Lettura difficile: controlla i dati o rifai la foto.');
       $('entry').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -973,6 +1089,25 @@ if (typeof module !== 'undefined') module.exports = Pricing;
       console.error(e);
       status('Non riesco a leggerla: ' + (e.message || e) + '. La prima lettura richiede internet.', 0);
     } finally { busy = false; }
+  }
+  function fillFromAI(f) {
+    last = { lines: [], barcodes: [], parsed: { recipient: f.recipient || '', sender: f.sender || '' }, img: last && last.img, rot: 0, conf: 100, ai: true };
+    const ids = Array.from(sel.options).map(o => o.value);
+    sel.value = ids.includes(f.courier) ? f.courier : '';
+    $('tracking').value = String(f.tracking || '').replace(/\s+/g, '').toUpperCase();
+    $('recipient').value = f.recipient || ''; $('sender').value = f.sender || '';
+    if (!$('ref').value) $('ref').value = f.reference || f.tracking || '';
+    chip('courierChip', sel.value ? 'good' : 'warn', sel.value ? 'letto con AI' : 'scegli');
+    chip('trackingChip', f.tracking ? 'good' : 'warn', f.tracking ? 'letto con AI' : 'manca');
+    chip('readChip', 'good', 'letta con AI: controlla');
+    if (!$('yacht').value && f.yacht) {
+      const k = knownYacht(f.yacht); $('yacht').value = k || f.yacht.toUpperCase();
+      chip('yachtChip', k ? 'good' : 'warn', k ? 'yacht già noto' : 'nuovo yacht'); yachtZone();
+    } else if (!$('yacht').value) chip('yachtChip', 'warn', 'scrivi lo yacht');
+    if (f.weight_kg && !$('kg').value) { $('kg').value = String(f.weight_kg).replace('.', ','); onKg(); }
+    if (parseInt(f.parcels_total) > 1) { $('colloTot').value = parseInt(f.parcels_total); $('colloN').value = parseInt(f.parcel_number) || 1; }
+    if (f.notes && !$('notes').value) $('notes').value = f.notes;
+    pricePreview();
   }
   function fillFromScan(p, lines) {
     sel.value = p.courier || '';
@@ -1030,7 +1165,13 @@ if (typeof module !== 'undefined') module.exports = Pricing;
   $('rotateBtn').addEventListener('click', () => { if (last) run(last.img, (last.rot + 90) % 360); });
 
   /* ---------- entry form ---------- */
-  let zone = 'A', typeTouched = false;
+  let zone = 'A', typeTouched = false, kind = 'in';
+  function setKind(k) {
+    kind = k; document.querySelectorAll('#kindSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.kind === k)));
+    $('type').required = k !== 'expected';
+    if (!editingId) $('saveBtn').textContent = k === 'expected' ? 'Salva pre-avviso' : 'Registra pacco';
+  }
+  document.querySelectorAll('#kindSeg button').forEach(b => b.addEventListener('click', () => setKind(b.dataset.kind)));
   function setZone(z) { zone = z; document.querySelectorAll('#zoneSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.zone === z))); pricePreview(); }
   document.querySelectorAll('#zoneSeg button').forEach(b => b.addEventListener('click', () => setZone(b.dataset.zone)));
   function onKg() {
@@ -1060,7 +1201,7 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     $('entry').reset(); editingId = null; photoData = null; last = null; typeTouched = false;
     $('thumb').hidden = true; $('rotateBtn').hidden = true; $('busy').hidden = true;
     ['readChip', 'yachtChip', 'courierChip', 'trackingChip', 'typeChip'].forEach(id => chip(id, '', ''));
-    $('date').value = P.today(); setZone('A');
+    $('date').value = P.today(); setZone('A'); setKind('in');
     $('entryTitle').textContent = 'Dati del pacco'; $('saveBtn').textContent = 'Registra pacco';
     if (keep) {
       Object.entries(keep).forEach(([k, v]) => { if (k === 'courier') sel.value = v; else $(k).value = v; });
@@ -1075,6 +1216,7 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     ['yacht', 'tracking', 'recipient', 'sender', 'ref', 'notes'].forEach(k => $(k).value = r[k] || '');
     sel.value = r.courier || ''; $('kg').value = r.kg == null ? '' : money(r.kg).replace(/,00$/, ''); $('type').value = r.type || ''; typeTouched = true;
     $('date').value = r.date; $('colloN').value = r.colloN; $('colloTot').value = r.colloTot; setZone(r.zone);
+    if (r.state === 'expected') setKind('expected');
     $('entryTitle').textContent = 'Modifica pacco'; $('saveBtn').textContent = 'Salva modifiche';
     location.hash = '#in'; setTimeout(() => $('entry').scrollIntoView({ block: 'start' }), 50);
   }
@@ -1083,7 +1225,7 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     e.preventDefault();
     let yacht = $('yacht').value.trim();
     if (!yacht) { toast('Scrivi lo yacht o il cliente.'); $('yacht').focus(); return; }
-    if (!$('type').value) { toast('Scegli la tipologia.'); $('type').focus(); return; }
+    if (!$('type').value && kind !== 'expected') { toast('Scegli la tipologia.'); $('type').focus(); return; }
     const known = knownYacht(yacht); if (known) yacht = known;
     const row = {
       yacht, courier: sel.value, tracking: $('tracking').value.trim().toUpperCase(),
@@ -1092,10 +1234,17 @@ if (typeof module !== 'undefined') module.exports = Pricing;
       colloN: parseInt($('colloN').value) || 1, colloTot: Math.max(parseInt($('colloTot').value) || 1, parseInt($('colloN').value) || 1),
       ref: $('ref').value.trim(), notes: $('notes').value.trim(),
     };
-    if (editingId) row.id = editingId;
-    else { row.at = new Date().toISOString(); row.state = 'in'; row.by = cfg().me || ''; }
+    if (me && me.admin) row.office = (editingId && (db.Parcels.find(p => p.id === editingId) || {}).office) || officeSel || firstOffice();
+    let arrived = null;
+    if (editingId) { row.id = editingId; const was = db.Parcels.find(p => p.id === editingId); if (was && was.state === 'expected' && kind === 'in') { row.state = 'in'; row.at = new Date().toISOString(); } if (kind === 'expected') row.state = 'expected'; }
+    else {
+      // a parcel announced in advance: the scan turns the pre-alert into an arrival
+      arrived = kind === 'in' && row.tracking && db.Parcels.find(p => p.state === 'expected' && String(p.tracking).toUpperCase() === row.tracking);
+      if (arrived) { row.id = arrived.id; row.at = new Date().toISOString(); row.state = 'in'; row.by = cfg().me || ''; }
+      else { row.at = new Date().toISOString(); row.state = kind; row.by = cfg().me || ''; }
+    }
     // learn from corrections: the heading printed above the corrected text
-    if (last) {
+    if (last && !last.ai) {
       const next = { sender: [...learned.sender], recipient: [...learned.recipient] };
       for (const role of ['recipient', 'sender']) {
         if (row[role] && row[role] !== (last.parsed[role] || '').trim()) {
@@ -1111,13 +1260,14 @@ if (typeof module !== 'undefined') module.exports = Pricing;
       await api('POST', { op: 'put', table: 'Parcels', row });
       if (!known) await api('POST', { op: 'put', table: 'Yachts', row: { name: yacht } });
       const more = !editingId && row.colloN < row.colloTot;
-      toast(editingId ? 'Modifiche salvate' : more ? `Collo ${row.colloN} registrato. Ora il collo ${row.colloN + 1}.` : 'Pacco registrato');
+      toast(arrived ? 'Era in arrivo: ora è in magazzino' : kind === 'expected' && !editingId ? 'Pre-avviso salvato: lo trovi in Magazzino > In arrivo' : editingId ? 'Modifiche salvate' : more ? `Collo ${row.colloN} registrato. Ora il collo ${row.colloN + 1}.` : 'Pacco registrato');
       const wasEdit = !!editingId;
       resetForm(more);
       await refresh();
       if (wasEdit && window.innerWidth >= 900) location.hash = '#mag';
     } catch (err) {
-      if (err.code === 'setup' || err.code === 'bad_code') { openSetup(); toast(err.code === 'setup' ? 'Prima collega l\'archivio.' : 'Codice team sbagliato.'); }
+      if (err.code === 'setup' || err.code === 'bad_code') { openSetup(err.code === 'bad_code' ? 'Codice non più valido: entra di nuovo.' : ''); }
+      else if (err.code === 'not_yours') toast('Questo pacco è di un altro ufficio.');
       else toast('Non salvato: ' + (err.message || err) + '. Riprova.');
     } finally { $('saveBtn').disabled = false; }
   });
@@ -1132,32 +1282,65 @@ if (typeof module !== 'undefined') module.exports = Pricing;
       ? await fetch(url + (url.includes('?') ? '&' : '?') + 'code=' + encodeURIComponent(code) + (query || ''))
       : await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ code, ...body }) });
     const j = await r.json();
-    if (j.error) throw Object.assign(new Error(j.error === 'bad_code' ? 'Codice team sbagliato' : j.error), { code: j.error });
+    if (j.error) throw Object.assign(new Error(j.error === 'bad_code' ? 'Codice sbagliato' : j.error), { code: j.error });
     return j;
+  }
+  function pickRates() {
+    const want = me && !me.admin ? 'rates@' + me.office : officeSel ? 'rates@' + officeSel : 'rates';
+    const s = db.Settings.find(x => x.id === want) || db.Settings.find(x => x.id === 'rates');
+    try { rates = P.merge(s && s.value ? JSON.parse(s.value) : {}); } catch (e) { rates = P.merge({}); }
   }
   async function refresh() {
     try {
       const j = await api('GET');
       if (!j.Yachts) { setConn(false, 'Il foglio Google va aggiornato: incolla il nuovo Code.gs'); return; }
-      db = { Parcels: j.Parcels || [], Yachts: j.Yachts || [], Deliveries: j.Deliveries || [], Settings: j.Settings || [] };
-      const s = db.Settings.find(x => x.id === 'rates');
-      try { rates = P.merge(s && s.value ? JSON.parse(s.value) : {}); } catch (e) { rates = P.merge({}); }
-      setConn(true, 'Collegato all\'archivio condiviso');
+      db = { Parcels: j.Parcels || [], Yachts: j.Yachts || [], Deliveries: j.Deliveries || [], Settings: j.Settings || [], Offices: j.Offices || [] };
+      me = j.me || { admin: true, office: '', name: 'Archivio' }; features = j.features || {};
+      if (!me.admin) officeSel = '';
+      else if (officeSel && !db.Offices.some(o => String(o.id) === officeSel)) officeSel = '';
+      pickRates(); showWho(); lastSync = new Date();
+      setConn(true, 'Collegato · ' + (me.admin ? 'sede centrale' : me.name));
+      $('login').hidden = true;
       const a = document.activeElement;
-      if (!(a && a.closest && a.closest('#rows'))) render();
+      if (!(a && a.closest && a.closest('#rows, #yachtRows, #ratesForm, #officeRows'))) render();
       pricePreview();
     } catch (e) {
-      setConn(false, e.code === 'setup' ? 'Non collegato: tocca qui per collegare' : 'Archivio non raggiungibile: ' + e.message);
+      if (e.code === 'setup' || e.code === 'bad_code') openSetup(e.code === 'bad_code' && cfg().code ? 'Codice non valido. Controlla e riprova.' : '');
+      setConn(false, e.code === 'setup' ? 'Non collegato: tocca qui per entrare' : e.code === 'bad_code' ? 'Codice non valido' : 'Archivio non raggiungibile: ' + e.message);
     }
   }
-  function openSetup() { $('setup').hidden = false; const c = cfg(); $('cfgUrl').value = c.url; $('cfgCode').value = c.code; $('cfgMe').value = c.me; }
-  ['conn', 'conn2'].forEach(id => $(id).addEventListener('click', openSetup));
-  $('setup').addEventListener('submit', e => {
+  function showWho() {
+    $('who2').hidden = !me;
+    if (!me) return;
+    $('offName').textContent = (me.admin ? 'Sede centrale' : me.name) + (cfg().me ? ' · ' + cfg().me : '');
+    const pick = $('officePick');
+    pick.hidden = !me.admin || !db.Offices.length;
+    pick.innerHTML = '<option value="">Tutti gli uffici</option>' + db.Offices.map(o => `<option value="${esc(o.id)}"${String(o.id) === officeSel ? ' selected' : ''}>${esc(o.name)}</option>`).join('');
+  }
+  $('officePick').addEventListener('change', e => { officeSel = e.target.value; local.set('pp.office', officeSel); pickRates(); render(); if (curView === 'rates') fillRates(); });
+  let demo = false;
+  function openSetup(err) {
+    if (demo) return;
+    const c = cfg(); $('cfgUrl').value = c.url; $('cfgCode').value = ''; $('cfgMe').value = c.me;
+    $('cfgMore').open = !c.url; $('cfgMore').hidden = !!(window.PARCEL_CONFIG && window.PARCEL_CONFIG.sheetUrl);
+    $('loginErr').hidden = !err; $('loginErr').textContent = err || '';
+    $('login').hidden = false; setTimeout(() => $('cfgCode').focus(), 50);
+  }
+  ['conn', 'conn2'].forEach(id => $(id).addEventListener('click', () => { demo = false; openSetup(''); }));
+  $('loginForm').addEventListener('submit', async e => {
     e.preventDefault();
-    local.set('pp.url', $('cfgUrl').value.trim()); local.set('pp.code', $('cfgCode').value.trim()); local.set('pp.me', $('cfgMe').value.trim());
-    $('setup').hidden = true; refresh();
+    if (!$('cfgMore').hidden && $('cfgUrl').value.trim()) local.set('pp.url', $('cfgUrl').value.trim());
+    if (!cfg().url) { $('loginErr').hidden = false; $('loginErr').textContent = 'Manca il link dell\'archivio: aprilo in Impostazioni avanzate.'; $('cfgMore').open = true; return; }
+    local.set('pp.code', $('cfgCode').value.trim()); local.set('pp.me', $('cfgMe').value.trim());
+    $('loginBtn').disabled = true; $('loginBtn').textContent = 'Controllo…';
+    await refresh();
+    $('loginBtn').disabled = false; $('loginBtn').textContent = 'Entra';
   });
-  $('cfgCancel').addEventListener('click', () => $('setup').hidden = true);
+  $('demoBtn').addEventListener('click', () => { demo = true; $('login').hidden = true; });
+  $('logoutBtn').addEventListener('click', () => {
+    local.set('pp.code', ''); local.set('pp.office', ''); me = null; officeSel = '';
+    db = { Parcels: [], Yachts: [], Deliveries: [], Settings: [], Offices: [] }; showWho(); render(); demo = false; openSetup('');
+  });
   async function save(table, row) { try { await api('POST', { op: 'put', table, row }); } catch (e) { toast('Modifica non salvata: ' + e.message); } refresh(); }
 
   /* ---------- rendering ---------- */
@@ -1167,7 +1350,7 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     $('yachtList').innerHTML = names.map(n => `<option value="${esc(n)}">`).join('');
     const yf = $('yachtFilter'), cur = yf.value;
     yf.innerHTML = '<option value="">Tutti gli yacht</option>' + names.map(n => `<option${n === cur ? ' selected' : ''}>${esc(n)}</option>`).join('');
-    renderRecent(); renderMag(); renderYachts(); renderCtl();
+    renderRecent(); renderMag(); renderYachts(); renderCtl(); renderOffices();
   }
   function renderRecent() {
     const today = parcels().filter(r => String(r.at || '').slice(0, 10) === P.today() || r.date === P.today()).slice(0, 8);
@@ -1178,7 +1361,7 @@ if (typeof module !== 'undefined') module.exports = Pricing;
   }
   $('recentList').addEventListener('click', e => { const b = e.target.closest('[data-edit]'); if (b) editParcel(b.dataset.edit); });
   function renderMag() {
-    const all = parcels(), stock = all.filter(r => r.state === 'in');
+    const all = parcels().filter(r => r.state !== 'expected' || stateF === 'expected' || stateF === 'all'), stock = all.filter(r => r.state === 'in');
     $('statIn').textContent = stock.length;
     $('statToday').textContent = all.filter(r => r.date === P.today()).length;
     $('statOld').textContent = stock.filter(r => r.days > 7).length;
@@ -1191,11 +1374,11 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     const groups = new Map();
     list.forEach(r => { const k = r.yacht || 'Senza yacht'; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(r); });
     const order = [...groups.entries()].sort((x, y) => Math.max(...y[1].map(r => r.state === 'in' ? r.days : -1)) - Math.max(...x[1].map(r => r.state === 'in' ? r.days : -1)) || x[0].localeCompare(y[0]));
-    const row = r => `<tr class="${r.state === 'out' ? 'done' : ''}" data-id="${esc(r.id)}">
-      <td class="code"><span class="c">${esc(courierName(r.courier) || '?')}</span> ${esc(r.tracking || 'senza tracking')}
+    const row = r => `<tr class="${r.state === 'out' ? 'done' : r.state === 'expected' ? 'exp' : ''}" data-id="${esc(r.id)}">
+      <td class="code"><span class="c">${esc(courierName(r.courier) || '?')}</span> ${esc(r.tracking || 'senza tracking')}${tstat(r) ? `<span class="tstat ${tstat(r)[1]}" title="${esc(r.trackEvent || '')}">${esc(tstat(r)[0])}</span>` : ''}${me && me.admin && !officeSel && db.Offices.length > 1 ? `<span class="tstat">${esc(officeName(r.office || firstOffice()))}</span>` : ''}
         <small>${r.colloTot > 1 ? `Collo ${r.colloN} di ${r.colloTot}` : ''}${r.recipient ? (r.colloTot > 1 ? ' · ' : '') + esc(String(r.recipient).split('\n')[0]) : ''}${r.notes ? ' · ' + esc(r.notes) : ''}</small>
         ${r.tracking ? `<a class="track" href="${esc(trackUrl(r))}" target="_blank" rel="noopener">Tracking ↗</a> ` : ''}${r.photo ? `<button class="link" data-act="photo">Foto</button>` : ''}</td>
-      <td class="t">${r.type ? `<span class="typeTag">${esc(typeLabel(r.type))}</span>${r.kg != null ? `<small>${money(r.kg).replace(/,00$/, '')} kg</small>` : ''}`
+      <td class="t">${r.state === 'expected' ? `<span class="typeTag">In arrivo</span>${r.trackEvent ? `<small>${esc(r.trackEvent)}</small>` : ''}` : r.type ? `<span class="typeTag">${esc(typeLabel(r.type))}</span>${r.kg != null ? `<small>${money(r.kg).replace(/,00$/, '')} kg</small>` : ''}`
         : `<select data-act="type" aria-label="Scegli tipologia" class="missing"><option value="" selected>Scegli tipologia…</option>${P.TYPES.map(t => `<option value="${t.id}">${t.name}</option>`).join('')}</select>`}
         <small class="mob">arrivato ${esc(fmtDate(r.date).slice(0, 5))} · <span class="${r.days > 7 && r.state === 'in' ? 'oldtxt' : ''}">${r.days} ${r.days === 1 ? 'giorno' : 'giorni'}</span> · storage <b>${r.storage == null ? '–' : eur(r.storage)}</b></small></td>
       <td class="d">${esc(fmtDate(r.date))}${r.state === 'out' ? `<small>consegnato ${esc(fmtDate(r.outDate))}</small>` : ''}</td>
@@ -1203,7 +1386,7 @@ if (typeof module !== 'undefined') module.exports = Pricing;
       <td class="num"><b>${r.storage == null ? '–' : eur(r.storage)}</b></td>
       <td class="row-acts">${confirmId === r.id
         ? `<span class="confirm">Eliminare davvero? <button class="btn small" data-act="yes">Elimina</button><button class="btn small" data-act="no">No</button></span>`
-        : `<div class="acts2">${r.state === 'in' ? '<button class="btn small go" data-act="out">Consegnato</button>' : '<button class="link" data-act="back">Rimetti in magazzino</button>'}
+        : `<div class="acts2">${r.state === 'expected' ? '<button class="btn small go" data-act="arrived">Arrivato</button>' : r.state === 'in' ? '<button class="btn small go" data-act="out">Consegnato</button>' : '<button class="link" data-act="back">Rimetti in magazzino</button>'}
            <button class="link" data-act="edit">Modifica</button><button class="link" data-act="del">Elimina</button></div>`}</td></tr>`;
     $('rows').innerHTML = order.map(([y, rs]) => {
       const inn = rs.filter(r => r.state === 'in'), sto = inn.reduce((t, r) => t + (r.storage || 0), 0), old = inn.reduce((m, r) => Math.max(m, r.days), 0);
@@ -1214,7 +1397,8 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     const t = e.target.closest('[data-act]'); if (!t || t.tagName === 'SELECT' || t.tagName === 'INPUT') return;
     const id = t.closest('tr').dataset.id, act = t.dataset.act;
     if (act === 'edit') editParcel(id);
-    else if (act === 'out') save('Parcels', { id, state: 'out', outDate: P.today() });
+    else if (act === 'out') save('Parcels', { id, state: 'out', outDate: P.today(), outAt: new Date().toISOString(), outBy: cfg().me || '' });
+    else if (act === 'arrived') { const r = db.Parcels.find(p => p.id === id); save('Parcels', { id, state: 'in', date: P.today(), at: new Date().toISOString() }); if (r && !r.type) setTimeout(() => toast('Ora scegli la tipologia del pacco.'), 400); }
     else if (act === 'back') save('Parcels', { id, state: 'in', outDate: '' });
     else if (act === 'del') { confirmId = id; renderMag(); }
     else if (act === 'no') { confirmId = null; renderMag(); }
@@ -1238,7 +1422,7 @@ if (typeof module !== 'undefined') module.exports = Pricing;
   $('search').addEventListener('input', renderMag); $('yachtFilter').addEventListener('change', renderMag);
   $('csvBtn').addEventListener('click', () => {
     const q = s => '"' + String(s ?? '').replace(/\r?\n/g, ', ').replace(/"/g, '""') + '"';
-    const rows = parcels().map(r => [r.yacht, courierName(r.courier), r.tracking, typeLabel(r.type), r.zone, money(r.kg), fmtDate(r.date), r.state === 'in' ? 'In magazzino' : 'Uscito', fmtDate(r.outDate), r.days, money(r.storage), r.colloN + '/' + r.colloTot, r.ref, r.recipient, r.sender, r.notes].map(q).join(';'));
+    const rows = parcels().map(r => [r.yacht, courierName(r.courier), r.tracking, typeLabel(r.type), r.zone, money(r.kg), fmtDate(r.date), r.state === 'in' ? 'In magazzino' : r.state === 'expected' ? 'In arrivo' : 'Uscito', fmtDate(r.outDate), r.days, money(r.storage), r.colloN + '/' + r.colloTot, r.ref, r.recipient, r.sender, r.notes].map(q).join(';'));
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob(['﻿' + ['Yacht;Corriere;Tracking;Tipologia;Zona;Peso kg;Ingresso;Stato;Uscita;Giorni;Storage €;Collo;Rif. spedizione;Destinatario;Mittente;Note'].concat(rows).join('\r\n')], { type: 'text/csv' }));
     a.download = 'pimpi-' + P.today() + '.csv'; a.click();
@@ -1309,7 +1493,7 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     if (!$('ctlView')) return;
     const all = parcels(), stock = all.filter(r => r.state === 'in');
     const ys = yachtRows(), today = P.today();
-    const week = all.filter(r => P.days(r.date, today) < 7).length;
+    const week = all.filter(r => r.state !== 'expected' && P.days(r.date, today) < 7).length;
     const old7 = stock.filter(r => r.days > 7), old14 = stock.filter(r => r.days > 14);
     let flatN = 0, flatSum = 0;
     ys.forEach(y => { const plan = y.plan || '2w'; if (plan !== 'card' && y.grt !== '' && y.grt != null) { const f = P.flatFee(Number(y.grt), berthOf(y).zone, plan, rates); if (f != null) { flatN++; flatSum += f; } } });
@@ -1317,8 +1501,8 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     const pct = (a, b) => Math.max(2, Math.min(100, b ? a / b * 100 : 0)) + '%';
     $('kIn').textContent = stock.length; $('kInBar').style.setProperty('--w', pct(stock.length, Math.max(stock.length, 50)));
     $('kInSub').textContent = new Set(stock.map(r => r.yacht).filter(Boolean)).size + ' yacht con pacchi';
-    $('kToday').textContent = all.filter(r => r.date === today).length; $('kTodaySub').textContent = 'ultimi 7 giorni: ' + week;
-    $('kTodayBar').style.setProperty('--w', pct(all.filter(r => r.date === today).length, Math.max(week, 1)));
+    $('kToday').textContent = all.filter(r => r.date === today && r.state !== 'expected').length; $('kTodaySub').textContent = 'ultimi 7 giorni: ' + week;
+    $('kTodayBar').style.setProperty('--w', pct(all.filter(r => r.date === today && r.state !== 'expected').length, Math.max(week, 1)));
     $('kOld').textContent = old7.length; $('kOldSub').textContent = 'oltre 14 gg: ' + old14.length;
     $('kOldBar').style.setProperty('--w', pct(old7.length, Math.max(stock.length, 1)));
     $('kOldBox').className = 'kpi' + (old14.length ? ' crit' : old7.length ? ' warn' : '');
@@ -1327,7 +1511,13 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     $('kFlatBar').style.setProperty('--w', pct(flatN, Math.max(ys.length, 1)));
     const post = old14.length ? ['crit', 'Critico'] : old7.length ? ['warn', 'Attenzione'] : ['ok', 'Regolare'];
     $('cPosture').className = 'chip ' + post[0]; $('cPosture').textContent = post[1];
-    $('cYachts').textContent = ys.length; $('cTime').textContent = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    $('cYachts').textContent = ys.length; $('cTime').textContent = (lastSync || new Date()).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const scope = me && me.admin && officeSel ? db.Offices.find(o => String(o.id) === officeSel) : me && !me.admin ? { name: me.name, city: me.city } : null;
+    $('cOffice').textContent = scope ? scope.name : me && me.admin && db.Offices.length ? 'Tutti gli uffici' : 'Magazzino';
+    // the harbour map is drawn for Genoa only
+    const genoa = !db.Offices.length || (scope ? /genova|genoa/i.test((scope.city || '') + ' ' + scope.name) : db.Offices.some(o => /genova|genoa/i.test((o.city || '') + ' ' + o.name)));
+    $('cMapPanel').hidden = !genoa; $('cGrid').style.gridTemplateColumns = genoa ? '' : '1fr';
+    renderLive(all, today);
 
     // per-yacht summary
     const info = ys.map(y => {
@@ -1391,14 +1581,81 @@ if (typeof module !== 'undefined') module.exports = Pricing;
         <span>${a.r.tracking ? `<a href="${esc(trackUrl(a.r))}" target="_blank" rel="noopener">Tracking ↗</a> ` : ''}<button type="button" data-edit="${esc(a.r.id)}">Apri</button></span></div>`).join('')
         : '<p class="note">Nessun avviso: tutti i pacchi sono in regola.</p>');
   }
+  function renderLive(all, today) {
+    // offices strip (head office, all offices)
+    const showOff = !!(me && me.admin && db.Offices.length > 0);
+    $('cOffPanel').hidden = !showOff;
+    if (showOff) {
+      const allP = db.Parcels.map(view);
+      $('cOffices').innerHTML = db.Offices.map(o => {
+        const mine = allP.filter(r => (r.office || firstOffice()) === String(o.id)), st = mine.filter(r => r.state === 'in');
+        const old = st.filter(r => r.days > 7).length, lastAt = mine.map(r => r.outAt || r.at || '').sort().pop();
+        return `<button type="button" class="offc" data-off="${esc(o.id)}" aria-pressed="${officeSel === String(o.id)}"><b>${esc(o.name)}</b><small>${esc(o.city || '')}${lastAt ? ' · ultima attività ' + esc(ago(lastAt)) : ''}</small>
+          <span class="nums"><span>${st.length}<small>in magazzino</small></span><span>${mine.filter(r => r.date === today && r.state !== 'expected').length}<small>oggi</small></span><span style="color:${old ? 'var(--c-warn)' : 'inherit'}">${old}<small>&gt; 7 gg</small></span></span></button>`;
+      }).join('');
+    }
+    // courier status
+    const tr = all.filter(r => r.tracking && (r.state === 'expected' || (r.state === 'in' && r.trackStatus && r.trackStatus !== 'Delivered')) && (!ctlYacht || r.yacht === ctlYacht));
+    tr.sort((a, b) => (a.state === 'expected' ? 0 : 1) - (b.state === 'expected' ? 0 : 1) || String(b.trackAt || '').localeCompare(String(a.trackAt || '')));
+    const checked = all.map(r => r.trackAt || '').sort().pop();
+    $('cTrSub').textContent = features.track ? (tr.length + ' seguiti' + (checked ? ' · controllato ' + ago(checked) : '')) : 'tracking automatico non attivo';
+    $('cTrBtn').hidden = !features.track;
+    $('cTrack').innerHTML = tr.length ? tr.slice(0, 40).map(r => {
+      const t = tstat(r) || (r.state === 'expected' ? ['In attesa di stato', 'mut'] : ['', 'mut']);
+      return `<div class="ev"><code>${esc(courierName(r.courier) || '?')}</code><span><b>${esc(r.yacht || 'Senza yacht')}</b> · ${r.state === 'expected' ? 'in arrivo' : 'in magazzino'}<br><code>${esc(r.tracking)}${r.trackEvent ? ' · ' + esc(r.trackEvent) : ''}</code></span><span class="st ${t[1]}">${esc(t[0])}</span></div>`;
+    }).join('') : `<p class="note">${features.track ? 'Nessun pacco in arrivo. Registra un pre-avviso da Nuovo pacco > In arrivo.' : 'Quando la chiave 17TRACK è nel foglio Google, qui vedi dove sono i pacchi in arrivo, aggiornato ogni ora.'}</p>`;
+    // today's activity feed
+    const ev = [];
+    all.forEach(r => {
+      if (r.state !== 'expected' && String(r.at || '').slice(0, 10) === today) ev.push({ t: r.at, k: ['Arrivato', 'ok'], r, by: r.by });
+      if (r.state === 'expected' && String(r.at || '').slice(0, 10) === today) ev.push({ t: r.at, k: ['Pre-avviso', 'mut'], r, by: r.by });
+      if (r.state === 'out' && (String(r.outAt || '').slice(0, 10) === today || (!r.outAt && r.outDate === today))) ev.push({ t: r.outAt || r.outDate, k: ['Consegnato', 'warn'], r, by: r.outBy });
+    });
+    ev.sort((a, b) => String(b.t).localeCompare(String(a.t)));
+    $('cFeedSub').textContent = ev.length + ' movimenti';
+    $('cFeed').innerHTML = ev.length ? ev.slice(0, 50).map(e => `<div class="ev"><code>${esc(hhmm(e.t) || '–')}</code><span><b>${esc(e.r.yacht || 'Senza yacht')}</b> · ${esc(courierName(e.r.courier) || '?')}${e.by ? ' · ' + esc(e.by) : ''}${me && me.admin && !officeSel && db.Offices.length > 1 ? ' · ' + esc(officeName(e.r.office || firstOffice())) : ''}<br><code>${esc(e.r.tracking || 'senza tracking')}</code></span><span class="st ${e.k[1]}">${e.k[0]}</span></div>`).join('')
+      : '<p class="note">Ancora nessun movimento oggi. Si aggiorna da solo.</p>';
+  }
+  $('cOffices').addEventListener('click', e => { const b = e.target.closest('[data-off]'); if (!b) return; officeSel = officeSel === b.dataset.off ? '' : b.dataset.off; local.set('pp.office', officeSel); showWho(); pickRates(); render(); });
+  $('cTrBtn').addEventListener('click', async () => {
+    $('cTrBtn').disabled = true; $('cTrBtn').textContent = 'Controllo…';
+    try { const j = await api('POST', { op: 'track' }); toast(j.error ? 'Tracking non disponibile: ' + j.error : `Controllati ${j.checked || 0} pacchi`); } catch (e) { toast('Tracking non riuscito: ' + e.message); }
+    $('cTrBtn').disabled = false; $('cTrBtn').textContent = 'Aggiorna stato'; refresh();
+  });
   $('cBoats').addEventListener('click', e => { const b = e.target.closest('[data-yacht]'); if (!b) return; ctlYacht = ctlYacht === b.dataset.yacht ? '' : b.dataset.yacht; renderCtl(); });
   $('cMap').addEventListener('click', e => { const g = e.target.closest('[data-berth]'); if (!g) return; const i = yachtRows().filter(y => berthOf(y).id === g.dataset.berth && parcels().some(r => r.state === 'in' && r.yacht === y.name)); if (i.length) { ctlYacht = i.length === 1 && ctlYacht !== i[0].name ? i[0].name : ''; renderCtl(); } });
   $('cAlerts').addEventListener('click', e => { if (e.target.closest('[data-clear]')) { ctlYacht = ''; renderCtl(); } const b = e.target.closest('[data-edit]'); if (b) editParcel(b.dataset.edit); });
+
+  /* ---------- offices (head office only) ---------- */
+  const newCode = () => { const a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', b = new Uint32Array(8); crypto.getRandomValues(b); return Array.from(b, x => a[x % a.length]).join(''); };
+  function renderOffices() {
+    const box = $('officesBox'); if (!box) return;
+    box.hidden = !(me && me.admin);
+    if (box.hidden) return;
+    $('officeRows').innerHTML = db.Offices.length ? db.Offices.map(o => `<tr data-id="${esc(o.id)}"><td><b>${esc(o.name)}</b>${String(o.active) === 'no' ? ' <small>(disattivato)</small>' : ''}</td><td>${esc(o.city || '')}</td><td><code>${esc(o.code || '')}</code></td>
+      <td><button class="link" data-o="code">Nuovo codice</button> <button class="link" data-o="toggle">${String(o.active) === 'no' ? 'Riattiva' : 'Disattiva'}</button></td></tr>`).join('')
+      : '<tr><td colspan="4">Nessun ufficio ancora. Il primo ufficio che aggiungi riceve anche i pacchi già registrati.</td></tr>';
+  }
+  $('officeAdd').addEventListener('submit', e => {
+    e.preventDefault();
+    const name = $('offNew').value.trim(), city = $('offCity').value.trim(); if (!name) return;
+    const id = canon(city || name).slice(0, 12) + '-' + Math.random().toString(36).slice(2, 6);
+    $('offNew').value = ''; $('offCity').value = '';
+    save('Offices', { id, name, city, code: newCode(), active: 'yes', at: new Date().toISOString() });
+    toast('Ufficio aggiunto: manda il codice all\'ufficio.');
+  });
+  $('officeRows').addEventListener('click', e => {
+    const b = e.target.closest('[data-o]'); if (!b) return;
+    const id = b.closest('tr').dataset.id, o = db.Offices.find(x => String(x.id) === id);
+    if (b.dataset.o === 'code') { save('Offices', { id, code: newCode() }); toast('Nuovo codice creato: il vecchio non funziona più.'); }
+    if (b.dataset.o === 'toggle') save('Offices', { id, active: String(o.active) === 'no' ? 'yes' : 'no' });
+  });
 
   /* ---------- rates ---------- */
   const getK = (o, k) => k.split('.').reduce((x, p) => x == null ? x : x[p], o);
   function setK(o, k, v) { const ps = k.split('.'); const lastK = ps.pop(); ps.reduce((x, p) => x[p], o)[lastK] = v; }
   function fillRates() {
+    $('ratesFor').textContent = !me ? '' : !me.admin ? 'Tariffe del tuo ufficio: ' + me.name + '.' : officeSel ? 'Stai cambiando le tariffe di ' + officeName(officeSel) + '.' : 'Tariffe di base: valgono per ogni ufficio che non ha tariffe sue. Scegli un ufficio in alto per dargli tariffe diverse.';
     document.querySelectorAll('#ratesForm [data-k]').forEach(i => { const v = getK(rates, i.dataset.k); i.value = v == null ? '' : (/^(storage|delivery)\./.test(i.dataset.k) ? v.toFixed(2) : String(v)).replace('.', ','); i.classList.toggle('missing', v == null); });
   }
   $('ratesForm').addEventListener('input', e => { if (e.target.dataset.k) e.target.classList.toggle('missing', !e.target.value.trim()); });
@@ -1406,14 +1663,18 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     e.preventDefault();
     const r = JSON.parse(JSON.stringify(rates));
     document.querySelectorAll('#ratesForm [data-k]').forEach(i => setK(r, i.dataset.k, num(i.value)));
-    try { await api('POST', { op: 'put', table: 'Settings', row: { id: 'rates', value: JSON.stringify(r), by: cfg().me || '', at: new Date().toISOString() } }); rates = P.merge(r); toast('Tariffe salvate'); refresh(); }
+    const rid = me && !me.admin ? 'rates@' + me.office : officeSel ? 'rates@' + officeSel : 'rates';
+    try { await api('POST', { op: 'put', table: 'Settings', row: { id: rid, value: JSON.stringify(r), by: cfg().me || '', at: new Date().toISOString() } }); rates = P.merge(r); toast('Tariffe salvate'); refresh(); }
     catch (err) { toast('Tariffe non salvate: ' + err.message); }
   });
   $('ratesReset').addEventListener('click', () => { rates = P.merge({}); fillRates(); toast('Valori di PIMPI ripristinati: premi Salva per usarli.'); });
 
   resetForm(false);
   render();
-  refresh(); setInterval(() => { if (!document.hidden) refresh(); }, 20000);
+  if (!cfg().code || !cfg().url) openSetup('');
+  else refresh();
+  let tick = 0;
+  setInterval(() => { tick++; if (!document.hidden && cfg().code && (curView === 'ctl' || tick % 2 === 0)) refresh(); }, 5000 * 3);
   window.__pp = { run, loadImage, Parser, Pricing, get last() { return last; } };
 })();
 
