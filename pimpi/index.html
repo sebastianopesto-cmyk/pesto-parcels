@@ -1,0 +1,1088 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14245e">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="../icons/favicon-32.png">
+<link rel="apple-touch-icon" href="../icons/app-icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PIMPI">
+<title>PIMPI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: navy brand bar on top, then one calm column on the phone (scan) and a full-width live table on the PC (office). */
+:root {
+  --navy: #14245e;
+  --navy-2: #1f3380;
+  --red: #e3261b;
+  --bg: #f3f5f9;
+  --surface: #ffffff;
+  --ink: #111a33;
+  --muted: #5b6480;
+  --line: #dde2ec;
+  --soft: #e9edf6;
+  --good: #187a4a;
+  --good-bg: #ddf3e7;
+  --warn: #9a5a00;
+  --warn-bg: #fdefd7;
+  --on-navy: #ffffff;
+  --in-bg: #e3ecff; --in-fg: #1f3380; --out-bg: #ffe5e2; --out-fg: #b31d14;
+  --display: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --body: "Public Sans", "Segoe UI", Roboto, Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0c1228; --surface: #141c3a; --ink: #e9ecf6; --muted: #9aa3c2; --line: #27315a; --soft: #1c2650;
+  --good: #6fd6a0; --good-bg: #133524; --warn: #f3b860; --warn-bg: #3a2a10; --navy-2: #2a3f94; --in-bg: #22336f; --in-fg: #cfdcff; --out-bg: #4a1d1a; --out-fg: #ffc9c4; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0c1228; --surface: #141c3a; --ink: #e9ecf6; --muted: #9aa3c2; --line: #27315a; --soft: #1c2650;
+  --good: #6fd6a0; --good-bg: #133524; --warn: #f3b860; --warn-bg: #3a2a10; --navy-2: #2a3f94; --in-bg: #22336f; --in-fg: #cfdcff; --out-bg: #4a1d1a; --out-fg: #ffc9c4; color-scheme: dark }
+
+* { box-sizing: border-box }
+[hidden] { display: none !important }
+html, body { min-height: 100% }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.45 var(--body) }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--navy) }
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+
+/* Brand bar */
+.brand { background: var(--navy); color: var(--on-navy); position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5 }
+.brand .wrap { display: flex; align-items: center; gap: 12px; padding-block: 10px; max-width: 1200px; margin: 0 auto }
+.brand img { height: 48px; width: auto; display: block }
+.brand .name { font-family: var(--display); font-weight: 800; font-stretch: 80%; font-size: 1.35rem; letter-spacing: .02em; line-height: 1; text-transform: uppercase; margin-right: auto }
+.brand .name small { display: block; font-weight: 500; font-stretch: 100%; font-size: .68rem; letter-spacing: .16em; opacity: .7; margin-top: 3px }
+.tabs { display: flex; background: rgba(255,255,255,.1); border-radius: 999px; padding: 3px }
+.tabs a { color: var(--on-navy); text-decoration: none; font-weight: 600; font-size: .9rem; padding: 7px 14px; border-radius: 999px; opacity: .8 }
+.tabs a[aria-current="page"] { background: var(--on-navy); color: var(--navy); opacity: 1 }
+.tabs a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible, label.big:focus-within { outline: 3px solid var(--red); outline-offset: 2px }
+
+main { max-width: 1200px; margin: 0 auto; padding-block: 22px 48px }
+.col { max-width: 520px; margin: 0 auto; display: grid; gap: 18px }
+
+/* Scan buttons */
+.shoot { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+label.big, button.big { display: grid; place-items: center; gap: 10px; padding: 26px 12px; border-radius: 18px; cursor: pointer; text-align: center;
+  font: 700 1.05rem var(--body); border: 0 }
+label.big.primary, button.big.primary { background: var(--red); color: #fff; box-shadow: 0 10px 24px -12px rgba(227,38,27,.7) }
+label.big.secondary { background: var(--surface); color: var(--navy); border: 2px solid var(--line) }
+:root:not([data-theme="light"]) label.big.secondary { color: var(--ink) }
+label.big svg, button.big svg { width: 38px; height: 38px }
+label.big small, button.big small { font-weight: 500; font-size: .8rem; opacity: .85 }
+input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none }
+.busy { display: grid; gap: 8px }
+.busy p { margin: 0; color: var(--muted); font-size: .92rem }
+.bar { height: 6px; background: var(--soft); border-radius: 3px; overflow: hidden }
+.bar i { display: block; height: 100%; width: 0; background: var(--red); transition: width .25s }
+
+/* Result card */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; overflow: clip; box-shadow: 0 12px 30px -22px rgba(20,36,94,.45) }
+.card .head { display: flex; gap: 12px; align-items: center; padding: 14px 16px; background: var(--soft) }
+.card .head img { width: 54px; height: 72px; object-fit: cover; border-radius: 6px; background: #fff; border: 1px solid var(--line) }
+.card .head .who { min-width: 0; flex: 1; display: grid; gap: 2px }
+select.courier { width: 100%; font: 800 1.5rem var(--display); font-stretch: 85%; color: var(--ink); background: transparent; border: 0; padding: 0; max-width: 100%; text-transform: uppercase; letter-spacing: .02em }
+.fields { display: grid; gap: 14px; padding: 16px }
+.f { display: grid; gap: 5px; min-width: 0 }
+.f .lab { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted) }
+.f input, .f textarea { width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; resize: vertical }
+.f input.code { font-family: var(--mono); font-size: 1.05rem; letter-spacing: .03em }
+.f textarea.rec { font-weight: 600 }
+#costChip:empty { display: none }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+td.cost input { width: 5.5em; font: 500 .9rem var(--mono); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; text-align: right }
+.note { margin: 0 0 12px; padding: 10px 14px; border-radius: 10px; background: var(--in-bg); color: var(--in-fg); font-size: .85rem }
+.dot { justify-self: start; display: inline-flex; align-items: center; gap: 5px; font-size: .7rem; letter-spacing: .04em; text-transform: none; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--soft); color: var(--muted) }
+.dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor }
+.dot.good { background: var(--good-bg); color: var(--good) }
+.dot.warn { background: var(--warn-bg); color: var(--warn) }
+.card .acts { display: flex; gap: 10px; padding: 0 16px 16px }
+.btn { appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 600 .95rem var(--body); padding: 10px 14px; border-radius: 12px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px }
+.btn.send { flex: 1; background: var(--navy); border-color: var(--navy); color: #fff; font-size: 1.05rem; padding: 14px }
+:root:not([data-theme="light"]) .btn.send { background: var(--navy-2); border-color: var(--navy-2) }
+.btn.icon { width: 48px; padding: 0 }
+.btn svg { width: 20px; height: 20px }
+.btn[disabled] { opacity: .5; cursor: default }
+.link { background: none; border: 0; padding: 0; color: var(--muted); font: inherit; font-size: .88rem; text-decoration: underline; text-underline-offset: 3px; cursor: pointer }
+
+/* Recent list on phone */
+.recent { display: grid; gap: 8px }
+.recent h2, .office h2 { font: 800 1.05rem var(--display); font-stretch: 85%; text-transform: uppercase; letter-spacing: .05em; margin: 0 }
+.mini { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; min-width: 0 }
+.mini .c { font: 800 .8rem var(--display); text-transform: uppercase; background: var(--soft); color: var(--navy); border-radius: 6px; padding: 4px 7px }
+:root:not([data-theme="light"]) .mini .c { color: var(--ink) }
+.mini .t { min-width: 0; display: grid }
+.mini .t span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.mini .t .code { font-family: var(--mono); font-size: .8rem; color: var(--muted) }
+.mini time { font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums }
+.samples { text-align: center; font-size: .88rem; color: var(--muted) }
+.samples button { margin: 0 4px }
+.conn { justify-self: center; font-size: .78rem; color: var(--muted); display: inline-flex; gap: 6px; align-items: center }
+.conn::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--muted) }
+.conn.live::before { background: var(--good) }
+
+/* Office view */
+.office { display: grid; gap: 16px }
+.office .top { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; justify-content: space-between }
+.office .stats { display: flex; gap: 22px; flex-wrap: wrap }
+.stat b { display: block; font: 800 2rem var(--display); font-stretch: 85%; color: var(--navy); line-height: 1; font-variant-numeric: tabular-nums }
+:root:not([data-theme="light"]) .stat b { color: var(--ink) }
+.stat span { font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em }
+.office .tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center }
+.office input.search { font: inherit; padding: 9px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); min-width: 0; width: 220px; max-width: 100% }
+.tablebox { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow-x: auto }
+table { width: 100%; border-collapse: collapse; font-size: .92rem }
+th { text-align: left; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 12px 14px; border-bottom: 1px solid var(--line); white-space: nowrap }
+td { padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top }
+tr:last-child td { border-bottom: 0 }
+tr.done td { opacity: .5 }
+td.code { font-family: var(--mono); font-size: .85rem; white-space: nowrap }
+td.addr { white-space: pre-line; min-width: 180px }
+td.addr.rec { font-weight: 600 }
+td.when { white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--muted) }
+td .c { font: 800 .82rem var(--display); text-transform: uppercase; color: var(--navy); white-space: nowrap }
+:root:not([data-theme="light"]) td .c { color: var(--ink) }
+td.row-acts { white-space: nowrap; text-align: right }
+.chk { display: inline-flex; gap: 6px; align-items: center; font-size: .85rem; cursor: pointer }
+.chk input { width: 18px; height: 18px; accent-color: var(--navy) }
+.empty { padding: 36px 16px; text-align: center; color: var(--muted) }
+.empty b { display: block; color: var(--ink); font-size: 1.05rem; margin-bottom: 4px }
+.confirm { display: inline-flex; gap: 6px; align-items: center; font-size: .85rem }
+
+/* Phone: table rows become cards */
+@media (max-width: 760px) {
+  table, tbody, tr, td { display: block }
+  thead { display: none }
+  tr { padding: 12px 14px; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 1fr auto; gap: 2px 10px }
+  td { padding: 0; border: 0 }
+  td.when { grid-column: 2; grid-row: 1 }
+  td.cour { grid-column: 1; grid-row: 1 }
+  td.code, td.addr, td.by, td.row-acts { grid-column: 1 / -1 }
+  td.addr.snd, td.by { font-size: .82rem; color: var(--muted) }
+  td.addr.snd::before { content: "From: " }
+  td.row-acts { text-align: left; padding-top: 6px }
+}
+
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg);
+  padding: 11px 18px; border-radius: 12px; font-weight: 600; max-width: calc(100% - 32px); z-index: 20; box-shadow: 0 10px 30px -10px rgba(0,0,0,.5) }
+@media (prefers-reduced-motion: reduce) { .bar i { transition: none } }
+/* Direction + status */
+.dirrow { display: flex; align-items: center; gap: 10px; padding: 12px 16px 0; flex-wrap: wrap }
+.seg { display: inline-flex; background: var(--soft); border-radius: 999px; padding: 3px; gap: 2px }
+.seg button { appearance: none; border: 0; background: transparent; color: var(--muted); font: 600 .9rem var(--body); padding: 7px 14px; border-radius: 999px; cursor: pointer }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 4px rgba(20,36,94,.18) }
+.pill { display: inline-block; font: 700 .7rem var(--body); letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; white-space: nowrap }
+.pill.in { background: var(--in-bg); color: var(--in-fg) }
+.pill.out { background: var(--out-bg); color: var(--out-fg) }
+td.stat select { font: 600 .85rem var(--body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px }
+a.track { font: 600 .78rem var(--body); color: var(--red); text-decoration: none; white-space: nowrap }
+a.track:hover { text-decoration: underline }
+td.cour .pill { margin-bottom: 4px }
+@media (max-width: 760px) { td.stat { grid-column: 1 / -1; padding-top: 4px } td.cost { grid-column: 1 / -1 } }
+.cam { position: fixed; inset: 0; z-index: 30; background: #000; display: grid; grid-template-rows: 1fr auto }
+.cam video { width: 100%; height: 100%; object-fit: cover; grid-row: 1 / 3; grid-column: 1 }
+.cam .frame { grid-row: 1; grid-column: 1; align-self: center; justify-self: center; width: min(78vw, 420px); aspect-ratio: 2 / 3; max-height: 70vh;
+  border: 3px solid rgba(255,255,255,.9); border-radius: 14px; box-shadow: 0 0 0 100vmax rgba(0,0,0,.35); pointer-events: none }
+.cam .hint { grid-row: 1; grid-column: 1; align-self: start; justify-self: center; margin: calc(18px + env(safe-area-inset-top, 0px)) 16px 0; color: #fff; font-weight: 600; background: rgba(0,0,0,.45); padding: 6px 12px; border-radius: 999px; font-size: .9rem }
+.camBar { grid-row: 2; grid-column: 1; display: flex; align-items: center; justify-content: space-around; padding: 18px 16px calc(22px + env(safe-area-inset-bottom, 0px)); z-index: 1 }
+.shutter { width: 74px; height: 74px; border-radius: 50%; border: 5px solid #fff; background: var(--red); cursor: pointer }
+.shutter:active { transform: scale(.94) }
+.camSide { background: none; border: 0; color: #fff; font: 600 1rem var(--body); padding: 10px; cursor: pointer; min-width: 80px }
+
+.setup { display: grid; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; max-width: 520px; margin: 0 auto }
+.setup h2 { font: 800 1.05rem var(--display); text-transform: uppercase; letter-spacing: .05em; margin: 0 }
+.setup input { width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px }
+.setup label { display: grid; gap: 4px; font-size: .85rem; color: var(--muted) }
+.conn { cursor: pointer }
+/* ---- PIMPI additions ---- */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+.f select, .f input[type=date] { width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px }
+.f .help { font-size: .8rem; color: var(--muted) }
+.f input.yacht { font: 800 1.25rem var(--display); font-stretch: 85%; text-transform: uppercase; letter-spacing: .02em }
+.collo { display: flex; align-items: center; gap: 8px }
+.collo input { width: 4.2em; text-align: center }
+.price { margin: 0 16px 14px; padding: 10px 12px; border-radius: 10px; background: var(--soft); font-size: .88rem; color: var(--muted) }
+.price b { color: var(--ink) }
+.card .title { font: 800 1.1rem var(--display); font-stretch: 85%; text-transform: uppercase; letter-spacing: .04em }
+.card .head .thumbwrap { position: relative }
+.office select.flt { font: inherit; padding: 9px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); max-width: 100% }
+td.y b { font: 800 .98rem var(--display); font-stretch: 85%; text-transform: uppercase; letter-spacing: .02em; display: block }
+td.y small, td.t small { color: var(--muted); font-size: .78rem; display: block }
+td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap }
+td.num b { font-size: 1rem }
+td input[type=date], td select { font: 500 .85rem var(--body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 5px 6px }
+.days.old { color: var(--warn); font-weight: 700 }
+.pill.stock { background: var(--warn-bg); color: var(--warn) }
+.pill.gone { background: var(--good-bg); color: var(--good) }
+td.row-acts { white-space: normal; text-align: left; min-width: 150px }
+td.row-acts .pill { display: inline-block; margin-bottom: 6px }
+td.row-acts .link { display: block; margin: 2px 0 }
+@media (max-width: 560px) { .brand .name small { display: none } .tabs a { padding: 7px 10px; font-size: .85rem } .brand img { height: 40px } }
+.rates { display: grid; gap: 18px; max-width: 760px }
+.rates fieldset { border: 1px solid var(--line); border-radius: 16px; background: var(--surface); padding: 14px 16px 16px; margin: 0; display: grid; gap: 10px }
+.rates legend { font: 800 .95rem var(--display); text-transform: uppercase; letter-spacing: .05em; padding: 0 6px }
+.rates .row { display: grid; grid-template-columns: 1fr 110px 110px; gap: 8px; align-items: center }
+.rates .row.h { font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted) }
+.rates input { width: 100%; font: 500 .95rem var(--mono); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 8px; text-align: right }
+.rates input.missing { border-color: var(--warn); background: var(--warn-bg) }
+.rates p { margin: 0; font-size: .85rem; color: var(--muted) }
+@media (max-width: 760px) {
+  .grid2 { grid-template-columns: 1fr }
+  td.y { grid-column: 1; grid-row: 1 }
+  td.t, td.d, td.g, td.num { grid-column: 1 / -1 }
+  td.num { text-align: left }
+  td.row-acts .link { display: inline-block; margin-right: 12px }
+}
+</style>
+</head>
+<body>
+
+<header class="brand"><div class="wrap">
+  <img src="../logo-white.png" alt="Pesto Sea Group">
+  <div class="name">PIMPI<small>Pacchi e posta · Pesto Sea Group</small></div>
+  <nav class="tabs" aria-label="Sezioni">
+    <a href="#in" id="tabIn">Ingresso</a>
+    <a href="#mag" id="tabMag">Magazzino</a>
+    <a href="#rates" id="tabRates">Tariffe</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <!-- INGRESSO -->
+  <section id="inView" class="col">
+    <div class="shoot">
+      <button type="button" class="big primary" id="camBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.8l1.4-2h6.6l1.4 2h1.8A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="12.5" r="3.8"/></svg>
+        <span>Leggi etichetta<br><small>apri fotocamera</small></span>
+      </button>
+      <label class="big secondary" for="pick">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>
+        <span>Carica foto<br><small>dalla galleria</small></span>
+      </label>
+      <input type="file" id="cam" accept="image/*" capture="environment">
+      <input type="file" id="pick" accept="image/*">
+    </div>
+    <div class="busy" id="busy" hidden>
+      <div class="bar"><i id="barFill"></i></div>
+      <p id="status" role="status"></p>
+    </div>
+
+    <form class="card" id="entry" autocomplete="off">
+      <div class="head">
+        <img id="thumb" alt="Etichetta letta" hidden>
+        <div class="who"><span class="title" id="entryTitle">Nuovo ingresso</span><span class="dot" id="readChip" hidden></span></div>
+        <button type="button" class="btn icon" id="rotateBtn" title="Ruota e rileggi" aria-label="Ruota e rileggi" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>
+      </div>
+      <div class="fields">
+        <div class="f"><div class="lab"><label for="yacht">Yacht / cliente</label><span class="dot" id="yachtChip" hidden></span></div>
+          <input id="yacht" class="yacht" list="yachtList" required placeholder="Nome yacht"></div>
+        <div class="grid2">
+          <div class="f"><div class="lab"><label for="courier">Corriere</label><span class="dot" id="courierChip" hidden></span></div>
+            <select id="courier"></select></div>
+          <div class="f"><div class="lab"><label for="tracking">Tracking</label><span class="dot" id="trackingChip" hidden></span></div>
+            <input id="tracking" class="code" spellcheck="false" autocapitalize="characters"></div>
+        </div>
+        <div class="grid2">
+          <div class="f"><div class="lab"><label for="recipient">Destinatario</label></div><textarea id="recipient" class="rec" rows="3"></textarea></div>
+          <div class="f"><div class="lab"><label for="sender">Mittente</label></div><textarea id="sender" rows="3"></textarea></div>
+        </div>
+        <div class="grid2">
+          <div class="f"><div class="lab"><label for="kg">Peso kg (di questo collo)</label></div><input id="kg" inputmode="decimal"></div>
+          <div class="f"><div class="lab"><label for="type">Tipologia</label><span class="dot" id="typeChip" hidden></span></div><select id="type" required></select></div>
+        </div>
+        <div class="grid2">
+          <div class="f"><div class="lab"><span>Zona consegna</span></div>
+            <div class="seg" id="zoneSeg" role="group" aria-label="Zona"><button type="button" data-zone="A" aria-pressed="true">Zona A</button><button type="button" data-zone="B" aria-pressed="false">Zona B</button></div></div>
+          <div class="f"><div class="lab"><label for="date">Data ingresso</label></div><input id="date" type="date" required></div>
+        </div>
+        <div class="grid2">
+          <div class="f"><div class="lab"><span>Collo</span></div>
+            <div class="collo"><input id="colloN" type="number" min="1" value="1" aria-label="Numero di questo collo"> di <input id="colloTot" type="number" min="1" value="1" aria-label="Numero totale colli"></div></div>
+          <div class="f"><div class="lab"><label for="ref">Rif. spedizione</label></div><input id="ref" placeholder="uguale per tutti i colli"></div>
+        </div>
+        <div class="f"><div class="lab"><label for="notes">Note</label></div><input id="notes"></div>
+      </div>
+      <p class="price" id="pricePrev"></p>
+      <div class="acts">
+        <button type="submit" class="btn send" id="saveBtn">Registra ingresso</button>
+        <button type="button" class="btn" id="resetBtn">Azzera</button>
+      </div>
+    </form>
+
+    <div class="recent">
+      <h2>Registrati oggi</h2>
+      <div id="recentList" class="recent"></div>
+    </div>
+    <p class="samples">Nessuna etichetta a portata di mano? Prova <button class="link" data-sample="../samples/sample-ups.jpg">UPS</button> · <button class="link" data-sample="../samples/sample-amazon.jpg">Amazon</button> · <button class="link" data-sample="../samples/sample-tnt.jpg">TNT</button></p>
+    <span class="conn" id="conn"></span>
+  </section>
+
+  <!-- MAGAZZINO -->
+  <section id="magView" class="office" hidden>
+    <div class="top">
+      <div class="stats">
+        <div class="stat"><b id="statIn">0</b><span>In magazzino</span></div>
+        <div class="stat"><b id="statToday">0</b><span>Ricevuti oggi</span></div>
+        <div class="stat"><b id="statOld">0</b><span>Oltre 7 giorni</span></div>
+        <div class="stat"><b id="statStorage">€0</b><span>Storage maturato</span></div>
+      </div>
+      <div class="tools">
+        <div class="seg" id="stateSeg" role="group" aria-label="Mostra"><button type="button" data-s="in" aria-pressed="true">In magazzino</button><button type="button" data-s="out" aria-pressed="false">Usciti</button><button type="button" data-s="all" aria-pressed="false">Tutti</button></div>
+        <select class="flt" id="yachtFilter" aria-label="Yacht"></select>
+        <input class="search" id="search" type="search" placeholder="Cerca yacht, tracking…" aria-label="Cerca">
+        <button class="btn" id="csvBtn" type="button">Scarica CSV</button>
+      </div>
+    </div>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th>Yacht</th><th>Corriere · tracking</th><th>Tipo</th><th>Ingresso</th><th>Giorni</th><th>Storage</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="empty" id="officeEmpty" hidden></div>
+    </div>
+    <span class="conn" id="conn2"></span>
+  </section>
+
+  <!-- TARIFFE -->
+  <section id="ratesView" hidden>
+    <form class="rates" id="ratesForm">
+      <p>Prezzi usati per storage e consegne, euro IVA esclusa. Partono dal listino PIMPI del 27 ottobre 2026; le caselle arancioni sono vuote.</p>
+      <fieldset><legend>Storage al giorno</legend>
+        <div class="row h"><span></span><span>€ / giorno</span><span></span></div>
+        <div class="row"><span>Box 1 · busta</span><input data-k="storage.1" inputmode="decimal"><span></span></div>
+        <div class="row"><span>Box 3 · small box (fino a 2 kg)</span><input data-k="storage.3" inputmode="decimal"><span></span></div>
+        <div class="row"><span>Box 5 · medium box (2–10 kg)</span><input data-k="storage.5" inputmode="decimal"><span></span></div>
+        <div class="row"><span>Box 8 · big box (10–30 kg)</span><input data-k="storage.8" inputmode="decimal"><span></span></div>
+        <div class="row"><span>Pallet / fuori misura: maggiorazione %</span><input data-k="palletPct" inputmode="decimal"><span></span></div>
+        <div class="row h"><span>Sconti sulla durata</span><span>1° sconto %</span><span>2° sconto %</span></div>
+        <div class="row"><span>Fino a 30 giorni</span><input data-k="discUpTo30.0" inputmode="decimal"><input data-k="discUpTo30.1" inputmode="decimal"></div>
+        <div class="row"><span>Oltre 30 giorni</span><input data-k="discOver30.0" inputmode="decimal"><input data-k="discOver30.1" inputmode="decimal"></div>
+        <div class="row"><span>Buste gratis fino a (giorni)</span><input data-k="envelopeFreeDays" inputmode="numeric"><span></span></div>
+      </fieldset>
+      <fieldset><legend>Consegna Genova</legend>
+        <div class="row h"><span></span><span>Zona A €</span><span>Zona B €</span></div>
+        <div class="row"><span>Busta</span><input data-k="delivery.A.busta" inputmode="decimal"><input data-k="delivery.B.busta" inputmode="decimal"></div>
+        <div class="row"><span>Small box</span><input data-k="delivery.A.small" inputmode="decimal"><input data-k="delivery.B.small" inputmode="decimal"></div>
+        <div class="row"><span>Medium box</span><input data-k="delivery.A.medium" inputmode="decimal"><input data-k="delivery.B.medium" inputmode="decimal"></div>
+        <div class="row"><span>Big box</span><input data-k="delivery.A.big" inputmode="decimal"><input data-k="delivery.B.big" inputmode="decimal"></div>
+        <div class="row"><span>Pallet: maggiorazione % sulla big box</span><input data-k="palletDeliveryPct" inputmode="decimal"><span></span></div>
+        <div class="row"><span>Urgenza / fuori orario: maggiorazione %</span><input data-k="urgencyPct" inputmode="decimal"><span></span></div>
+      </fieldset>
+      <div style="display:flex;gap:8px"><button class="btn send" type="submit" style="flex:0 1 220px">Salva tariffe</button><button class="btn" type="button" id="ratesReset">Ripristina valori di PIMPI</button></div>
+    </form>
+  </section>
+</main>
+
+<form class="setup" id="setup" hidden autocomplete="off" style="position:fixed;inset:auto 16px 16px;z-index:25;box-shadow:0 20px 50px -20px rgba(0,0,0,.5)">
+  <h2>Collega all'archivio</h2>
+  <label>Link del foglio Google<input id="cfgUrl" type="url" placeholder="https://script.google.com/macros/s/…/exec"></label>
+  <label>Codice team<input id="cfgCode" type="password"></label>
+  <label>Il tuo nome<input id="cfgMe" type="text"></label>
+  <div style="display:flex;gap:8px"><button class="btn send" type="submit">Salva</button><button class="btn" type="button" id="cfgCancel">Annulla</button></div>
+</form>
+<datalist id="yachtList"></datalist>
+<div class="cam" id="camView" hidden role="dialog" aria-label="Fotocamera">
+  <video id="camVideo" playsinline autoplay muted></video>
+  <div class="frame" aria-hidden="true"></div>
+  <p class="hint">Inquadra tutta l'etichetta</p>
+  <div class="camBar">
+    <button type="button" class="camSide" id="camClose">Annulla</button>
+    <button type="button" class="shutter" id="camShoot" aria-label="Scatta"></button>
+    <button type="button" class="camSide" id="camGallery">Galleria</button>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+<script>
+/* ===== PARSER (pure functions, no DOM) ===== */
+const Parser = (() => {
+  const COURIERS = [
+    { id: 'ups', name: 'UPS', kw: [/\bU\s?P\s?S\b/], track: [{ re: /^1Z[0-9A-Z]{16}$/, strong: true }] },
+    { id: 'amazon', name: 'Amazon Logistics', kw: [/\bamazon\b/i], track: [{ re: /^TB[ACM]\d{12}$/, strong: true }] },
+    { id: 'dhl', name: 'DHL', kw: [/\bD\s?H\s?L\b/], track: [{ re: /^J[JV]?D\d{16,20}$/, strong: true }, { re: /^\d{10}$/ }, { re: /^\d{20}$/ }] },
+    { id: 'tnt', name: 'TNT', kw: [/\bT\s?N\s?T\b/], track: [{ re: /^[A-Z]{2}\d{9}WW$/, strong: true }, { re: /^\d{9}$/ }] },
+    { id: 'fedex', name: 'FedEx', kw: [/\bfed\s?ex\b/i], track: [{ re: /^\d{12}$/ }, { re: /^\d{15}$/ }] },
+    { id: 'gls', name: 'GLS', kw: [/\bGLS\b/], track: [{ re: /^[A-Z]{2}\d{9}$/ }, { re: /^\d{11,12}$/ }] },
+    { id: 'brt', name: 'BRT', kw: [/\bBRT\b/, /bartolini/i], track: [{ re: /^\d{12,18}$/ }] },
+    { id: 'dpd', name: 'DPD', kw: [/\bDPD\b/], track: [{ re: /^\d{14}$/ }] },
+    { id: 'poste', name: 'Poste Italiane / SDA', kw: [/poste\s*italiane/i, /\bSDA\b/, /poste\s*delivery/i], track: [{ re: /^[A-Z]{2}\d{9}IT$/, strong: true }, { re: /^\d{12,13}$/ }] },
+    { id: 'inpost', name: 'InPost', kw: [/\binpost\b/i], track: [{ re: /^\d{24}$/ }] },
+  ];
+  const TRACK_HINT = /(tracking|track|awb|waybill|lettera di vettura|ldv|spedizione|segnacollo|n\.?\s*collo|shipment)/i;
+
+  const SENDER_KW = ['mittente', 'sender', 'ship from', 'shipper', 'spedito da', 'return address', 'return to', 'reso a', 'expediteur', 'expéditeur', 'absender', 'remitente', 'from:', 'da:'];
+  const RECIP_KW = ['destinatario', 'ship to', 'deliver to', 'delivery to', 'delivery address', 'consignee', 'recipient', 'indirizzo di consegna', 'consegnare a', 'destinataire', 'empfänger', 'empfanger', 'to:', 'a:'];
+  const STOP = /(tracking|\bawb\b|waybill|sample|fictional|\bpeso\b|weight|\bkg\b|colli|\bpcs\b|ordine|order|ref\.?|riferimento|\bcod\b|contrassegno|\bdata\b|date:)/i;
+  const POSTCODE = /(\b\d{5}\b\s+[A-Za-z\u00C0-\u00FF'.\-]{2,})|(\b[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}\b)/;
+
+  function normCode(s) {
+    let c = String(s || '').toUpperCase().replace(/[\s\-.]/g, '');
+    if (/^%[0-9A-Z]{7}\d{14}\d{6}$/.test(c)) c = c.slice(8, 22); // DPD barcode: %, postcode, parcel no., service, country
+    if (/^\d{34}$/.test(c)) c = c.slice(-12);                    // FedEx 34-digit barcode ends with the 12-digit tracking no.
+    return c;
+  }
+  function ocrFix(tok) { // common OCR confusions inside codes; returns a few readings to try
+    const t = tok.toUpperCase().replace(/[\s\-.]/g, '');
+    if (/^1Z/.test(t)) return [t.slice(0, 2) + t.slice(2).replace(/O/g, '0')];
+    const digits = x => x.replace(/[OQD]/g, '0').replace(/[IL]/g, '1').replace(/Z/g, '2').replace(/A/g, '4').replace(/S/g, '5').replace(/G/g, '6').replace(/T/g, '7').replace(/B/g, '8');
+    const tail = t.match(/[A-Z]{2}$/)?.[0] || '';
+    const out = [];
+    for (const n of [0, 2, 3]) {
+      if (n > t.length - tail.length) continue;
+      out.push(t.slice(0, n) + digits(t.slice(n, t.length - tail.length)) + tail);
+      out.push(t.slice(0, n) + digits(t.slice(n)));
+    }
+    return out;
+  }
+  function matchCourier(code) {
+    const out = [];
+    for (const c of COURIERS) for (const t of c.track) if (t.re.test(code)) out.push({ courier: c.id, strong: !!t.strong });
+    return out;
+  }
+  function kwHeader(line, list) {
+    const low = line.toLowerCase().trim();
+    for (const k of list) {
+      const kk = k.toLowerCase();
+      if (low.startsWith(kk)) {
+        const rest = line.trim().slice(kk.length);
+        if (kk.endsWith(':') || rest === '' || /^[\s:.\-]/.test(rest)) return rest.replace(/^[\s:.\-]+/, '').trim();
+      }
+    }
+    return null;
+  }
+
+  function extractBlocks(lines, learned) {
+    const sKw = SENDER_KW.concat(learned?.sender || []);
+    const rKw = RECIP_KW.concat(learned?.recipient || []);
+    const headers = [];
+    lines.forEach((l, i) => {
+      const s = kwHeader(l.text, sKw), r = kwHeader(l.text, rKw);
+      if (r !== null && (s === null || r.length <= s.length)) headers.push({ i, role: 'recipient', rest: r });
+      else if (s !== null) headers.push({ i, role: 'sender', rest: s });
+    });
+    const res = { sender: '', recipient: '', senderHow: 'none', recipientHow: 'none' };
+    for (const h of headers) {
+      const out = [];
+      if (h.rest && h.rest.length > 1) out.push(h.rest);
+      let sawPost = false;
+      for (let j = h.i + 1; j < lines.length && out.length < 6; j++) {
+        const t = lines[j].text.trim();
+        if (headers.some(x => x.i === j)) break;
+        if (!t || STOP.test(t) || !/[A-Za-z\u00C0-\u00FF]{2}/.test(t)) { if (out.length) break; else continue; }
+        if (sawPost && !/^[A-Za-z\u00C0-\u00FF .'-]{2,24}$/.test(t)) break;
+        out.push(t);
+        if (POSTCODE.test(t)) { sawPost = true; }
+        if (sawPost && out.length && /^[A-Za-z\u00C0-\u00FF .'-]{2,24}$/.test(t) && !POSTCODE.test(t)) break;
+      }
+      if (out.length && !res[h.role]) { res[h.role] = out.join('\n'); res[h.role + 'How'] = 'heading'; }
+    }
+    if (!res.recipient || !res.sender) { // fallback: address blocks around postcode lines, bigger text = recipient
+      const blocks = [];
+      lines.forEach((l, i) => {
+        if (!POSTCODE.test(l.text)) return;
+        const start = Math.max(0, i - 3);
+        const blk = [];
+        for (let j = start; j <= i; j++) {
+          const t = lines[j].text.trim();
+          if (!t || STOP.test(t) || !/[A-Za-z\u00C0-\u00FF]{2}/.test(t) || kwHeader(t, sKw) !== null || kwHeader(t, rKw) !== null) { blk.length = 0; continue; }
+          blk.push(lines[j]);
+        }
+        if (blk.length) blocks.push({ text: blk.map(b => b.text.trim()).join('\n'), h: blk.reduce((a, b) => a + (b.h || 0), 0) / blk.length });
+      });
+      const used = new Set([res.sender, res.recipient]);
+      const free = blocks.filter(b => !used.has(b.text) && ![...used].some(u => u && (u.includes(b.text) || b.text.includes(u))));
+      if (!res.recipient && free.length) {
+        const big = free.slice().sort((a, b) => b.h - a.h)[0];
+        res.recipient = big.text; res.recipientHow = 'guess';
+        free.splice(free.indexOf(big), 1);
+      }
+      if (!res.sender && free.length) { res.sender = free[0].text; res.senderHow = 'guess'; }
+    }
+    return res;
+  }
+
+  function parse({ lines = [], barcodes = [], learned = {} }) {
+    const text = lines.map(l => l.text).join('\n');
+    const score = {}; const why = {};
+    const add = (c, n, w) => { score[c] = (score[c] || 0) + n; (why[c] = why[c] || []).push(w); };
+    for (const c of COURIERS) if (c.kw.some(r => r.test(text))) add(c.id, 3, 'name on label');
+    const cands = [];
+    for (const b of barcodes) {
+      const code = normCode(b.text);
+      const m = matchCourier(code);
+      m.forEach(x => add(x.courier, x.strong ? 4 : 1, 'barcode format'));
+      cands.push({ code, src: 'barcode', m, format: b.format });
+    }
+    lines.forEach(l => {
+      const toks = (l.text.match(/1Z(?:\s?[0-9A-Z]){16}|[A-Z0-9%][A-Z0-9 \-]{7,40}[A-Z0-9]/gi) || []);
+      for (const tok of toks) {
+        const variants = [normCode(tok), ...ocrFix(tok).map(normCode)];
+        for (const code of new Set(variants)) {
+          const m = matchCourier(code);
+          if (!m.length) continue;
+          const strong = m.some(x => x.strong);
+          if (!strong && !TRACK_HINT.test(l.text)) continue;
+          m.forEach(x => add(x.courier, x.strong ? 2 : 0.5, 'number format in text'));
+          cands.push({ code, src: 'text', m });
+        }
+      }
+    });
+    let courier = '';
+    const best = Object.entries(score).sort((a, b) => b[1] - a[1])[0];
+    if (best) courier = best[0];
+    const rank = c => {
+      const mm = c.m.find(x => x.courier === courier);
+      if (!mm) return -1;
+      return (mm.strong ? 2 : 0) + (c.src === 'barcode' ? 1 : 0);
+    };
+    let tracking = '', trackingHow = 'none';
+    const ranked = cands.map(c => ({ c, r: rank(c) })).filter(x => x.r >= 0).sort((a, b) => b.r - a.r);
+    if (ranked.length) { tracking = ranked[0].c.code; trackingHow = ranked[0].c.src; }
+    else {
+      const bc = cands.find(c => c.src === 'barcode' && /^[A-Z0-9]{8,30}$/.test(c.code));
+      if (bc) { tracking = bc.code; trackingHow = 'barcode-unknown'; }
+    }
+    const addr = extractBlocks(lines, learned);
+    return { courier, courierWhy: why[courier] || [], tracking, trackingHow, ...addr, candidates: cands };
+  }
+
+  // After a user fix: find the heading line printed just above the corrected text, so it can be reused.
+  function learnHeading(lines, corrected, knownLists) {
+    const first = (corrected || '').split('\n')[0].trim().toLowerCase();
+    if (first.length < 3) return null;
+    const idx = lines.findIndex(l => l.text.trim().toLowerCase().includes(first) || first.includes(l.text.trim().toLowerCase()) && l.text.trim().length > 3);
+    if (idx < 1) return null;
+    const head = lines[idx - 1].text.trim().replace(/[:.\s]+$/, '');
+    if (head.length < 2 || head.length > 30 || /\d{3,}/.test(head)) return null;
+    const low = head.toLowerCase();
+    if (knownLists.some(list => list.some(k => k.replace(/:$/, '') === low))) return null;
+    return low;
+  }
+
+  return { COURIERS, parse, learnHeading, normCode };
+})();
+
+</script>
+<script>
+/* ===== PRICING: PIMPI storage and delivery rules ===== */
+const Pricing = (() => {
+  const TYPES = [
+    { id: 'busta', name: 'Busta', box: 1 },
+    { id: 'small', name: 'Small box', box: 3 },
+    { id: 'medium', name: 'Medium box', box: 5 },
+    { id: 'big', name: 'Big box', box: 8 },
+    { id: 'pallet', name: 'Pallet / fuori misura', box: 8 },
+  ];
+  // PIMPI English rate card, 27 October 2026 (euro, VAT excluded)
+  const DEFAULT = {
+    storage: { 1: 0.70, 3: 1.50, 5: 2.70, 8: 4.80 },
+    palletPct: 20,
+    discUpTo30: [15, 10],
+    discOver30: [10, 10],
+    envelopeFreeDays: 3,
+    delivery: { A: { busta: 6.40, small: 9.60, medium: 14.40, big: 20 }, B: { busta: 12, small: 16, medium: 22.40, big: 32 } },
+    // Monthly subscription by gross tonnage: [up to GRT, euro/month]; the last band has no upper limit
+    grt: [[300, 75], [400, 80], [500, 90], [600, 95], [700, 105], [800, 110], [900, 115], [1000, 125], [1100, 130], [1200, 140], [1300, 145], [1400, 150], [1500, 160], [1600, 165], [1700, 170], [1800, 180], [1900, 185], [2000, 195], [null, 200]],
+    palletDeliveryPct: 20,
+    urgencyPct: 30,
+  };
+  const clone = o => JSON.parse(JSON.stringify(o));
+  function merge(saved) {
+    const r = clone(DEFAULT);
+    (function deep(dst, src) {
+      for (const k in src || {}) {
+        if (src[k] && typeof src[k] === 'object' && !Array.isArray(src[k]) && dst[k] && typeof dst[k] === 'object') deep(dst[k], src[k]);
+        else if (k in dst) dst[k] = src[k];
+      }
+    })(r, saved);
+    return r;
+  }
+  const round2 = x => Math.round((x + 1e-9) * 100) / 100;
+  const typeOf = id => TYPES.find(t => t.id === id) || null;
+  function typeFromKg(kg) {
+    if (kg == null || !(kg > 0)) return '';
+    return kg <= 2 ? 'small' : kg <= 10 ? 'medium' : kg <= 30 ? 'big' : 'pallet';
+  }
+  const dayNum = iso => { const [y, m, d] = String(iso).slice(0, 10).split('-').map(Number); return Math.round(Date.UTC(y, m - 1, d) / 864e5); };
+  const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  // Whole days in storage; same day = 0
+  const days = (from, to) => Math.max(0, dayNum(to || today()) - dayNum(from));
+  function daily(type, rates) {
+    const t = typeOf(type); if (!t) return null;
+    const base = rates.storage[t.box];
+    if (base == null) return null;
+    return type === 'pallet' ? round2(base * (1 + rates.palletPct / 100)) : base;
+  }
+  // Storage for d days: daily rate x days, then the two duration discounts, rounded to cents
+  function storage(type, d, rates) {
+    const per = daily(type, rates);
+    if (per == null) return null;
+    if (d <= 0) return 0;
+    if (type === 'busta' && d <= rates.envelopeFreeDays) return 0;
+    const [a, b] = d <= 30 ? rates.discUpTo30 : rates.discOver30;
+    return round2(per * d * (1 - a / 100) * (1 - b / 100));
+  }
+  // Delivery price for one parcel; null when the price list is missing that case
+  function delivery(type, zone, rates, { urgent = false, d = 0 } = {}) {
+    if (type === 'busta' && d <= rates.envelopeFreeDays) return 0;
+    const z = rates.delivery[zone] || {};
+    let base = type === 'pallet' ? (z.big == null ? null : z.big * (1 + rates.palletDeliveryPct / 100)) : z[type];
+    if (base == null) return null;
+    return round2(base * (urgent ? 1 + rates.urgencyPct / 100 : 1));
+  }
+  function monthlyFee(grt, rates) {
+    const g = Number(grt); if (!(g >= 0)) return null;
+    const band = rates.grt.find(([max]) => max == null || g <= max);
+    return band ? band[1] : null;
+  }
+  return { monthlyFee, TYPES, DEFAULT, merge, typeOf, typeFromKg, days, today, daily, storage, delivery, round2 };
+})();
+if (typeof module !== 'undefined') module.exports = Pricing;
+
+</script>
+<script>
+/* ===== APP ===== */
+(() => {
+  const $ = id => document.getElementById(id);
+  const local = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+  const P = Pricing;
+  let db = { Parcels: [], Yachts: [], Deliveries: [], Settings: [] };
+  let rates = P.merge({});
+  let learned = local.get('pp.learned', { sender: [], recipient: [] });
+  let last = null, busy = false, editingId = null, photoData = null;
+
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+  const num = v => { const n = parseFloat(String(v ?? '').replace(/[€\s]/g, '').replace(',', '.')); return isFinite(n) ? n : null; };
+  const money = n => n == null ? '' : n.toFixed(2).replace('.', ',');
+  const eur = n => n == null ? '–' : '€' + money(n);
+  const fmtDate = iso => { const [y, m, d] = String(iso).slice(0, 10).split('-'); return d ? `${d}/${m}/${y}` : ''; };
+  const canon = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, 3200); }
+  function status(msg, pct) { $('busy').hidden = false; $('status').textContent = msg; if (pct != null) $('barFill').style.width = Math.round(pct * 100) + '%'; }
+  function chip(id, kind, text) { const c = $(id); c.hidden = !text; c.className = 'dot' + (kind ? ' ' + kind : ''); c.textContent = text || ''; }
+
+  /* ---------- couriers, types ---------- */
+  const sel = $('courier');
+  sel.innerHTML = '<option value="">—</option>' + Parser.COURIERS.map(c => `<option value="${c.id}">${c.name}</option>`).join('') + '<option value="other">Altro</option>';
+  const courierName = id => (Parser.COURIERS.find(c => c.id === id) || {}).name || (id === 'other' ? 'Altro' : id || '');
+  $('type').innerHTML = '<option value="">Scegli…</option>' + P.TYPES.map(t => `<option value="${t.id}">${t.name} · Box ${t.box}</option>`).join('');
+  const typeLabel = id => { const t = P.typeOf(id); return t ? t.name : 'Tipo da scegliere'; };
+  const TRACK = {
+    ups: 'https://www.ups.com/track?loc=it_IT&tracknum=',
+    dhl: 'https://www.dhl.com/it-it/home/tracking.html?tracking-id=',
+    tnt: 'https://www.tnt.com/express/it_it/site/shipping-tools/tracking.html?searchType=con&cons=',
+    fedex: 'https://www.fedex.com/fedextrack/?trknbr=',
+    dpd: 'https://tracking.dpd.de/status/it_IT/parcel/',
+    poste: 'https://www.poste.it/cerca/index.html#/risultati-spedizioni/',
+    gls: 'https://gls-group.com/IT/it/servizi-online/ricerca-spedizioni?match=',
+  };
+  const trackUrl = r => r.tracking ? (TRACK[r.courier] || 'https://t.17track.net/en#nums=') + encodeURIComponent(r.tracking) : '';
+
+  /* ---------- parcels as the app sees them (older rows from the first scanner are mapped in) ---------- */
+  const OUT_OLD = ['handed', 'delivered', 'picked'];
+  function view(r) {
+    const o = { ...r };
+    o.date = String(o.date || o.at || '').slice(0, 10) || P.today();
+    o.state = o.state || (OUT_OLD.includes(o.status) ? 'out' : 'in');
+    o.zone = o.zone === 'B' ? 'B' : 'A';
+    o.kg = num(o.kg);
+    o.colloN = parseInt(o.colloN) || 1; o.colloTot = parseInt(o.colloTot) || 1;
+    o.days = P.days(o.date, o.state === 'out' ? o.outDate : null);
+    o.storage = P.storage(o.type, o.days, rates);
+    return o;
+  }
+  const parcels = () => db.Parcels.map(view).sort((a, b) => (b.date + b.at).localeCompare(a.date + a.at));
+  const yachtNames = () => [...new Set(db.Yachts.map(y => y.name).concat(db.Parcels.map(p => p.yacht)).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  // Same yacht typed differently ("Saba I", "SABA I") is stored under the first spelling
+  const knownYacht = name => yachtNames().find(n => canon(n) === canon(name));
+  function guessYacht(text) {
+    const t = canon(text);
+    const hit = yachtNames().filter(n => canon(n).length >= 3 && t.includes(canon(n))).sort((a, b) => b.length - a.length)[0];
+    if (hit) return { name: hit, how: 'known' };
+    const m = String(text || '').match(/\b(?:M\/?Y|S\/?Y|MY|SY|YACHT|Y\/T)\.?\s+([A-Z0-9][A-Z0-9 '\-]{1,24})/i);
+    return m ? { name: m[1].trim().replace(/\s{2,}.*/, ''), how: 'label' } : null;
+  }
+
+  /* ---------- views ---------- */
+  function route() {
+    let v = location.hash.replace('#', '');
+    if (!['in', 'mag', 'rates'].includes(v)) v = window.innerWidth >= 900 ? 'mag' : 'in';
+    $('inView').hidden = v !== 'in'; $('magView').hidden = v !== 'mag'; $('ratesView').hidden = v !== 'rates';
+    [['tabIn', 'in'], ['tabMag', 'mag'], ['tabRates', 'rates']].forEach(([id, k]) => k === v ? $(id).setAttribute('aria-current', 'page') : $(id).removeAttribute('aria-current'));
+    if (v === 'rates') fillRates();
+  }
+  window.addEventListener('hashchange', route); route();
+
+  /* ---------- images, barcodes, text ---------- */
+  function loadImage(src) {
+    return new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('Foto non leggibile')); im.src = src; });
+  }
+  function toCanvas(img, maxSide, rot = 0) {
+    const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+    const s = Math.min(1, maxSide / Math.max(iw, ih)), w = Math.round(iw * s), h = Math.round(ih * s);
+    const c = document.createElement('canvas'), side = rot % 180 !== 0;
+    c.width = side ? h : w; c.height = side ? w : h;
+    const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+    g.translate(c.width / 2, c.height / 2); g.rotate(rot * Math.PI / 180); g.drawImage(img, -w / 2, -h / 2, w, h);
+    return c;
+  }
+  function crop(src, x, y, w, h, maxSide) {
+    const s = Math.min(1, maxSide / Math.max(w, h));
+    const c = document.createElement('canvas'); c.width = Math.round(w * s); c.height = Math.round(h * s);
+    c.getContext('2d').drawImage(src, x, y, w, h, 0, 0, c.width, c.height);
+    return c;
+  }
+  async function readBarcodes(canvas) {
+    const found = new Map();
+    const put = (text, format) => { if (text && !found.has(text)) found.set(text, { text, format }); };
+    if ('BarcodeDetector' in window) {
+      try { (await new BarcodeDetector().detect(canvas)).forEach(b => put(b.rawValue, b.format)); } catch (e) {}
+    }
+    if (window.ZXing) {
+      const Z = window.ZXing, hints = new Map();
+      hints.set(Z.DecodeHintType.TRY_HARDER, true);
+      const reader = new Z.MultiFormatReader(); reader.setHints(hints);
+      const W = canvas.width, H = canvas.height;
+      const regions = [[0, 0, W, H], [0, 0, W, H / 2], [0, H / 2, W, H / 2], [0, 0, W, H / 3], [0, H / 3, W, H / 3], [0, 2 * H / 3, W, H / 3],
+        [0, 0, W / 2, H], [W / 2, 0, W / 2, H], [0, H / 4, W, H / 2]];
+      const tries = regions.map(r => [r, 1400]).concat([[[0, 0, W, H], 800], [[0, H / 3, W, 2 * H / 3], 700]]);
+      for (const [[x, y, w, h], max] of tries) {
+        try {
+          const r = reader.decode(new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.HTMLCanvasElementLuminanceSource(crop(canvas, x, y, w, h, max)))));
+          put(r.getText(), Z.BarcodeFormat[r.getBarcodeFormat()]);
+        } catch (e) {}
+        reader.reset();
+        await new Promise(r => setTimeout(r, 0));
+      }
+    }
+    return [...found.values()];
+  }
+  let workerP = null;
+  function getWorker() {
+    if (!workerP) {
+      workerP = Tesseract.createWorker('ita+eng', 1, {
+        logger: m => {
+          if (m.status === 'recognizing text') status('Leggo l\'etichetta… ' + Math.round(m.progress * 100) + '%', 0.45 + m.progress * 0.5);
+          else if (/loading|initializ/i.test(m.status)) status('Preparo la lettura (solo la prima volta)…', 0.1 + (m.progress || 0) * 0.3);
+        }
+      });
+      workerP.catch(() => { workerP = null; });
+    }
+    return workerP;
+  }
+  async function readText(canvas) {
+    const { data } = await (await getWorker()).recognize(canvas);
+    const lines = (data.lines || []).map(l => ({ text: l.text.replace(/\s+/g, ' ').trim(), h: l.bbox ? l.bbox.y1 - l.bbox.y0 : 0 })).filter(l => l.text);
+    return { lines, conf: data.confidence };
+  }
+
+  async function run(img, rot = 0) {
+    if (busy) return; busy = true;
+    try {
+      status('Cerco il codice a barre…', 0.05);
+      const big = toCanvas(img, 2000, rot);
+      photoData = toCanvas(img, 1200, rot).toDataURL('image/jpeg', 0.72);
+      $('thumb').src = toCanvas(img, 300, rot).toDataURL('image/jpeg', 0.7); $('thumb').hidden = false; $('rotateBtn').hidden = false;
+      const barcodes = await readBarcodes(big);
+      status(barcodes.length ? 'Codice trovato. Leggo l\'etichetta…' : 'Leggo l\'etichetta…', 0.4);
+      const { lines, conf } = await readText(toCanvas(img, 1800, rot));
+      const parsed = Parser.parse({ lines, barcodes, learned });
+      last = { lines, barcodes, parsed, img, rot, conf };
+      fillFromScan(parsed, lines);
+      $('busy').hidden = true;
+      if (conf < 45) toast('Lettura difficile: controlla i dati o rifai la foto.');
+      $('entry').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) {
+      console.error(e);
+      status('Non riesco a leggerla: ' + (e.message || e) + '. La prima lettura richiede internet.', 0);
+    } finally { busy = false; }
+  }
+  function fillFromScan(p, lines) {
+    sel.value = p.courier || '';
+    $('tracking').value = p.tracking; $('recipient').value = p.recipient; $('sender').value = p.sender;
+    if (!$('ref').value) $('ref').value = p.tracking || '';
+    const surePlace = p.courierWhy.includes('barcode format');
+    chip('courierChip', p.courier ? (surePlace ? 'good' : 'warn') : 'warn', p.courier ? (surePlace ? 'sicuro' : 'controlla') : 'scegli');
+    const th = { barcode: ['good', 'dal codice'], text: ['warn', 'controlla'], 'barcode-unknown': ['warn', 'controlla'], none: ['warn', 'manca'] }[p.trackingHow];
+    chip('trackingChip', ...th);
+    chip('readChip', 'good', 'letta: controlla i dati');
+    if (!$('yacht').value) {
+      const g = guessYacht(p.recipient) || guessYacht(lines.map(l => l.text).join('\n'));
+      if (g) { $('yacht').value = g.name; chip('yachtChip', g.how === 'known' ? 'good' : 'warn', g.how === 'known' ? 'yacht già noto' : 'dall\'etichetta'); }
+      else chip('yachtChip', 'warn', 'scrivi lo yacht');
+    }
+    const kg = String(lines.map(l => l.text).join(' ')).match(/(\d+(?:[.,]\d+)?)\s?KG\b/i);
+    if (kg && !$('kg').value) { $('kg').value = kg[1].replace('.', ','); onKg(); }
+    pricePreview();
+  }
+
+  async function onFile(e) {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    try { await run(await loadImage(URL.createObjectURL(f))); } catch (err) { status(err.message, 0); }
+    e.target.value = '';
+  }
+  $('cam').addEventListener('change', onFile); $('pick').addEventListener('change', onFile);
+  // Live camera inside the app; falls back to the phone's own camera app if the browser refuses
+  let stream = null;
+  function closeCam() { if (stream) stream.getTracks().forEach(t => t.stop()); stream = null; $('camVideo').srcObject = null; $('camView').hidden = true; }
+  $('camBtn').addEventListener('click', async () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { $('cam').click(); return; }
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+      $('camVideo').srcObject = stream; $('camView').hidden = false;
+      await $('camVideo').play().catch(() => {});
+    } catch (e) {
+      closeCam();
+      if (e && e.name === 'NotAllowedError') toast('Fotocamera bloccata: consentila nelle impostazioni, oppure usa Carica foto.');
+      $('cam').click();
+    }
+  });
+  $('camClose').addEventListener('click', closeCam);
+  $('camGallery').addEventListener('click', () => { closeCam(); $('pick').click(); });
+  $('camShoot').addEventListener('click', async () => {
+    const v = $('camVideo'); if (!v.videoWidth) return;
+    const c = document.createElement('canvas'); c.width = v.videoWidth; c.height = v.videoHeight;
+    c.getContext('2d').drawImage(v, 0, 0);
+    closeCam();
+    try { await run(await loadImage(c.toDataURL('image/jpeg', 0.92))); } catch (err) { status(err.message, 0); }
+  });
+  document.addEventListener('visibilitychange', () => { if (document.hidden && stream) closeCam(); });
+  document.querySelectorAll('[data-sample]').forEach(b => b.addEventListener('click', async () => {
+    try { await run(await loadImage(b.dataset.sample)); } catch (err) { status(err.message, 0); }
+  }));
+  $('rotateBtn').addEventListener('click', () => { if (last) run(last.img, (last.rot + 90) % 360); });
+
+  /* ---------- entry form ---------- */
+  let zone = 'A', typeTouched = false;
+  function setZone(z) { zone = z; document.querySelectorAll('#zoneSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.zone === z))); pricePreview(); }
+  document.querySelectorAll('#zoneSeg button').forEach(b => b.addEventListener('click', () => setZone(b.dataset.zone)));
+  function onKg() {
+    if (typeTouched && $('type').value) return pricePreview();
+    const t = P.typeFromKg(num($('kg').value));
+    if (t) { $('type').value = t; chip('typeChip', 'warn', 'dal peso: controlla'); }
+    pricePreview();
+  }
+  $('kg').addEventListener('input', onKg);
+  $('type').addEventListener('change', () => { typeTouched = true; chip('typeChip', '', ''); pricePreview(); });
+  $('date').addEventListener('change', pricePreview);
+  $('yacht').addEventListener('input', () => chip('yachtChip', '', ''));
+  function pricePreview() {
+    const t = $('type').value, el = $('pricePrev');
+    if (!t) { el.innerHTML = 'Scegli la tipologia per vedere storage e consegna.'; return; }
+    const per = P.daily(t, rates), del = P.delivery(t, zone, rates, { d: 99 });
+    const free = t === 'busta' ? ` · gratis fino a ${rates.envelopeFreeDays} giorni` : '';
+    el.innerHTML = `Storage <b>${eur(per)}</b>/giorno prima degli sconti${free} · consegna zona ${zone} <b>${del == null ? 'da listino' : eur(del)}</b>`;
+  }
+  function resetForm(keepShipment) {
+    const keep = keepShipment ? { yacht: $('yacht').value, courier: sel.value, ref: $('ref').value, sender: $('sender').value, recipient: $('recipient').value, colloTot: $('colloTot').value, colloN: String((parseInt($('colloN').value) || 1) + 1), date: $('date').value } : null;
+    $('entry').reset(); editingId = null; photoData = null; last = null; typeTouched = false;
+    $('thumb').hidden = true; $('rotateBtn').hidden = true; $('busy').hidden = true;
+    ['readChip', 'yachtChip', 'courierChip', 'trackingChip', 'typeChip'].forEach(id => chip(id, '', ''));
+    $('date').value = P.today(); setZone('A');
+    $('entryTitle').textContent = 'Nuovo ingresso'; $('saveBtn').textContent = 'Registra ingresso';
+    if (keep) {
+      Object.entries(keep).forEach(([k, v]) => { if (k === 'courier') sel.value = v; else $(k).value = v; });
+      $('entryTitle').textContent = `Collo ${keep.colloN} di ${keep.colloTot}`;
+    }
+    pricePreview();
+  }
+  $('resetBtn').addEventListener('click', () => resetForm(false));
+  function editParcel(id) {
+    const r = view(db.Parcels.find(p => p.id === id) || {}); if (!r.id) return;
+    resetForm(false); editingId = id;
+    ['yacht', 'tracking', 'recipient', 'sender', 'ref', 'notes'].forEach(k => $(k).value = r[k] || '');
+    sel.value = r.courier || ''; $('kg').value = r.kg == null ? '' : money(r.kg).replace(/,00$/, ''); $('type').value = r.type || ''; typeTouched = true;
+    $('date').value = r.date; $('colloN').value = r.colloN; $('colloTot').value = r.colloTot; setZone(r.zone);
+    $('entryTitle').textContent = 'Modifica ingresso'; $('saveBtn').textContent = 'Salva modifiche';
+    location.hash = '#in'; setTimeout(() => $('entry').scrollIntoView({ block: 'start' }), 50);
+  }
+
+  $('entry').addEventListener('submit', async e => {
+    e.preventDefault();
+    let yacht = $('yacht').value.trim();
+    if (!yacht) { toast('Scrivi lo yacht o il cliente.'); $('yacht').focus(); return; }
+    if (!$('type').value) { toast('Scegli la tipologia.'); $('type').focus(); return; }
+    const known = knownYacht(yacht); if (known) yacht = known;
+    const row = {
+      yacht, courier: sel.value, tracking: $('tracking').value.trim().toUpperCase(),
+      recipient: $('recipient').value.trim(), sender: $('sender').value.trim(),
+      kg: num($('kg').value) ?? '', type: $('type').value, zone, date: $('date').value || P.today(),
+      colloN: parseInt($('colloN').value) || 1, colloTot: Math.max(parseInt($('colloTot').value) || 1, parseInt($('colloN').value) || 1),
+      ref: $('ref').value.trim(), notes: $('notes').value.trim(),
+    };
+    if (editingId) row.id = editingId;
+    else { row.at = new Date().toISOString(); row.state = 'in'; row.by = cfg().me || ''; }
+    // learn from corrections: the heading printed above the corrected text
+    if (last) {
+      const next = { sender: [...learned.sender], recipient: [...learned.recipient] };
+      for (const role of ['recipient', 'sender']) {
+        if (row[role] && row[role] !== (last.parsed[role] || '').trim()) {
+          const h = Parser.learnHeading(last.lines, row[role], [next.sender, next.recipient]);
+          if (h && !next[role].includes(h)) next[role].push(h);
+        }
+      }
+      learned = next; local.set('pp.learned', next);
+    }
+    $('saveBtn').disabled = true;
+    try {
+      if (photoData) { try { row.photo = (await api('POST', { op: 'photo', data: photoData, name: (yacht + ' ' + (row.tracking || '')).trim() })).id; } catch (err) { if (err.code === 'setup' || err.code === 'bad_code') throw err; toast('Foto non salvata, il pacco sì.'); } }
+      await api('POST', { op: 'put', table: 'Parcels', row });
+      if (!known) await api('POST', { op: 'put', table: 'Yachts', row: { name: yacht } });
+      const more = !editingId && row.colloN < row.colloTot;
+      toast(editingId ? 'Modifiche salvate' : more ? `Collo ${row.colloN} registrato. Ora il collo ${row.colloN + 1}.` : 'Ingresso registrato');
+      const wasEdit = !!editingId;
+      resetForm(more);
+      await refresh();
+      if (wasEdit && window.innerWidth >= 900) location.hash = '#mag';
+    } catch (err) {
+      if (err.code === 'setup' || err.code === 'bad_code') { openSetup(); toast(err.code === 'setup' ? 'Prima collega l\'archivio.' : 'Codice team sbagliato.'); }
+      else toast('Non salvato: ' + (err.message || err) + '. Riprova.');
+    } finally { $('saveBtn').disabled = false; }
+  });
+
+  /* ---------- office archive (Google Sheet behind a small Apps Script web app) ---------- */
+  function setConn(live, text) { ['conn', 'conn2'].forEach(id => { const c = $(id); c.className = 'conn' + (live ? ' live' : ''); c.textContent = text; }); }
+  const cfg = () => ({ url: (window.PARCEL_CONFIG && window.PARCEL_CONFIG.sheetUrl) || local.get('pp.url', ''), code: local.get('pp.code', ''), me: local.get('pp.me', '') });
+  async function api(method, body, query) {
+    const { url, code } = cfg();
+    if (!url || !code) throw Object.assign(new Error('Non collegato'), { code: 'setup' });
+    const r = method === 'GET'
+      ? await fetch(url + (url.includes('?') ? '&' : '?') + 'code=' + encodeURIComponent(code) + (query || ''))
+      : await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ code, ...body }) });
+    const j = await r.json();
+    if (j.error) throw Object.assign(new Error(j.error === 'bad_code' ? 'Codice team sbagliato' : j.error), { code: j.error });
+    return j;
+  }
+  async function refresh() {
+    try {
+      const j = await api('GET');
+      if (!j.Yachts) { setConn(false, 'Il foglio Google va aggiornato: incolla il nuovo Code.gs'); return; }
+      db = { Parcels: j.Parcels || [], Yachts: j.Yachts || [], Deliveries: j.Deliveries || [], Settings: j.Settings || [] };
+      const s = db.Settings.find(x => x.id === 'rates');
+      try { rates = P.merge(s && s.value ? JSON.parse(s.value) : {}); } catch (e) { rates = P.merge({}); }
+      setConn(true, 'Collegato all\'archivio condiviso');
+      const a = document.activeElement;
+      if (!(a && a.closest && a.closest('#rows'))) render();
+      pricePreview();
+    } catch (e) {
+      setConn(false, e.code === 'setup' ? 'Non collegato: tocca qui per collegare' : 'Archivio non raggiungibile: ' + e.message);
+    }
+  }
+  function openSetup() { $('setup').hidden = false; const c = cfg(); $('cfgUrl').value = c.url; $('cfgCode').value = c.code; $('cfgMe').value = c.me; }
+  ['conn', 'conn2'].forEach(id => $(id).addEventListener('click', openSetup));
+  $('setup').addEventListener('submit', e => {
+    e.preventDefault();
+    local.set('pp.url', $('cfgUrl').value.trim()); local.set('pp.code', $('cfgCode').value.trim()); local.set('pp.me', $('cfgMe').value.trim());
+    $('setup').hidden = true; refresh();
+  });
+  $('cfgCancel').addEventListener('click', () => $('setup').hidden = true);
+  async function save(table, row) { try { await api('POST', { op: 'put', table, row }); } catch (e) { toast('Modifica non salvata: ' + e.message); } refresh(); }
+
+  /* ---------- rendering ---------- */
+  let stateF = 'in', confirmId = null;
+  function render() {
+    const names = yachtNames();
+    $('yachtList').innerHTML = names.map(n => `<option value="${esc(n)}">`).join('');
+    const yf = $('yachtFilter'), cur = yf.value;
+    yf.innerHTML = '<option value="">Tutti gli yacht</option>' + names.map(n => `<option${n === cur ? ' selected' : ''}>${esc(n)}</option>`).join('');
+    renderRecent(); renderMag();
+  }
+  function renderRecent() {
+    const today = parcels().filter(r => String(r.at || '').slice(0, 10) === P.today() || r.date === P.today()).slice(0, 8);
+    $('recentList').innerHTML = today.length ? today.map(r => `<div class="mini"><span class="c">${esc(courierName(r.courier) || '?')}</span>
+      <div class="t"><span><b>${esc(r.yacht || 'Senza yacht')}</b> · ${esc(typeLabel(r.type))}${r.colloTot > 1 ? ` · ${r.colloN}/${r.colloTot}` : ''}</span><span class="code">${esc(r.tracking || 'senza tracking')}</span></div>
+      <button class="link" data-edit="${esc(r.id)}">Modifica</button></div>`).join('')
+      : '<div class="mini" style="grid-template-columns:1fr;color:var(--muted)">Ancora nessun pacco oggi.</div>';
+  }
+  $('recentList').addEventListener('click', e => { const b = e.target.closest('[data-edit]'); if (b) editParcel(b.dataset.edit); });
+  function renderMag() {
+    const all = parcels(), stock = all.filter(r => r.state === 'in');
+    $('statIn').textContent = stock.length;
+    $('statToday').textContent = all.filter(r => r.date === P.today()).length;
+    $('statOld').textContent = stock.filter(r => r.days > 7).length;
+    $('statStorage').textContent = '€' + money(stock.reduce((t, r) => t + (r.storage || 0), 0)).replace(/,00$/, '');
+    const q = $('search').value.trim().toLowerCase(), yf = $('yachtFilter').value;
+    const list = all.filter(r => (stateF === 'all' || r.state === stateF) && (!yf || r.yacht === yf)
+      && (!q || [r.yacht, r.tracking, r.recipient, r.sender, r.ref, courierName(r.courier)].join(' ').toLowerCase().includes(q)));
+    $('officeEmpty').hidden = list.length > 0;
+    $('officeEmpty').innerHTML = !all.length ? '<b>Nessun pacco ancora</b>Registra un ingresso dal telefono o da qui e compare subito.' : '<b>Nessun risultato</b>Cambia filtro o ricerca.';
+    $('rows').innerHTML = list.map(r => `<tr class="${r.state === 'out' ? 'done' : ''}" data-id="${esc(r.id)}">
+      <td class="y"><b>${esc(r.yacht || 'Senza yacht')}</b><small>${r.colloTot > 1 ? `Collo ${r.colloN} di ${r.colloTot}` : ''}${r.ref && r.colloTot > 1 ? ' · ' + esc(r.ref) : ''}</small>${r.notes ? `<small>${esc(r.notes)}</small>` : ''}</td>
+      <td class="code"><span class="c">${esc(courierName(r.courier) || '?')}</span> ${esc(r.tracking || 'senza tracking')}
+        <br>${r.tracking ? `<a class="track" href="${esc(trackUrl(r))}" target="_blank" rel="noopener">Tracking ↗</a> ` : ''}${r.photo ? `<button class="link" data-act="photo">Foto</button>` : ''}</td>
+      <td class="t"><select data-act="type" aria-label="Tipologia">${P.TYPES.map(t => `<option value="${t.id}"${r.type === t.id ? ' selected' : ''}>${t.name}</option>`).join('')}${r.type ? '' : '<option selected value="">Da scegliere</option>'}</select>
+        <small>Zona <select data-act="zone" aria-label="Zona"><option${r.zone === 'A' ? ' selected' : ''}>A</option><option${r.zone === 'B' ? ' selected' : ''}>B</option></select>${r.kg != null ? ' · ' + money(r.kg).replace(/,00$/, '') + ' kg' : ''}</small></td>
+      <td class="d"><input type="date" data-act="date" value="${esc(r.date)}" aria-label="Data ingresso">${r.state === 'out' ? `<small>uscito ${esc(fmtDate(r.outDate))}</small>` : ''}</td>
+      <td class="g num"><span class="days${r.days > 7 && r.state === 'in' ? ' old' : ''}">${r.days}</span></td>
+      <td class="num"><b>${r.storage == null ? 'Tipo?' : eur(r.storage)}</b></td>
+      <td class="row-acts">${confirmId === r.id
+        ? `<span class="confirm">Eliminare? <button class="btn" data-act="yes">Elimina</button><button class="btn" data-act="no">No</button></span>`
+        : `${r.state === 'in' ? '<span class="pill stock">In magazzino</span>' : '<span class="pill gone">Uscito</span>'}
+           <button class="link" data-act="edit">Modifica</button><button class="link" data-act="${r.state === 'in' ? 'out' : 'back'}">${r.state === 'in' ? 'Segna uscito' : 'Rimetti in magazzino'}</button><button class="link" data-act="del">Elimina</button>`}</td></tr>`).join('');
+  }
+  $('rows').addEventListener('click', async e => {
+    const t = e.target.closest('[data-act]'); if (!t || t.tagName === 'SELECT' || t.tagName === 'INPUT') return;
+    const id = t.closest('tr').dataset.id, act = t.dataset.act;
+    if (act === 'edit') editParcel(id);
+    else if (act === 'out') save('Parcels', { id, state: 'out', outDate: P.today() });
+    else if (act === 'back') save('Parcels', { id, state: 'in', outDate: '' });
+    else if (act === 'del') { confirmId = id; renderMag(); }
+    else if (act === 'no') { confirmId = null; renderMag(); }
+    else if (act === 'yes') { confirmId = null; try { await api('POST', { op: 'del', table: 'Parcels', id }); } catch (err) { toast('Non eliminato.'); } refresh(); }
+    else if (act === 'photo') {
+      const w = window.open('', '_blank'); if (w) w.document.body.textContent = 'Carico la foto…';
+      try { const j = await api('GET', null, '&photo=' + encodeURIComponent(db.Parcels.find(p => p.id === id).photo)); if (w) w.document.body.innerHTML = `<img src="${j.data}" style="max-width:100%">`; }
+      catch (err) { if (w) w.close(); toast('Foto non disponibile.'); }
+    }
+  });
+  $('rows').addEventListener('change', e => {
+    const t = e.target.closest('[data-act]'); if (!t) return;
+    const id = t.closest('tr').dataset.id;
+    if (t.dataset.act === 'type' && t.value) save('Parcels', { id, type: t.value });
+    if (t.dataset.act === 'zone') save('Parcels', { id, zone: t.value });
+    if (t.dataset.act === 'date' && t.value) save('Parcels', { id, date: t.value });
+  });
+  document.querySelectorAll('#stateSeg button').forEach(b => b.addEventListener('click', () => {
+    stateF = b.dataset.s; document.querySelectorAll('#stateSeg button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); renderMag();
+  }));
+  $('search').addEventListener('input', renderMag); $('yachtFilter').addEventListener('change', renderMag);
+  $('csvBtn').addEventListener('click', () => {
+    const q = s => '"' + String(s ?? '').replace(/\r?\n/g, ', ').replace(/"/g, '""') + '"';
+    const rows = parcels().map(r => [r.yacht, courierName(r.courier), r.tracking, typeLabel(r.type), r.zone, money(r.kg), fmtDate(r.date), r.state === 'in' ? 'In magazzino' : 'Uscito', fmtDate(r.outDate), r.days, money(r.storage), r.colloN + '/' + r.colloTot, r.ref, r.recipient, r.sender, r.notes].map(q).join(';'));
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['﻿' + ['Yacht;Corriere;Tracking;Tipologia;Zona;Peso kg;Ingresso;Stato;Uscita;Giorni;Storage €;Collo;Rif. spedizione;Destinatario;Mittente;Note'].concat(rows).join('\r\n')], { type: 'text/csv' }));
+    a.download = 'pimpi-' + P.today() + '.csv'; a.click();
+  });
+
+  /* ---------- rates ---------- */
+  const getK = (o, k) => k.split('.').reduce((x, p) => x == null ? x : x[p], o);
+  function setK(o, k, v) { const ps = k.split('.'); const lastK = ps.pop(); ps.reduce((x, p) => x[p], o)[lastK] = v; }
+  function fillRates() {
+    document.querySelectorAll('#ratesForm [data-k]').forEach(i => { const v = getK(rates, i.dataset.k); i.value = v == null ? '' : (/^(storage|delivery)\./.test(i.dataset.k) ? v.toFixed(2) : String(v)).replace('.', ','); i.classList.toggle('missing', v == null); });
+  }
+  $('ratesForm').addEventListener('input', e => { if (e.target.dataset.k) e.target.classList.toggle('missing', !e.target.value.trim()); });
+  $('ratesForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const r = JSON.parse(JSON.stringify(rates));
+    document.querySelectorAll('#ratesForm [data-k]').forEach(i => setK(r, i.dataset.k, num(i.value)));
+    try { await api('POST', { op: 'put', table: 'Settings', row: { id: 'rates', value: JSON.stringify(r), by: cfg().me || '', at: new Date().toISOString() } }); rates = P.merge(r); toast('Tariffe salvate'); refresh(); }
+    catch (err) { toast('Tariffe non salvate: ' + err.message); }
+  });
+  $('ratesReset').addEventListener('click', () => { rates = P.merge({}); fillRates(); toast('Valori di PIMPI ripristinati: premi Salva per usarli.'); });
+
+  resetForm(false);
+  render();
+  refresh(); setInterval(() => { if (!document.hidden) refresh(); }, 20000);
+  window.__pp = { run, loadImage, Parser, Pricing, get last() { return last; } };
+})();
+
+</script>
+</body>
+</html>
