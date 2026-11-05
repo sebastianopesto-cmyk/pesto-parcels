@@ -531,7 +531,7 @@ const Parser = (() => {
     poste: 'https://www.poste.it/cerca/index.html#/risultati-spedizioni/',
     gls: 'https://gls-group.com/IT/it/servizi-online/ricerca-spedizioni?match=',
   };
-  const trackUrl = r => r.tracking ? (TRACK[r.courier] || 'https://t.17track.net/en#nums=') + encodeURIComponent(r.tracking) : '';
+  const trackUrl = r => r.tracking ? (TRACK[r.courier] || 'https://parcelsapp.com/en/tracking/') + encodeURIComponent(r.tracking) : '';
   let dir = 'in';
   function setDir(d, sure) {
     dir = d;
