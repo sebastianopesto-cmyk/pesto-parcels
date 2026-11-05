@@ -593,6 +593,11 @@ tr.exp td { background: color-mix(in srgb, var(--in-bg) 35%, transparent) }
         <div class="row"><span>Pallet: maggiorazione % sulla big box</span><input data-k="palletDeliveryPct" inputmode="decimal"><span></span></div>
         <div class="row"><span>Urgenza / fuori orario: maggiorazione %</span><input data-k="urgencyPct" inputmode="decimal"><span></span></div>
       </fieldset>
+      <fieldset><legend>Canone mensile per stazza (GRT)</legend>
+        <p>Prezzo al mese con 2 consegne a settimana in Zona A. Valori di partenza da PIMPI II.</p>
+        <div class="row h"><span>Stazza</span><span>€ / mese</span><span></span></div>
+        <div id="grtRows"></div>
+      </fieldset>
       <fieldset><legend>Canone flat mensile</legend>
         <p>Il prezzo base è la fascia GRT del listino PIMPI (consegna 2 volte a settimana, Zona A). Qui sotto gli aggiustamenti.</p>
         <div class="row"><span>Zona B: maggiorazione %</span><input data-k="flat.zoneBPct" inputmode="decimal"><span></span></div>
@@ -830,7 +835,8 @@ const Pricing = (() => {
     envelopeFreeDays: 3,
     delivery: { A: { busta: 6.40, small: 9.60, medium: 14.40, big: 20 }, B: { busta: 12, small: 16, medium: 22.40, big: 32 } },
     // Monthly subscription by gross tonnage: [up to GRT, euro/month]; the last band has no upper limit
-    grt: [[300, 75], [400, 80], [500, 90], [600, 95], [700, 105], [800, 110], [900, 115], [1000, 125], [1100, 130], [1200, 140], [1300, 145], [1400, 150], [1500, 160], [1600, 165], [1700, 170], [1800, 180], [1900, 185], [2000, 195], [null, 200]],
+    // PIMPI II (Roberta, Nov 2026): 75 up to 300 GRT, +15 every 100 GRT up to 2000, 375 above
+    grt: [[300, 75], [400, 90], [500, 105], [600, 120], [700, 135], [800, 150], [900, 165], [1000, 180], [1100, 195], [1200, 210], [1300, 225], [1400, 240], [1500, 255], [1600, 270], [1700, 285], [1800, 300], [1900, 315], [2000, 330], [null, 375]],
     palletDeliveryPct: 20,
     urgencyPct: 30,
     // Flat monthly plan per yacht (Pesto proposal, 5 Nov 2026): GRT band = twice a week in Zone A
@@ -1659,6 +1665,7 @@ if (typeof module !== 'undefined') module.exports = Pricing;
   /* ---------- rates ---------- */
   const getK = (o, k) => k.split('.').reduce((x, p) => x == null ? x : x[p], o);
   function setK(o, k, v) { const ps = k.split('.'); const lastK = ps.pop(); ps.reduce((x, p) => x[p], o)[lastK] = v; }
+  $('grtRows').innerHTML = P.DEFAULT.grt.map(([max], i) => `<div class="row"><span>${max == null ? 'Oltre ' + P.DEFAULT.grt[i - 1][0] : (i ? 'Da ' + (P.DEFAULT.grt[i - 1][0] + 1) + ' a ' : 'Fino a ') + max} GRT</span><input data-k="grt.${i}.1" inputmode="decimal"><span></span></div>`).join('');
   function fillRates() {
     $('ratesFor').textContent = !me ? '' : !me.admin ? 'Tariffe del tuo ufficio: ' + me.name + '.' : officeSel ? 'Stai cambiando le tariffe di ' + officeName(officeSel) + '.' : 'Tariffe di base: valgono per ogni ufficio che non ha tariffe sue. Scegli un ufficio in alto per dargli tariffe diverse.';
     document.querySelectorAll('#ratesForm [data-k]').forEach(i => { const v = getK(rates, i.dataset.k); i.value = v == null ? '' : (/^(storage|delivery)\./.test(i.dataset.k) ? v.toFixed(2) : String(v)).replace('.', ','); i.classList.toggle('missing', v == null); });
