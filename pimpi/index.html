@@ -232,6 +232,47 @@ td.row-acts .link { display: block; margin: 2px 0 }
 .ytab .fee small { display: block; color: var(--muted); font-size: .75rem }
 .yadd { display: flex; gap: 8px; flex-wrap: wrap }
 .yadd input { font: inherit; padding: 9px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); flex: 1 1 200px }
+/* ---- clarity pass ---- */
+.tabs a { display: inline-flex; align-items: center; gap: 7px }
+.tabs a svg { width: 17px; height: 17px; flex: none }
+.pagehd { margin: 4px 0 14px; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 6px 16px }
+.pagehd h1 { margin: 0; font: 800 1.5rem/1.1 var(--display); letter-spacing: .01em }
+.pagehd p { margin: 0; color: var(--muted); font-size: .92rem; flex: 1 1 320px }
+.step { border: 0; margin: 0; padding: 0; display: grid; gap: 12px }
+.step + .step, .more { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 4px }
+.step legend { float: left; width: 100%; padding: 0; margin-bottom: 2px; font: 800 .8rem var(--display); letter-spacing: .1em; text-transform: uppercase; color: var(--navy-2); display: flex; align-items: center; gap: 8px }
+.step legend b { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; font-size: .75rem }
+.more summary { cursor: pointer; font-weight: 600; color: var(--muted); font-size: .9rem; list-style: none }
+.more summary::before { content: "+ " } .more[open] summary::before { content: "– " }
+.more .inner { display: grid; gap: 12px; margin-top: 12px }
+.zoneNote { font-size: .8rem; color: var(--muted); margin: -4px 0 0 }
+/* magazzino grouped by yacht */
+.grp td { background: var(--soft); border-top: 2px solid var(--line) }
+.grp .gy { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px }
+.grp .gy b { font: 800 1rem var(--display); text-transform: uppercase; letter-spacing: .03em }
+.grp .gy span { color: var(--muted); font-size: .82rem }
+.btn.small { padding: 6px 12px; font-size: .85rem; border-radius: 10px }
+.btn.go { background: var(--navy); color: #fff; border-color: var(--navy) }
+.acts2 { display: flex; gap: 8px; align-items: center; justify-content: flex-end; flex-wrap: wrap }
+.acts2 .link { font-size: .85rem }
+.typeTag { font-weight: 600 } small.mob { display: none }
+@media (max-width: 700px) {
+  #yachtRows tr { display: grid !important; grid-template-columns: 1fr 1fr; gap: 10px 12px; padding: 14px 14px 16px }
+  #yachtRows td { display: block !important; padding: 0 !important; border: 0 !important; text-align: left !important }
+  #yachtRows td.y { grid-column: 1 / -1 }
+  #yachtRows td[data-l]::before { content: attr(data-l); display: block; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px }
+  #yachtRows td[data-l="Ormeggio · zona"], #yachtRows td[data-l="Piano consegne"] { grid-column: 1 / -1 }
+  #yachtRows select, #yachtRows input { width: 100%; max-width: 100% }
+  #yachtsView thead { display: none }
+} .oldtxt { color: var(--warn); font-weight: 700 }
+@media (max-width: 700px) { #rows small.mob { display: block; margin-top: 2px } #rows td.d, #rows td.g, #rows td.num { display: none } } .typeTag.missing { color: var(--red) }
+@media (max-width: 700px) {
+  body { padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px)) }
+  .brand .tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; border-radius: 0; padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--navy); justify-content: space-around; box-shadow: 0 -8px 24px -12px rgba(0,0,0,.5); overflow: visible }
+  .brand .tabs a { flex: 1 1 0; flex-direction: column; gap: 3px; padding: 6px 2px; font-size: .68rem; border-radius: 12px; text-align: center; min-width: 0 }
+  .brand .tabs a svg { width: 22px; height: 22px }
+  .pagehd h1 { font-size: 1.3rem }
+}
 /* control room: always dark */
 .ctl { --c-bg: #0a0f1f; --c-panel: #10172d; --c-line: #222c4a; --c-ink: #e6eaf5; --c-mut: #8a93b3; --c-ok: #4fd18b; --c-warn: #f2b33d; --c-crit: #ff5a4e; --c-acc: #f2b33d;
   background: var(--c-bg); color: var(--c-ink); border-radius: 22px; padding: 18px; display: grid; gap: 14px; margin-top: 4px; color-scheme: dark }
@@ -289,11 +330,11 @@ td.row-acts .link { display: block; margin: 2px 0 }
   <img src="../logo-white.png" alt="Pesto Sea Group">
   <div class="name">PIMPI<small>Pacchi e posta · Pesto Sea Group</small></div>
   <nav class="tabs" aria-label="Sezioni">
-    <a href="#ctl" id="tabCtl">Controllo</a>
-    <a href="#in" id="tabIn">Ingresso</a>
-    <a href="#mag" id="tabMag">Magazzino</a>
-    <a href="#yachts" id="tabYachts">Yacht</a>
-    <a href="#rates" id="tabRates">Tariffe</a>
+    <a href="#ctl" id="tabCtl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/></svg><span>Panoramica</span></a>
+    <a href="#in" id="tabIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Nuovo pacco</span></a>
+    <a href="#mag" id="tabMag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l9-5 9 5v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M8 21v-8h8v8"/></svg><span>Magazzino</span></a>
+    <a href="#yachts" id="tabYachts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l2 4h14l2-4z"/><path d="M12 3v14M12 4l7 10h-7"/></svg><span>Yacht</span></a>
+    <a href="#rates" id="tabRates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15 9.5a3 3 0 1 0 0 5M8 11h5M8 13.5h5"/></svg><span>Tariffe</span></a>
   </nav>
 </div></header>
 
@@ -333,6 +374,7 @@ td.row-acts .link { display: block; margin: 2px 0 }
 
   <!-- INGRESSO -->
   <section id="inView" class="col">
+    <header class="pagehd"><h1>Nuovo pacco</h1><p>Fotografa l'etichetta: compilo io i campi. Controlla, scegli la tipologia e premi Registra.</p></header>
     <div class="shoot">
       <button type="button" class="big primary" id="camBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.8l1.4-2h6.6l1.4 2h1.8A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="12.5" r="3.8"/></svg>
@@ -353,42 +395,45 @@ td.row-acts .link { display: block; margin: 2px 0 }
     <form class="card" id="entry" autocomplete="off">
       <div class="head">
         <img id="thumb" alt="Etichetta letta" hidden>
-        <div class="who"><span class="title" id="entryTitle">Nuovo ingresso</span><span class="dot" id="readChip" hidden></span></div>
+        <div class="who"><span class="title" id="entryTitle">Dati del pacco</span><span class="dot" id="readChip" hidden></span></div>
         <button type="button" class="btn icon" id="rotateBtn" title="Ruota e rileggi" aria-label="Ruota e rileggi" hidden>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>
       </div>
       <div class="fields">
-        <div class="f"><div class="lab"><label for="yacht">Yacht / cliente</label><span class="dot" id="yachtChip" hidden></span></div>
-          <input id="yacht" class="yacht" list="yachtList" required placeholder="Nome yacht"></div>
-        <div class="grid2">
-          <div class="f"><div class="lab"><label for="courier">Corriere</label><span class="dot" id="courierChip" hidden></span></div>
-            <select id="courier"></select></div>
-          <div class="f"><div class="lab"><label for="tracking">Tracking</label><span class="dot" id="trackingChip" hidden></span></div>
-            <input id="tracking" class="code" spellcheck="false" autocapitalize="characters"></div>
-        </div>
-        <div class="grid2">
-          <div class="f"><div class="lab"><label for="recipient">Destinatario</label></div><textarea id="recipient" class="rec" rows="3"></textarea></div>
-          <div class="f"><div class="lab"><label for="sender">Mittente</label></div><textarea id="sender" rows="3"></textarea></div>
-        </div>
-        <div class="grid2">
-          <div class="f"><div class="lab"><label for="kg">Peso kg (di questo collo)</label></div><input id="kg" inputmode="decimal"></div>
-          <div class="f"><div class="lab"><label for="type">Tipologia</label><span class="dot" id="typeChip" hidden></span></div><select id="type" required></select></div>
-        </div>
-        <div class="grid2">
+        <fieldset class="step"><legend><b>1</b>Per chi è</legend>
+          <div class="f"><div class="lab"><label for="yacht">Yacht / cliente</label><span class="dot" id="yachtChip" hidden></span></div>
+            <input id="yacht" class="yacht" list="yachtList" required placeholder="Nome yacht"></div>
+          <p class="zoneNote" id="zoneNote"></p>
+          <div class="f"><div class="lab"><label for="recipient">Destinatario</label></div><textarea id="recipient" class="rec" rows="2" placeholder="Es. Chief Stew"></textarea></div>
+        </fieldset>
+        <fieldset class="step"><legend><b>2</b>Il pacco</legend>
+          <div class="grid2">
+            <div class="f"><div class="lab"><label for="courier">Corriere</label><span class="dot" id="courierChip" hidden></span></div>
+              <select id="courier"></select></div>
+            <div class="f"><div class="lab"><label for="tracking">Tracking</label><span class="dot" id="trackingChip" hidden></span></div>
+              <input id="tracking" class="code" spellcheck="false" autocapitalize="characters"></div>
+          </div>
+          <div class="grid2">
+            <div class="f"><div class="lab"><label for="type">Tipologia</label><span class="dot" id="typeChip" hidden></span></div><select id="type" required></select></div>
+            <div class="f"><div class="lab"><label for="kg">Peso kg</label></div><input id="kg" inputmode="decimal" placeholder="la tipologia si sceglie da sola"></div>
+          </div>
+          <div class="f"><div class="lab"><span>Quanti colli in questa spedizione?</span></div>
+            <div class="collo">Collo <input id="colloN" type="number" min="1" value="1" aria-label="Numero di questo collo"> di <input id="colloTot" type="number" min="1" value="1" aria-label="Numero totale colli"></div></div>
+        </fieldset>
+        <details class="more"><summary>Altri dettagli (facoltativi)</summary><div class="inner">
+          <div class="f"><div class="lab"><label for="sender">Mittente</label></div><textarea id="sender" rows="2"></textarea></div>
+          <div class="grid2">
+            <div class="f"><div class="lab"><label for="date">Data ingresso</label></div><input id="date" type="date" required></div>
+            <div class="f"><div class="lab"><label for="ref">Rif. spedizione</label></div><input id="ref" placeholder="uguale per tutti i colli"></div>
+          </div>
           <div class="f"><div class="lab"><span>Zona consegna</span></div>
             <div class="seg" id="zoneSeg" role="group" aria-label="Zona"><button type="button" data-zone="A" aria-pressed="true">Zona A</button><button type="button" data-zone="B" aria-pressed="false">Zona B</button></div></div>
-          <div class="f"><div class="lab"><label for="date">Data ingresso</label></div><input id="date" type="date" required></div>
-        </div>
-        <div class="grid2">
-          <div class="f"><div class="lab"><span>Collo</span></div>
-            <div class="collo"><input id="colloN" type="number" min="1" value="1" aria-label="Numero di questo collo"> di <input id="colloTot" type="number" min="1" value="1" aria-label="Numero totale colli"></div></div>
-          <div class="f"><div class="lab"><label for="ref">Rif. spedizione</label></div><input id="ref" placeholder="uguale per tutti i colli"></div>
-        </div>
-        <div class="f"><div class="lab"><label for="notes">Note</label></div><input id="notes"></div>
+          <div class="f"><div class="lab"><label for="notes">Note</label></div><input id="notes"></div>
+        </div></details>
       </div>
       <p class="price" id="pricePrev"></p>
       <div class="acts">
-        <button type="submit" class="btn send" id="saveBtn">Registra ingresso</button>
+        <button type="submit" class="btn send" id="saveBtn">Registra pacco</button>
         <button type="button" class="btn" id="resetBtn">Azzera</button>
       </div>
     </form>
@@ -403,6 +448,7 @@ td.row-acts .link { display: block; margin: 2px 0 }
 
   <!-- MAGAZZINO -->
   <section id="magView" class="office" hidden>
+    <header class="pagehd"><h1>Magazzino</h1><p>Tutti i pacchi presenti, divisi per yacht. Quando un pacco viene consegnato premi <b>Consegnato</b>.</p></header>
     <div class="top">
       <div class="stats">
         <div class="stat"><b id="statIn">0</b><span>In magazzino</span></div>
@@ -419,7 +465,7 @@ td.row-acts .link { display: block; margin: 2px 0 }
     </div>
     <div class="tablebox">
       <table>
-        <thead><tr><th>Yacht</th><th>Corriere · tracking</th><th>Tipo</th><th>Ingresso</th><th>Giorni</th><th>Storage</th><th></th></tr></thead>
+        <thead><tr><th>Corriere · tracking</th><th>Tipologia</th><th>Arrivato</th><th>Giorni</th><th>Storage</th><th></th></tr></thead>
         <tbody id="rows"></tbody>
       </table>
       <div class="empty" id="officeEmpty" hidden></div>
@@ -429,13 +475,14 @@ td.row-acts .link { display: block; margin: 2px 0 }
 
   <!-- YACHT -->
   <section id="yachtsView" class="office ytab" hidden>
+    <header class="pagehd"><h1>Yacht e canoni</h1><p>Per ogni yacht: stazza, ormeggio e piano di consegna. Il canone mensile si calcola da solo.</p></header>
     <div class="top">
       <div class="stats">
         <div class="stat"><b id="statFlat">0</b><span>Yacht con flat</span></div>
         <div class="stat"><b id="statFlatSum">€0</b><span>Flat al mese</span></div>
         <div class="stat"><b id="statCard">0</b><span>A listino</span></div>
       </div>
-      <p style="margin:0;color:var(--muted);font-size:.88rem;max-width:560px">Ogni yacht ha un canone mensile fisso in base a stazza (GRT) e zona, con consegna 2 volte o 1 volta a settimana. Chi sceglie "A listino" paga ogni consegna e lo storage col tariffario; le consegne extra si pagano sempre a listino.</p>
+      <p style="margin:0;color:var(--muted);font-size:.85rem;max-width:560px">Flat: canone fisso con consegna 2 volte o 1 volta a settimana. A listino: ogni consegna e lo storage si pagano col tariffario. Le consegne extra si pagano sempre a listino.</p>
       <form class="yadd" id="yachtAdd"><input id="yachtNew" placeholder="Nome nuovo yacht" aria-label="Nome nuovo yacht"><button class="btn" type="submit">Aggiungi yacht</button></form>
     </div>
     <div class="tablebox">
@@ -449,6 +496,7 @@ td.row-acts .link { display: block; margin: 2px 0 }
 
   <!-- TARIFFE -->
   <section id="ratesView" hidden>
+    <header class="pagehd"><h1>Tariffe</h1><p>I prezzi usati in tutta l'app. Cambiali qui e premi Salva tariffe.</p></header>
     <form class="rates" id="ratesForm">
       <p>Prezzi usati per storage e consegne, euro IVA esclusa. Partono dal listino PIMPI del 27 ottobre 2026; le caselle arancioni sono vuote.</p>
       <fieldset><legend>Storage al giorno</legend>
@@ -937,7 +985,7 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     chip('readChip', 'good', 'letta: controlla i dati');
     if (!$('yacht').value) {
       const g = guessYacht(p.recipient) || guessYacht(lines.map(l => l.text).join('\n'));
-      if (g) { $('yacht').value = g.name; chip('yachtChip', g.how === 'known' ? 'good' : 'warn', g.how === 'known' ? 'yacht già noto' : 'dall\'etichetta'); }
+      if (g) { $('yacht').value = g.name; chip('yachtChip', g.how === 'known' ? 'good' : 'warn', g.how === 'known' ? 'yacht già noto' : 'dall\'etichetta'); yachtZone(); }
       else chip('yachtChip', 'warn', 'scrivi lo yacht');
     }
     const kg = String(lines.map(l => l.text).join(' ')).match(/(\d+(?:[.,]\d+)?)\s?KG\b/i);
@@ -994,7 +1042,12 @@ if (typeof module !== 'undefined') module.exports = Pricing;
   $('kg').addEventListener('input', onKg);
   $('type').addEventListener('change', () => { typeTouched = true; chip('typeChip', '', ''); pricePreview(); });
   $('date').addEventListener('change', pricePreview);
-  $('yacht').addEventListener('input', () => chip('yachtChip', '', ''));
+  $('yacht').addEventListener('input', () => { chip('yachtChip', '', ''); yachtZone(); });
+  function yachtZone() {
+    const n = knownYacht($('yacht').value.trim()), y = n && db.Yachts.find(x => x.name === n);
+    if (y && (y.berth || y.zone)) { const b = berthOf(y); setZone(b.zone); $('zoneNote').textContent = `Ormeggio ${b.name} · zona ${b.zone}`; }
+    else $('zoneNote').textContent = '';
+  }
   function pricePreview() {
     const t = $('type').value, el = $('pricePrev');
     if (!t) { el.innerHTML = 'Scegli la tipologia per vedere storage e consegna.'; return; }
@@ -1008,12 +1061,12 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     $('thumb').hidden = true; $('rotateBtn').hidden = true; $('busy').hidden = true;
     ['readChip', 'yachtChip', 'courierChip', 'trackingChip', 'typeChip'].forEach(id => chip(id, '', ''));
     $('date').value = P.today(); setZone('A');
-    $('entryTitle').textContent = 'Nuovo ingresso'; $('saveBtn').textContent = 'Registra ingresso';
+    $('entryTitle').textContent = 'Dati del pacco'; $('saveBtn').textContent = 'Registra pacco';
     if (keep) {
       Object.entries(keep).forEach(([k, v]) => { if (k === 'courier') sel.value = v; else $(k).value = v; });
       $('entryTitle').textContent = `Collo ${keep.colloN} di ${keep.colloTot}`;
     }
-    pricePreview();
+    yachtZone(); pricePreview();
   }
   $('resetBtn').addEventListener('click', () => resetForm(false));
   function editParcel(id) {
@@ -1022,7 +1075,7 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     ['yacht', 'tracking', 'recipient', 'sender', 'ref', 'notes'].forEach(k => $(k).value = r[k] || '');
     sel.value = r.courier || ''; $('kg').value = r.kg == null ? '' : money(r.kg).replace(/,00$/, ''); $('type').value = r.type || ''; typeTouched = true;
     $('date').value = r.date; $('colloN').value = r.colloN; $('colloTot').value = r.colloTot; setZone(r.zone);
-    $('entryTitle').textContent = 'Modifica ingresso'; $('saveBtn').textContent = 'Salva modifiche';
+    $('entryTitle').textContent = 'Modifica pacco'; $('saveBtn').textContent = 'Salva modifiche';
     location.hash = '#in'; setTimeout(() => $('entry').scrollIntoView({ block: 'start' }), 50);
   }
 
@@ -1058,7 +1111,7 @@ if (typeof module !== 'undefined') module.exports = Pricing;
       await api('POST', { op: 'put', table: 'Parcels', row });
       if (!known) await api('POST', { op: 'put', table: 'Yachts', row: { name: yacht } });
       const more = !editingId && row.colloN < row.colloTot;
-      toast(editingId ? 'Modifiche salvate' : more ? `Collo ${row.colloN} registrato. Ora il collo ${row.colloN + 1}.` : 'Ingresso registrato');
+      toast(editingId ? 'Modifiche salvate' : more ? `Collo ${row.colloN} registrato. Ora il collo ${row.colloN + 1}.` : 'Pacco registrato');
       const wasEdit = !!editingId;
       resetForm(more);
       await refresh();
@@ -1135,19 +1188,27 @@ if (typeof module !== 'undefined') module.exports = Pricing;
       && (!q || [r.yacht, r.tracking, r.recipient, r.sender, r.ref, courierName(r.courier)].join(' ').toLowerCase().includes(q)));
     $('officeEmpty').hidden = list.length > 0;
     $('officeEmpty').innerHTML = !all.length ? '<b>Nessun pacco ancora</b>Registra un ingresso dal telefono o da qui e compare subito.' : '<b>Nessun risultato</b>Cambia filtro o ricerca.';
-    $('rows').innerHTML = list.map(r => `<tr class="${r.state === 'out' ? 'done' : ''}" data-id="${esc(r.id)}">
-      <td class="y"><b>${esc(r.yacht || 'Senza yacht')}</b><small>${r.colloTot > 1 ? `Collo ${r.colloN} di ${r.colloTot}` : ''}${r.ref && r.colloTot > 1 ? ' · ' + esc(r.ref) : ''}</small>${r.notes ? `<small>${esc(r.notes)}</small>` : ''}</td>
+    const groups = new Map();
+    list.forEach(r => { const k = r.yacht || 'Senza yacht'; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(r); });
+    const order = [...groups.entries()].sort((x, y) => Math.max(...y[1].map(r => r.state === 'in' ? r.days : -1)) - Math.max(...x[1].map(r => r.state === 'in' ? r.days : -1)) || x[0].localeCompare(y[0]));
+    const row = r => `<tr class="${r.state === 'out' ? 'done' : ''}" data-id="${esc(r.id)}">
       <td class="code"><span class="c">${esc(courierName(r.courier) || '?')}</span> ${esc(r.tracking || 'senza tracking')}
-        <br>${r.tracking ? `<a class="track" href="${esc(trackUrl(r))}" target="_blank" rel="noopener">Tracking ↗</a> ` : ''}${r.photo ? `<button class="link" data-act="photo">Foto</button>` : ''}</td>
-      <td class="t"><select data-act="type" aria-label="Tipologia">${P.TYPES.map(t => `<option value="${t.id}"${r.type === t.id ? ' selected' : ''}>${t.name}</option>`).join('')}${r.type ? '' : '<option selected value="">Da scegliere</option>'}</select>
-        <small>Zona <select data-act="zone" aria-label="Zona"><option${r.zone === 'A' ? ' selected' : ''}>A</option><option${r.zone === 'B' ? ' selected' : ''}>B</option></select>${r.kg != null ? ' · ' + money(r.kg).replace(/,00$/, '') + ' kg' : ''}</small></td>
-      <td class="d"><input type="date" data-act="date" value="${esc(r.date)}" aria-label="Data ingresso">${r.state === 'out' ? `<small>uscito ${esc(fmtDate(r.outDate))}</small>` : ''}</td>
+        <small>${r.colloTot > 1 ? `Collo ${r.colloN} di ${r.colloTot}` : ''}${r.recipient ? (r.colloTot > 1 ? ' · ' : '') + esc(String(r.recipient).split('\n')[0]) : ''}${r.notes ? ' · ' + esc(r.notes) : ''}</small>
+        ${r.tracking ? `<a class="track" href="${esc(trackUrl(r))}" target="_blank" rel="noopener">Tracking ↗</a> ` : ''}${r.photo ? `<button class="link" data-act="photo">Foto</button>` : ''}</td>
+      <td class="t">${r.type ? `<span class="typeTag">${esc(typeLabel(r.type))}</span>${r.kg != null ? `<small>${money(r.kg).replace(/,00$/, '')} kg</small>` : ''}`
+        : `<select data-act="type" aria-label="Scegli tipologia" class="missing"><option value="" selected>Scegli tipologia…</option>${P.TYPES.map(t => `<option value="${t.id}">${t.name}</option>`).join('')}</select>`}
+        <small class="mob">arrivato ${esc(fmtDate(r.date).slice(0, 5))} · <span class="${r.days > 7 && r.state === 'in' ? 'oldtxt' : ''}">${r.days} ${r.days === 1 ? 'giorno' : 'giorni'}</span> · storage <b>${r.storage == null ? '–' : eur(r.storage)}</b></small></td>
+      <td class="d">${esc(fmtDate(r.date))}${r.state === 'out' ? `<small>consegnato ${esc(fmtDate(r.outDate))}</small>` : ''}</td>
       <td class="g num"><span class="days${r.days > 7 && r.state === 'in' ? ' old' : ''}">${r.days}</span></td>
-      <td class="num"><b>${r.storage == null ? 'Tipo?' : eur(r.storage)}</b></td>
+      <td class="num"><b>${r.storage == null ? '–' : eur(r.storage)}</b></td>
       <td class="row-acts">${confirmId === r.id
-        ? `<span class="confirm">Eliminare? <button class="btn" data-act="yes">Elimina</button><button class="btn" data-act="no">No</button></span>`
-        : `${r.state === 'in' ? '<span class="pill stock">In magazzino</span>' : '<span class="pill gone">Uscito</span>'}
-           <button class="link" data-act="edit">Modifica</button><button class="link" data-act="${r.state === 'in' ? 'out' : 'back'}">${r.state === 'in' ? 'Segna uscito' : 'Rimetti in magazzino'}</button><button class="link" data-act="del">Elimina</button>`}</td></tr>`).join('');
+        ? `<span class="confirm">Eliminare davvero? <button class="btn small" data-act="yes">Elimina</button><button class="btn small" data-act="no">No</button></span>`
+        : `<div class="acts2">${r.state === 'in' ? '<button class="btn small go" data-act="out">Consegnato</button>' : '<button class="link" data-act="back">Rimetti in magazzino</button>'}
+           <button class="link" data-act="edit">Modifica</button><button class="link" data-act="del">Elimina</button></div>`}</td></tr>`;
+    $('rows').innerHTML = order.map(([y, rs]) => {
+      const inn = rs.filter(r => r.state === 'in'), sto = inn.reduce((t, r) => t + (r.storage || 0), 0), old = inn.reduce((m, r) => Math.max(m, r.days), 0);
+      return `<tr class="grp"><td colspan="6"><div class="gy"><b>${esc(y)}</b><span>${rs.length} ${rs.length === 1 ? 'pacco' : 'pacchi'}${inn.length ? ` · il più vecchio da ${old} gg · storage ${eur(sto)}` : ''}</span></div></td></tr>` + rs.map(row).join('');
+    }).join('');
   }
   $('rows').addEventListener('click', async e => {
     const t = e.target.closest('[data-act]'); if (!t || t.tagName === 'SELECT' || t.tagName === 'INPUT') return;
@@ -1199,12 +1260,12 @@ if (typeof module !== 'undefined') module.exports = Pricing;
       const n = stock.filter(r => r.yacht === y.name).length;
       return `<tr data-name="${esc(y.name)}" data-id="${esc(y.id || '')}">
         <td class="y"><b>${esc(y.name)}</b></td>
-        <td><input class="g" data-y="grt" inputmode="numeric" value="${grt == null ? '' : esc(grt)}" placeholder="GRT" aria-label="Stazza GRT"></td>
-        <td><select data-y="berth" aria-label="Ormeggio">${BERTHS.map(b => `<option value="${b.id}"${berthOf(y).id === b.id ? ' selected' : ''}>${b.name} · ${b.zone}</option>`).join('')}</select></td>
-        <td><select data-y="plan" aria-label="Piano">${PLANS.map(([k, l]) => `<option value="${k}"${plan === k ? ' selected' : ''}>${l}</option>`).join('')}</select></td>
-        <td><input type="date" data-y="since" value="${esc(y.since || '')}" aria-label="Inizio canone"></td>
-        <td class="fee num">${plan === 'card' ? '<small>Ogni consegna a listino</small>' : fee == null ? '<small>Inserisci la stazza</small>' : `<b>${eur(fee)}</b><small>+ extra a listino</small>`}</td>
-        <td class="num">${n}</td></tr>`;
+        <td data-l="Stazza GRT"><input class="g" data-y="grt" inputmode="numeric" value="${grt == null ? '' : esc(grt)}" placeholder="GRT" aria-label="Stazza GRT"></td>
+        <td data-l="Ormeggio · zona"><select data-y="berth" aria-label="Ormeggio">${BERTHS.map(b => `<option value="${b.id}"${berthOf(y).id === b.id ? ' selected' : ''}>${b.name} · ${b.zone}</option>`).join('')}</select></td>
+        <td data-l="Piano consegne"><select data-y="plan" aria-label="Piano">${PLANS.map(([k, l]) => `<option value="${k}"${plan === k ? ' selected' : ''}>${l}</option>`).join('')}</select></td>
+        <td data-l="Canone dal"><input type="date" data-y="since" value="${esc(y.since || '')}" aria-label="Inizio canone"></td>
+        <td class="fee num" data-l="Canone / mese">${plan === 'card' ? '<small>Ogni consegna a listino</small>' : fee == null ? '<small>Inserisci la stazza</small>' : `<b>${eur(fee)}</b><small>+ extra a listino</small>`}</td>
+        <td class="num" data-l="Pacchi in magazzino">${n}</td></tr>`;
     }).join('');
     $('yachtEmpty').hidden = ys.length > 0;
     $('statFlat').textContent = nFlat; $('statCard').textContent = nCard;
