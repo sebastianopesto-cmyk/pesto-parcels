@@ -323,6 +323,14 @@ td.row-acts .link { display: block; margin: 2px 0 }
   td.row-acts .link { display: inline-block; margin-right: 12px }
 }
 /* login, office badge, live page additions */
+.ctl .world { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 10px }
+.ctl .globeP { padding-bottom: 10px; position: relative; overflow: hidden }
+.ctl .globe { height: clamp(320px, 58vh, 640px); margin: 0 -16px; cursor: grab; background: radial-gradient(ellipse at center, #10204a 0%, #0a0f1f 70%) }
+.ctl .globe canvas { display: block }
+.ctl .trackP .feed { max-height: clamp(320px, 58vh, 640px) }
+.ctl .gtip { background: #0a0f1fe6; border: 1px solid var(--c-line); border-radius: 10px; padding: 8px 10px; font: 500 .8rem var(--body); color: var(--c-ink); max-width: 240px }
+.ctl .gtip code { font: 500 .72rem var(--mono); color: var(--c-mut) }
+@media (max-width: 900px) { .ctl .world { grid-template-columns: 1fr } .ctl .globe { height: 360px } }
 body.live { background: #0a0f1f }
 body.live main { max-width: none; padding: 0 }
 body.live .brand .wrap { max-width: none; padding-inline: max(16px, 2vw) }
@@ -359,7 +367,7 @@ body.live .ctl { border-radius: 0; margin: 0; min-height: calc(100vh - 68px); pa
 .ctl .offc b { font-size: .95rem } .ctl .offc small { font: 500 .72rem var(--mono); color: var(--c-mut) }
 .ctl .offc .nums { display: flex; gap: 14px; font: 600 1.05rem var(--mono) } .ctl .offc .nums span small { display: block; font-size: .62rem; letter-spacing: .08em; text-transform: uppercase }
 .ctl .feed { display: grid; gap: 6px; max-height: 340px; overflow: auto }
-.ctl .ev { display: grid; grid-template-columns: 48px 1fr auto; gap: 10px; align-items: center; font-size: .86rem; padding: 8px 10px; border-radius: 10px; background: #0d1427 }
+.ctl .ev { display: grid; grid-template-columns: 64px 1fr auto; gap: 10px; align-items: center; font-size: .86rem; padding: 8px 10px; border-radius: 10px; background: #0d1427 }
 .ctl .ev code { font: 500 .75rem var(--mono); color: var(--c-mut) }
 .ctl .ev .st { font: 600 .72rem var(--mono); padding: 3px 8px; border-radius: 6px; border: 1px solid currentColor; white-space: nowrap }
 .ctl .st.ok { color: var(--c-ok) } .ctl .st.warn { color: var(--c-warn) } .ctl .st.crit { color: var(--c-crit) } .ctl .st.mut { color: var(--c-mut) }
@@ -396,6 +404,18 @@ tr.exp td { background: color-mix(in srgb, var(--in-bg) 35%, transparent) }
         <div><h2><span class="livedot"><i></i>LIVE</span> Pesto Sea Group · Pacchi</h2><small><span id="cOffice">Magazzino</span> · <span id="cYachts">0</span> yacht · aggiornato alle <span id="cTime">–</span></small></div>
         <div class="posture">Stato magazzino <span class="chip ok" id="cPosture">Regolare</span></div>
       </div>
+      <div class="world">
+        <div class="panel globeP">
+          <h3>Pacchi nel mondo <small id="cWorldSub"></small>
+            <span class="legend"><span><i style="background:#5ab0ff"></i>In viaggio</span><span><i style="background:var(--c-warn)"></i>In consegna</span><span><i style="background:var(--c-ok)"></i>Arrivato</span><span><i style="background:var(--c-crit)"></i>Problema</span></span></h3>
+          <div class="globe" id="globe" aria-label="Globo con i percorsi dei pacchi verso l'ufficio"></div>
+          <p class="note" id="cWorldNote"></p>
+        </div>
+        <div class="panel trackP">
+          <h3>Corrieri in tempo reale <small id="cTrSub"></small><button type="button" class="refresh" id="cTrBtn" hidden>Aggiorna stato</button></h3>
+          <div class="feed" id="cTrack"></div>
+        </div>
+      </div>
       <div class="kpis">
         <div class="kpi"><span>In magazzino</span><b id="kIn">0</b><i id="kInBar"></i><em id="kInSub">colli presenti</em></div>
         <div class="kpi"><span>Arrivati oggi</span><b id="kToday">0</b><i id="kTodayBar"></i><em id="kTodaySub">ultimi 7 giorni: 0</em></div>
@@ -421,17 +441,13 @@ tr.exp td { background: color-mix(in srgb, var(--in-bg) 35%, transparent) }
       </div>
       <div class="grid2">
         <div class="panel">
-          <h3>Corrieri in tempo reale <small id="cTrSub"></small><button type="button" class="refresh" id="cTrBtn" hidden>Aggiorna stato</button></h3>
-          <div class="feed" id="cTrack"></div>
-        </div>
-        <div class="panel">
           <h3>Attività di oggi <small id="cFeedSub"></small></h3>
           <div class="feed" id="cFeed"></div>
         </div>
-      </div>
-      <div class="panel">
-        <h3>Avvisi <small id="cAlSub"></small></h3>
-        <div class="alerts" id="cAlerts"></div>
+        <div class="panel">
+          <h3>Avvisi <small id="cAlSub"></small></h3>
+          <div class="alerts" id="cAlerts"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -989,11 +1005,11 @@ if (typeof module !== 'undefined') module.exports = Pricing;
   /* ---------- views ---------- */
   function route() {
     let v = location.hash.replace('#', '');
-    if (!['ctl', 'in', 'mag', 'yachts', 'rates'].includes(v)) v = window.innerWidth >= 900 ? 'ctl' : 'in';
+    if (!['ctl', 'in', 'mag', 'yachts', 'rates'].includes(v)) v = 'ctl';
     $('inView').hidden = v !== 'in'; $('magView').hidden = v !== 'mag'; $('ratesView').hidden = v !== 'rates'; $('yachtsView').hidden = v !== 'yachts'; $('ctlView').hidden = v !== 'ctl';
     [['tabCtl', 'ctl'], ['tabIn', 'in'], ['tabMag', 'mag'], ['tabYachts', 'yachts'], ['tabRates', 'rates']].forEach(([id, k]) => k === v ? $(id).setAttribute('aria-current', 'page') : $(id).removeAttribute('aria-current'));
     if (v === 'rates') fillRates();
-    curView = v; document.body.classList.toggle('live', v === 'ctl');
+    curView = v; if (v === 'ctl') setTimeout(() => renderWorld(parcels()), 0); document.body.classList.toggle('live', v === 'ctl');
   }
   let curView = '';
   window.addEventListener('hashchange', route); route();
@@ -1529,6 +1545,7 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     const genoa = !db.Offices.length || (scope ? /genova|genoa/i.test((scope.city || '') + ' ' + scope.name) : db.Offices.some(o => /genova|genoa/i.test((o.city || '') + ' ' + o.name)));
     $('cMapPanel').hidden = !genoa; $('cGrid').style.gridTemplateColumns = genoa ? '' : '1fr';
     renderLive(all, today);
+    renderWorld(all);
 
     // per-yacht summary
     const info = ys.map(y => {
@@ -1592,6 +1609,99 @@ if (typeof module !== 'undefined') module.exports = Pricing;
         <span>${a.r.tracking ? `<a href="${esc(trackUrl(a.r))}" target="_blank" rel="noopener">Tracking ↗</a> ` : ''}<button type="button" data-edit="${esc(a.r.id)}">Apri</button></span></div>`).join('')
         : '<p class="note">Nessun avviso: tutti i pacchi sono in regola.</p>');
   }
+  /* ---------- 3D world: where parcels are coming from ---------- */
+  // Places a courier event or a sender address may name; [lat, lng]. Countries fall back to a central point.
+  const PLACES = {
+    'GENOVA': [44.41, 8.93], 'GENOA': [44.41, 8.93], 'SANREMO': [43.82, 7.78], 'SAN REMO': [43.82, 7.78], 'IMPERIA': [43.89, 8.03], 'SAVONA': [44.31, 8.48], 'LA SPEZIA': [44.10, 9.82], 'PORTOFINO': [44.30, 9.21], 'RAPALLO': [44.35, 9.23], 'LAVAGNA': [44.31, 9.34], 'VIAREGGIO': [43.87, 10.25], 'LIVORNO': [43.55, 10.31], 'PISA': [43.72, 10.40], 'FIRENZE': [43.77, 11.25], 'FLORENCE': [43.77, 11.25],
+    'MILANO': [45.46, 9.19], 'MILAN': [45.46, 9.19], 'MALPENSA': [45.63, 8.72], 'LINATE': [45.45, 9.28], 'BERGAMO': [45.70, 9.67], 'BRESCIA': [45.54, 10.21], 'TORINO': [45.07, 7.69], 'TURIN': [45.07, 7.69], 'NOVARA': [45.45, 8.62], 'ALESSANDRIA': [44.91, 8.61], 'PIACENZA': [45.05, 9.69], 'PAVIA': [45.19, 9.16], 'VERONA': [45.44, 10.99], 'VENEZIA': [45.44, 12.32], 'VENICE': [45.44, 12.32], 'PADOVA': [45.41, 11.88], 'TREVISO': [45.67, 12.24], 'VICENZA': [45.55, 11.55], 'TRIESTE': [45.65, 13.78], 'UDINE': [46.06, 13.24], 'BOLOGNA': [44.49, 11.34], 'MODENA': [44.65, 10.93], 'PARMA': [44.80, 10.33], 'REGGIO EMILIA': [44.70, 10.63], 'RIMINI': [44.06, 12.57], 'ANCONA': [43.62, 13.52], 'ROMA': [41.90, 12.50], 'ROME': [41.90, 12.50], 'FIUMICINO': [41.80, 12.24], 'NAPOLI': [40.85, 14.27], 'NAPLES': [40.85, 14.27], 'BARI': [41.12, 16.87], 'PALERMO': [38.12, 13.36], 'CATANIA': [37.50, 15.09], 'CAGLIARI': [39.22, 9.12], 'OLBIA': [40.92, 9.50], 'PESCARA': [42.46, 14.21], 'PERUGIA': [43.11, 12.39], 'LODI': [45.31, 9.50], 'CASTEL SAN GIOVANNI': [45.06, 9.43], 'PASSO CORESE': [42.16, 12.65], 'VERCELLI': [45.32, 8.42], 'COLLEFERRO': [41.73, 13.00],
+    'NICE': [43.70, 7.27], 'NIZZA': [43.70, 7.27], 'MONACO': [43.74, 7.42], 'MONTE CARLO': [43.74, 7.42], 'ANTIBES': [43.58, 7.12], 'CANNES': [43.55, 7.01], 'MARSEILLE': [43.30, 5.37], 'LYON': [45.76, 4.84], 'PARIS': [48.86, 2.35], 'ROISSY': [49.01, 2.55], 'BARCELONA': [41.39, 2.17], 'MADRID': [40.42, -3.70], 'PALMA': [39.57, 2.65], 'VALENCIA': [39.47, -0.38], 'LISBOA': [38.72, -9.14], 'LISBON': [38.72, -9.14],
+    'LONDON': [51.51, -0.13], 'EAST MIDLANDS': [52.83, -1.33], 'SOUTHAMPTON': [50.90, -1.40], 'DUBLIN': [53.35, -6.26], 'AMSTERDAM': [52.37, 4.90], 'ROTTERDAM': [51.92, 4.48], 'BRUSSELS': [50.85, 4.35], 'BRUXELLES': [50.85, 4.35], 'LIEGE': [50.63, 5.57], 'KOLN': [50.94, 6.96], 'KOELN': [50.94, 6.96], 'COLOGNE': [50.94, 6.96], 'LEIPZIG': [51.34, 12.37], 'FRANKFURT': [50.11, 8.68], 'MUNCHEN': [48.14, 11.58], 'MUENCHEN': [48.14, 11.58], 'MUNICH': [48.14, 11.58], 'HAMBURG': [53.55, 9.99], 'BERLIN': [52.52, 13.40], 'DUSSELDORF': [51.23, 6.78], 'STUTTGART': [48.78, 9.18], 'NURNBERG': [49.45, 11.08], 'WIEN': [48.21, 16.37], 'VIENNA': [48.21, 16.37], 'ZURICH': [47.38, 8.54], 'BASEL': [47.56, 7.59], 'GENEVA': [46.20, 6.14], 'GENEVE': [46.20, 6.14], 'LUGANO': [46.00, 8.95], 'CHIASSO': [45.83, 9.03], 'COPENHAGEN': [55.68, 12.57], 'STOCKHOLM': [59.33, 18.07], 'OSLO': [59.91, 10.75], 'WARSAW': [52.23, 21.01], 'PRAGUE': [50.08, 14.44], 'BUDAPEST': [47.50, 19.04], 'ATHENS': [37.98, 23.73], 'PIRAEUS': [37.94, 23.65], 'ISTANBUL': [41.01, 28.98], 'SPLIT': [43.51, 16.44], 'VALLETTA': [35.90, 14.51],
+    'NEW YORK': [40.71, -74.01], 'NEWARK': [40.74, -74.17], 'MIAMI': [25.76, -80.19], 'FORT LAUDERDALE': [26.12, -80.14], 'LOUISVILLE': [38.25, -85.76], 'MEMPHIS': [35.15, -90.05], 'CINCINNATI': [39.10, -84.51], 'INDIANAPOLIS': [39.77, -86.16], 'CHICAGO': [41.88, -87.63], 'ATLANTA': [33.75, -84.39], 'LOS ANGELES': [34.05, -118.24], 'SAN FRANCISCO': [37.77, -122.42], 'SEATTLE': [47.61, -122.33], 'DALLAS': [32.78, -96.80], 'HOUSTON': [29.76, -95.37], 'TORONTO': [43.65, -79.38], 'MONTREAL': [45.50, -73.57], 'ANCHORAGE': [61.22, -149.90],
+    'DUBAI': [25.20, 55.27], 'DOHA': [25.29, 51.53], 'HONG KONG': [22.32, 114.17], 'SHENZHEN': [22.54, 114.06], 'GUANGZHOU': [23.13, 113.26], 'SHANGHAI': [31.23, 121.47], 'BEIJING': [39.90, 116.40], 'YIWU': [29.31, 120.07], 'SINGAPORE': [1.35, 103.82], 'TOKYO': [35.68, 139.69], 'SEOUL': [37.57, 126.98], 'INCHEON': [37.46, 126.44], 'TAIPEI': [25.03, 121.57], 'BANGKOK': [13.76, 100.50], 'MUMBAI': [19.08, 72.88], 'DELHI': [28.61, 77.21], 'SYDNEY': [-33.87, 151.21], 'AUCKLAND': [-36.85, 174.76], 'JOHANNESBURG': [-26.20, 28.05], 'CAPE TOWN': [-33.92, 18.42],
+    'ITALY': [42.5, 12.5], 'ITALIA': [42.5, 12.5], 'FRANCE': [46.6, 2.4], 'FRANCIA': [46.6, 2.4], 'GERMANY': [51.2, 10.4], 'GERMANIA': [51.2, 10.4], 'DEUTSCHLAND': [51.2, 10.4], 'SPAIN': [40.4, -3.7], 'SPAGNA': [40.4, -3.7], 'ESPANA': [40.4, -3.7], 'NETHERLANDS': [52.1, 5.3], 'OLANDA': [52.1, 5.3], 'BELGIUM': [50.6, 4.5], 'SWITZERLAND': [46.8, 8.2], 'SVIZZERA': [46.8, 8.2], 'AUSTRIA': [47.5, 14.6], 'UNITED KINGDOM': [52.5, -1.5], 'GREAT BRITAIN': [52.5, -1.5], 'REGNO UNITO': [52.5, -1.5], 'ENGLAND': [52.5, -1.5], 'IRELAND': [53.4, -8.0], 'PORTUGAL': [39.6, -8.0], 'GREECE': [39.1, 22.0], 'CROATIA': [45.1, 15.2], 'MALTA': [35.9, 14.4], 'TURKEY': [39.0, 35.2], 'POLAND': [52.1, 19.4], 'DENMARK': [56.0, 9.5], 'SWEDEN': [62.0, 15.0], 'NORWAY': [61.0, 9.0],
+    'UNITED STATES': [39.8, -98.6], 'USA': [39.8, -98.6], 'STATI UNITI': [39.8, -98.6], 'CANADA': [56.1, -106.3], 'CHINA': [35.9, 104.2], 'CINA': [35.9, 104.2], 'JAPAN': [36.2, 138.3], 'GIAPPONE': [36.2, 138.3], 'INDIA': [20.6, 79.0], 'AUSTRALIA': [-25.3, 133.8], 'UNITED ARAB EMIRATES': [24.0, 54.0], 'UAE': [24.0, 54.0],
+  };
+  const PLACE_KEYS = Object.keys(PLACES).sort((a, b) => b.length - a.length);
+  const deacc = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
+  function locate(text) {
+    const t = ' ' + deacc(text).replace(/[^A-Z0-9]+/g, ' ') + ' ';
+    const cities = PLACE_KEYS.filter(k => PLACES[k] && t.includes(' ' + k + ' '));
+    // prefer the most specific place (cities come before countries in the list order by length is not enough)
+    const city = cities.find(k => !/^(ITALY|ITALIA|FRANCE|FRANCIA|GERMANY|GERMANIA|DEUTSCHLAND|SPAIN|SPAGNA|ESPANA|NETHERLANDS|OLANDA|BELGIUM|SWITZERLAND|SVIZZERA|AUSTRIA|UNITED KINGDOM|GREAT BRITAIN|REGNO UNITO|ENGLAND|IRELAND|PORTUGAL|GREECE|CROATIA|MALTA|TURKEY|POLAND|DENMARK|SWEDEN|NORWAY|UNITED STATES|USA|STATI UNITI|CANADA|CHINA|CINA|JAPAN|GIAPPONE|INDIA|AUSTRALIA|UNITED ARAB EMIRATES|UAE)$/.test(k));
+    const k = city || cities[0];
+    return k ? { name: k.charAt(0) + k.slice(1).toLowerCase(), ll: PLACES[k] } : null;
+  }
+  const officeLL = id => { const o = db.Offices.find(x => String(x.id) === String(id)); return (o && (locate(o.city) || locate(o.name))) || { name: 'Genova', ll: PLACES.GENOVA }; };
+  const SAMPLE = [
+    ['MMM', 'dhl', 'Leipzig', 'InTransit'], ['SAKURA', 'ups', 'Louisville', 'InTransit'], ['MMM', 'amazon', 'Castel San Giovanni', 'OutForDelivery'],
+    ['AURORA', 'fedex', 'Memphis', 'InTransit'], ['SAKURA', 'dhl', 'Hong Kong', 'InTransit'], ['BLUE 2', 'tnt', 'Liege', 'Exception'],
+    ['AURORA', 'poste', 'Roma', 'OutForDelivery'], ['MMM', 'gls', 'Amsterdam', 'InTransit'], ['BLUE 2', 'ups', 'Dubai', 'InTransit'], ['SAKURA', 'brt', 'Milano', 'Delivered'],
+  ].map(([yacht, courier, place, st], i) => ({ id: 'demo' + i, yacht, courier, state: st === 'Delivered' ? 'in' : 'expected', trackStatus: st, trackEvent: place, tracking: 'ESEMPIO' + (i + 1), office: '' }));
+  const ARC = { ok: '#4fd18b', warn: '#f2b33d', crit: '#ff5a4e', go: '#5ab0ff', mut: '#8a93b3' };
+  let globe = null, globeLoading = false, globeKey = '';
+  function loadGlobe(cb) {
+    if (window.Globe) return cb();
+    if (globeLoading) return; globeLoading = true;
+    const s = document.createElement('script'); s.src = 'vendor/globe.gl.min.js'; s.onload = cb;
+    s.onerror = () => { $('cWorldNote').textContent = 'Il globo 3D non si è caricato: controlla la connessione.'; };
+    document.head.appendChild(s);
+  }
+  function worldRoutes(all) {
+    const demoMode = !me && !db.Parcels.length;
+    const list = demoMode ? SAMPLE : all.filter(r => r.state === 'expected' || r.state === 'in' && (r.date === P.today() || (r.trackStatus && r.trackStatus !== 'Delivered')) || r.state === 'in' && r.days <= 7);
+    const routes = [], unknown = [];
+    list.slice(0, 200).forEach(r => {
+      const to = officeLL(r.office || firstOffice());
+      const ev = String(r.trackEvent || ''), evPlace = ev.includes(' · ') ? ev.split(' · ').pop() : ev;
+      const from = (r.trackEvent && locate(evPlace)) || locate(r.trackEvent) || locate(r.sender);
+      if (!from) { unknown.push(r); return; }
+      const st = r.trackStatus || (r.state === 'in' ? 'here' : '');
+      const lv = st === 'Exception' || st === 'DeliveryFailure' ? 'crit' : st === 'OutForDelivery' || st === 'AvailableForPickup' ? 'warn' : r.state === 'in' || st === 'Delivered' ? 'ok' : 'go';
+      routes.push({ r, from, to, lv, moving: r.state === 'expected' });
+    });
+    return { routes, unknown, demoMode };
+  }
+  function renderWorld(all) {
+    const el = $('globe'); if (!el || $('ctlView').hidden) return;
+    const { routes, unknown, demoMode } = worldRoutes(all);
+    $('cWorldSub').textContent = demoMode ? 'dati di esempio: accedi per vedere i tuoi pacchi' : routes.length + ' sul globo' + (unknown.length ? ' · ' + unknown.length + ' senza posizione' : '');
+    $('cWorldNote').textContent = demoMode ? 'Esempio: i percorsi reali compaiono quando il tracking 17TRACK è attivo o il mittente è leggibile.' : routes.length ? 'Ogni linea va da dove si trova il pacco (o dal mittente) al tuo ufficio. Trascina per girare il globo.' : 'Nessun pacco in viaggio con una posizione nota. Le posizioni arrivano dal tracking dei corrieri e dall\'indirizzo del mittente.';
+    const key = JSON.stringify(routes.map(x => [x.r.id, x.lv, x.from.name, x.to.name]));
+    loadGlobe(() => {
+      try {
+        if (!globe) {
+          globe = Globe()(el)
+            .globeImageUrl('vendor/earth-night.jpg').bumpImageUrl('vendor/earth-topology.png')
+            .backgroundColor('rgba(0,0,0,0)').atmosphereColor('#5ab0ff').atmosphereAltitude(0.18)
+            .width(el.clientWidth).height(el.clientHeight)
+            .arcColor(d => [ARC[d.lv] + '33', ARC[d.lv]]).arcStroke(d => d.moving ? 0.9 : 0.5)
+            .arcDashLength(d => d.moving ? 0.35 : 1).arcDashGap(d => d.moving ? 0.25 : 0).arcDashInitialGap(() => Math.random())
+            .arcDashAnimateTime(d => d.moving ? 2600 : 0).arcAltitudeAutoScale(0.45)
+            .arcLabel(d => tipHtml(d))
+            .pointColor(d => d.office ? '#f2b33d' : ARC[d.lv]).pointAltitude(d => d.office ? 0.03 : 0.012).pointRadius(d => d.office ? 0.55 : 0.32)
+            .pointLabel(d => d.office ? `<div class="gtip"><b>${esc(d.name)}</b><br><code>${d.n} pacchi diretti qui</code></div>` : tipHtml(d))
+            .ringColor(() => t => `rgba(242,179,61,${1 - t})`).ringMaxRadius(3.2).ringPropagationSpeed(2).ringRepeatPeriod(1400);
+          globe.controls().enableZoom = false;
+          globe.controls().autoRotate = !matchMedia('(prefers-reduced-motion: reduce)').matches; globe.controls().autoRotateSpeed = 0.35;
+          el.addEventListener('pointerdown', () => { globe.controls().autoRotate = false; });
+          globe.pointOfView({ lat: 36, lng: 4, altitude: 1.65 });
+          new ResizeObserver(() => globe.width(el.clientWidth).height(el.clientHeight)).observe(el);
+        }
+        if (key === globeKey) return; globeKey = key;
+        const offices = new Map();
+        routes.forEach(x => { const o = offices.get(x.to.name) || { office: true, name: x.to.name, lat: x.to.ll[0], lng: x.to.ll[1], n: 0 }; o.n++; offices.set(x.to.name, o); });
+        if (!offices.size) { const o = officeLL(me && !me.admin ? me.office : officeSel || firstOffice()); offices.set(o.name, { office: true, name: o.name, lat: o.ll[0], lng: o.ll[1], n: 0 }); }
+        globe.arcsData(routes.filter(x => x.from.name !== x.to.name).map(x => ({ ...x, startLat: x.from.ll[0], startLng: x.from.ll[1], endLat: x.to.ll[0], endLng: x.to.ll[1] })))
+          .pointsData([...offices.values()].concat(routes.map(x => ({ ...x, lat: x.from.ll[0] + (Math.random() - .5) * .3, lng: x.from.ll[1] + (Math.random() - .5) * .3 }))))
+          .ringsData([...offices.values()]);
+      } catch (e) { console.error(e); $('cWorldNote').textContent = 'Questo browser non riesce a mostrare il globo 3D.'; }
+    });
+  }
+  function tipHtml(d) {
+    const t = tstat(d.r);
+    return `<div class="gtip"><b>${esc(d.r.yacht || 'Senza yacht')}</b> · ${esc(courierName(d.r.courier) || '?')}<br>${d.moving ? 'ora a ' : 'da '}${esc(d.from.name)} → ${esc(d.to.name)}${t ? '<br>' + esc(t[0]) : ''}<br><code>${esc(d.r.tracking || '')}</code></div>`;
+  }
+
   function renderLive(all, today) {
     // offices strip (head office, all offices)
     const showOff = !!(me && me.admin && db.Offices.length > 0);
@@ -1606,14 +1716,14 @@ if (typeof module !== 'undefined') module.exports = Pricing;
       }).join('');
     }
     // courier status
-    const tr = all.filter(r => r.tracking && (r.state === 'expected' || (r.state === 'in' && r.trackStatus && r.trackStatus !== 'Delivered')) && (!ctlYacht || r.yacht === ctlYacht));
+    const tr = (!me && !db.Parcels.length ? SAMPLE : all).filter(r => r.tracking && (r.state === 'expected' || (r.state === 'in' && r.trackStatus && r.trackStatus !== 'Delivered')) && (!ctlYacht || r.yacht === ctlYacht));
     tr.sort((a, b) => (a.state === 'expected' ? 0 : 1) - (b.state === 'expected' ? 0 : 1) || String(b.trackAt || '').localeCompare(String(a.trackAt || '')));
     const checked = all.map(r => r.trackAt || '').sort().pop();
-    $('cTrSub').textContent = features.track ? (tr.length + ' seguiti' + (checked ? ' · controllato ' + ago(checked) : '')) : 'tracking automatico non attivo';
+    $('cTrSub').textContent = !me && !db.Parcels.length ? 'esempio' : features.track ? (tr.length + ' seguiti' + (checked ? ' · controllato ' + ago(checked) : '')) : 'tracking automatico non attivo';
     $('cTrBtn').hidden = !features.track;
     $('cTrack').innerHTML = tr.length ? tr.slice(0, 40).map(r => {
       const t = tstat(r) || (r.state === 'expected' ? ['In attesa di stato', 'mut'] : ['', 'mut']);
-      return `<div class="ev"><code>${esc(courierName(r.courier) || '?')}</code><span><b>${esc(r.yacht || 'Senza yacht')}</b> · ${r.state === 'expected' ? 'in arrivo' : 'in magazzino'}<br><code>${esc(r.tracking)}${r.trackEvent ? ' · ' + esc(r.trackEvent) : ''}</code></span><span class="st ${t[1]}">${esc(t[0])}</span></div>`;
+      return `<div class="ev"><code>${esc(String(courierName(r.courier) || "?").split(" ")[0])}</code><span><b>${esc(r.yacht || 'Senza yacht')}</b> · ${r.state === 'expected' ? 'in arrivo' : 'in magazzino'}<br><code>${esc(r.tracking)}${r.trackEvent ? ' · ' + esc(r.trackEvent) : ''}</code></span><span class="st ${t[1]}">${esc(t[0])}</span></div>`;
     }).join('') : `<p class="note">${features.track ? 'Nessun pacco in arrivo. Registra un pre-avviso da Nuovo pacco > In arrivo.' : 'Quando la chiave 17TRACK è nel foglio Google, qui vedi dove sono i pacchi in arrivo, aggiornato ogni ora.'}</p>`;
     // today's activity feed
     const ev = [];
