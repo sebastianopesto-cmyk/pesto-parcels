@@ -226,6 +226,12 @@ td.row-acts .link { display: block; margin: 2px 0 }
 .rates .row.h { font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted) }
 .rates input { width: 100%; font: 500 .95rem var(--mono); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 8px; text-align: right }
 .rates input.missing { border-color: var(--warn); background: var(--warn-bg) }
+.ytab input, .ytab select { font: inherit; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink) }
+.ytab input.g { width: 90px; text-align: right; font-family: var(--mono) }
+.ytab .fee b { font-size: 1.05rem }
+.ytab .fee small { display: block; color: var(--muted); font-size: .75rem }
+.yadd { display: flex; gap: 8px; flex-wrap: wrap }
+.yadd input { font: inherit; padding: 9px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); flex: 1 1 200px }
 .rates p { margin: 0; font-size: .85rem; color: var(--muted) }
 @media (max-width: 760px) {
   .grid2 { grid-template-columns: 1fr }
@@ -244,6 +250,7 @@ td.row-acts .link { display: block; margin: 2px 0 }
   <nav class="tabs" aria-label="Sezioni">
     <a href="#in" id="tabIn">Ingresso</a>
     <a href="#mag" id="tabMag">Magazzino</a>
+    <a href="#yachts" id="tabYachts">Yacht</a>
     <a href="#rates" id="tabRates">Tariffe</a>
   </nav>
 </div></header>
@@ -345,6 +352,26 @@ td.row-acts .link { display: block; margin: 2px 0 }
     <span class="conn" id="conn2"></span>
   </section>
 
+  <!-- YACHT -->
+  <section id="yachtsView" class="office ytab" hidden>
+    <div class="top">
+      <div class="stats">
+        <div class="stat"><b id="statFlat">0</b><span>Yacht con flat</span></div>
+        <div class="stat"><b id="statFlatSum">€0</b><span>Flat al mese</span></div>
+        <div class="stat"><b id="statCard">0</b><span>A listino</span></div>
+      </div>
+      <p style="margin:0;color:var(--muted);font-size:.88rem;max-width:560px">Ogni yacht ha un canone mensile fisso in base a stazza (GRT) e zona, con consegna 2 volte o 1 volta a settimana. Chi sceglie "A listino" paga ogni consegna e lo storage col tariffario; le consegne extra si pagano sempre a listino.</p>
+      <form class="yadd" id="yachtAdd"><input id="yachtNew" placeholder="Nome nuovo yacht" aria-label="Nome nuovo yacht"><button class="btn" type="submit">Aggiungi yacht</button></form>
+    </div>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th>Yacht</th><th>Stazza GRT</th><th>Zona</th><th>Piano</th><th>Dal</th><th>Canone / mese</th><th>Pacchi in magazzino</th></tr></thead>
+        <tbody id="yachtRows"></tbody>
+      </table>
+      <div class="empty" id="yachtEmpty" hidden><b>Nessuno yacht ancora</b>Aggiungine uno qui sopra o registra un pacco.</div>
+    </div>
+  </section>
+
   <!-- TARIFFE -->
   <section id="ratesView" hidden>
     <form class="rates" id="ratesForm">
@@ -369,6 +396,11 @@ td.row-acts .link { display: block; margin: 2px 0 }
         <div class="row"><span>Big box</span><input data-k="delivery.A.big" inputmode="decimal"><input data-k="delivery.B.big" inputmode="decimal"></div>
         <div class="row"><span>Pallet: maggiorazione % sulla big box</span><input data-k="palletDeliveryPct" inputmode="decimal"><span></span></div>
         <div class="row"><span>Urgenza / fuori orario: maggiorazione %</span><input data-k="urgencyPct" inputmode="decimal"><span></span></div>
+      </fieldset>
+      <fieldset><legend>Canone flat mensile</legend>
+        <p>Il prezzo base è la fascia GRT del listino PIMPI (consegna 2 volte a settimana, Zona A). Qui sotto gli aggiustamenti.</p>
+        <div class="row"><span>Zona B: maggiorazione %</span><input data-k="flat.zoneBPct" inputmode="decimal"><span></span></div>
+        <div class="row"><span>Consegna settimanale: % del prezzo bisettimanale</span><input data-k="flat.weeklyPct" inputmode="decimal"><span></span></div>
       </fieldset>
       <div style="display:flex;gap:8px"><button class="btn send" type="submit" style="flex:0 1 220px">Salva tariffe</button><button class="btn" type="button" id="ratesReset">Ripristina valori di PIMPI</button></div>
     </form>
@@ -589,6 +621,8 @@ const Pricing = (() => {
     grt: [[300, 75], [400, 80], [500, 90], [600, 95], [700, 105], [800, 110], [900, 115], [1000, 125], [1100, 130], [1200, 140], [1300, 145], [1400, 150], [1500, 160], [1600, 165], [1700, 170], [1800, 180], [1900, 185], [2000, 195], [null, 200]],
     palletDeliveryPct: 20,
     urgencyPct: 30,
+    // Flat monthly plan per yacht (Pesto proposal, 5 Nov 2026): GRT band = twice a week in Zone A
+    flat: { zoneBPct: 25, weeklyPct: 60 },
   };
   const clone = o => JSON.parse(JSON.stringify(o));
   function merge(saved) {
@@ -639,7 +673,16 @@ const Pricing = (() => {
     const band = rates.grt.find(([max]) => max == null || g <= max);
     return band ? band[1] : null;
   }
-  return { monthlyFee, TYPES, DEFAULT, merge, typeOf, typeFromKg, days, today, daily, storage, delivery, round2 };
+  // Flat monthly fee: plan '2w' (twice a week) or '1w' (weekly); 'card' = rate card, no flat fee
+  function flatFee(grt, zone, plan, rates) {
+    if (plan !== '2w' && plan !== '1w') return null;
+    const base = monthlyFee(grt, rates); if (base == null) return null;
+    const f = rates.flat || {};
+    let fee = base * (zone === 'B' ? 1 + (f.zoneBPct || 0) / 100 : 1);
+    if (plan === '1w') fee *= (f.weeklyPct == null ? 100 : f.weeklyPct) / 100;
+    return round2(fee);
+  }
+  return { flatFee, monthlyFee, TYPES, DEFAULT, merge, typeOf, typeFromKg, days, today, daily, storage, delivery, round2 };
 })();
 if (typeof module !== 'undefined') module.exports = Pricing;
 
@@ -713,9 +756,9 @@ if (typeof module !== 'undefined') module.exports = Pricing;
   /* ---------- views ---------- */
   function route() {
     let v = location.hash.replace('#', '');
-    if (!['in', 'mag', 'rates'].includes(v)) v = window.innerWidth >= 900 ? 'mag' : 'in';
-    $('inView').hidden = v !== 'in'; $('magView').hidden = v !== 'mag'; $('ratesView').hidden = v !== 'rates';
-    [['tabIn', 'in'], ['tabMag', 'mag'], ['tabRates', 'rates']].forEach(([id, k]) => k === v ? $(id).setAttribute('aria-current', 'page') : $(id).removeAttribute('aria-current'));
+    if (!['in', 'mag', 'yachts', 'rates'].includes(v)) v = window.innerWidth >= 900 ? 'mag' : 'in';
+    $('inView').hidden = v !== 'in'; $('magView').hidden = v !== 'mag'; $('ratesView').hidden = v !== 'rates'; $('yachtsView').hidden = v !== 'yachts';
+    [['tabIn', 'in'], ['tabMag', 'mag'], ['tabYachts', 'yachts'], ['tabRates', 'rates']].forEach(([id, k]) => k === v ? $(id).setAttribute('aria-current', 'page') : $(id).removeAttribute('aria-current'));
     if (v === 'rates') fillRates();
   }
   window.addEventListener('hashchange', route); route();
@@ -992,7 +1035,7 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     $('yachtList').innerHTML = names.map(n => `<option value="${esc(n)}">`).join('');
     const yf = $('yachtFilter'), cur = yf.value;
     yf.innerHTML = '<option value="">Tutti gli yacht</option>' + names.map(n => `<option${n === cur ? ' selected' : ''}>${esc(n)}</option>`).join('');
-    renderRecent(); renderMag();
+    renderRecent(); renderMag(); renderYachts();
   }
   function renderRecent() {
     const today = parcels().filter(r => String(r.at || '').slice(0, 10) === P.today() || r.date === P.today()).slice(0, 8);
@@ -1059,6 +1102,47 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob(['﻿' + ['Yacht;Corriere;Tracking;Tipologia;Zona;Peso kg;Ingresso;Stato;Uscita;Giorni;Storage €;Collo;Rif. spedizione;Destinatario;Mittente;Note'].concat(rows).join('\r\n')], { type: 'text/csv' }));
     a.download = 'pimpi-' + P.today() + '.csv'; a.click();
+  });
+
+  /* ---------- yachts and flat plans ---------- */
+  const PLANS = [['2w', '2 volte a settimana'], ['1w', '1 volta a settimana'], ['card', 'A listino']];
+  function yachtRows() {
+    const byName = new Map(db.Yachts.filter(y => y.name).map(y => [y.name, y]));
+    return yachtNames().map(n => byName.get(n) || { name: n });
+  }
+  function renderYachts() {
+    const ys = yachtRows(), stock = parcels().filter(r => r.state === 'in');
+    let nFlat = 0, sum = 0, nCard = 0;
+    $('yachtRows').innerHTML = ys.map(y => {
+      const plan = y.plan || '2w', zone = y.zone || 'A', grt = y.grt === '' || y.grt == null ? null : Number(y.grt);
+      const fee = grt == null ? null : P.flatFee(grt, zone, plan, rates);
+      if (plan === 'card') nCard++; else if (fee != null) { nFlat++; sum += fee; }
+      const n = stock.filter(r => r.yacht === y.name).length;
+      return `<tr data-name="${esc(y.name)}" data-id="${esc(y.id || '')}">
+        <td class="y"><b>${esc(y.name)}</b></td>
+        <td><input class="g" data-y="grt" inputmode="numeric" value="${grt == null ? '' : esc(grt)}" placeholder="GRT" aria-label="Stazza GRT"></td>
+        <td><select data-y="zone" aria-label="Zona"><option${zone === 'A' ? ' selected' : ''}>A</option><option${zone === 'B' ? ' selected' : ''}>B</option></select></td>
+        <td><select data-y="plan" aria-label="Piano">${PLANS.map(([k, l]) => `<option value="${k}"${plan === k ? ' selected' : ''}>${l}</option>`).join('')}</select></td>
+        <td><input type="date" data-y="since" value="${esc(y.since || '')}" aria-label="Inizio canone"></td>
+        <td class="fee num">${plan === 'card' ? '<small>Ogni consegna a listino</small>' : fee == null ? '<small>Inserisci la stazza</small>' : `<b>${eur(fee)}</b><small>+ extra a listino</small>`}</td>
+        <td class="num">${n}</td></tr>`;
+    }).join('');
+    $('yachtEmpty').hidden = ys.length > 0;
+    $('statFlat').textContent = nFlat; $('statCard').textContent = nCard;
+    $('statFlatSum').textContent = '€' + money(sum).replace(/,00$/, '');
+  }
+  $('yachtRows').addEventListener('change', e => {
+    const t = e.target.closest('[data-y]'); if (!t) return;
+    const tr = t.closest('tr'), row = { name: tr.dataset.name };
+    if (tr.dataset.id) row.id = tr.dataset.id;
+    row[t.dataset.y] = t.dataset.y === 'grt' ? (num(t.value) == null ? '' : num(t.value)) : t.value;
+    save('Yachts', row);
+  });
+  $('yachtAdd').addEventListener('submit', e => {
+    e.preventDefault();
+    const n = $('yachtNew').value.trim().replace(/^(M\/?Y|S\/?Y)\.?\s+/i, '').toUpperCase(); if (!n) return;
+    if (knownYacht(n)) { toast('Yacht già presente'); return; }
+    $('yachtNew').value = ''; save('Yachts', { name: n, plan: '2w', zone: 'A', since: P.today() });
   });
 
   /* ---------- rates ---------- */
