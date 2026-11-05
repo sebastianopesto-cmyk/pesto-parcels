@@ -232,6 +232,47 @@ td.row-acts .link { display: block; margin: 2px 0 }
 .ytab .fee small { display: block; color: var(--muted); font-size: .75rem }
 .yadd { display: flex; gap: 8px; flex-wrap: wrap }
 .yadd input { font: inherit; padding: 9px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); flex: 1 1 200px }
+/* control room: always dark */
+.ctl { --c-bg: #0a0f1f; --c-panel: #10172d; --c-line: #222c4a; --c-ink: #e6eaf5; --c-mut: #8a93b3; --c-ok: #4fd18b; --c-warn: #f2b33d; --c-crit: #ff5a4e; --c-acc: #f2b33d;
+  background: var(--c-bg); color: var(--c-ink); border-radius: 22px; padding: 18px; display: grid; gap: 14px; margin-top: 4px; color-scheme: dark }
+.ctl .hd { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px }
+.brand .wrap { min-width: 0 } .tabs { overflow-x: auto; min-width: 0; max-width: 100%; scrollbar-width: none } .tabs a { flex: none }
+.ctl .hd h2 { margin: 0; font: 800 1.15rem var(--display); letter-spacing: .03em; text-transform: uppercase }
+.ctl .hd small { display: block; font: 500 .72rem var(--mono); color: var(--c-mut); letter-spacing: .12em; text-transform: uppercase; margin-top: 3px }
+.ctl .posture { margin-left: auto; display: flex; align-items: center; gap: 10px; font-size: .85rem; color: var(--c-mut) }
+.ctl .chip { font: 600 .8rem var(--mono); padding: 4px 10px; border-radius: 8px; border: 1px solid currentColor }
+.ctl .chip.ok { color: var(--c-ok) } .ctl .chip.warn { color: var(--c-warn) } .ctl .chip.crit { color: var(--c-crit) }
+.ctl .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px }
+.ctl .kpi { background: var(--c-panel); border: 1px solid var(--c-line); border-radius: 14px; padding: 14px 16px; display: grid; gap: 6px }
+.ctl .kpi span { font: 500 .7rem var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--c-mut) }
+.ctl .kpi b { font: 600 2rem/1 var(--mono); font-variant-numeric: tabular-nums }
+.ctl .kpi i { height: 3px; border-radius: 3px; background: var(--c-line); position: relative; overflow: hidden }
+.ctl .kpi i::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w, 0%); background: var(--c-acc) }
+.ctl .kpi em { font: normal .72rem var(--mono); color: var(--c-mut) }
+.ctl .kpi.crit b { color: var(--c-crit) } .ctl .kpi.warn b { color: var(--c-warn) }
+.ctl .grid2 { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 10px }
+@media (max-width: 900px) { .ctl .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)) } .ctl .kpi b { font-size: 1.5rem } .ctl .grid2 { grid-template-columns: 1fr } .ctl { padding: 12px; border-radius: 16px } }
+.ctl .panel { background: var(--c-panel); border: 1px solid var(--c-line); border-radius: 14px; padding: 14px 16px; min-width: 0 }
+.ctl .panel h3 { margin: 0 0 10px; font: 700 .95rem var(--body); display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap }
+.ctl .panel h3 small { font: 500 .75rem var(--mono); color: var(--c-mut) }
+.ctl .legend { margin-left: auto; display: flex; gap: 12px; font: 500 .75rem var(--body); color: var(--c-mut) }
+.ctl .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: 1px }
+.ctl svg.map { width: 100%; height: auto; display: block }
+.ctl svg.map text { font-family: var(--mono); fill: var(--c-mut) }
+.ctl .boats { display: grid; gap: 8px }
+.ctl .boat { display: grid; grid-template-columns: 10px 1fr auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--c-line); background: #0d1427; cursor: pointer; text-align: left; color: inherit; font: inherit; width: 100% }
+.ctl .boat:hover, .ctl .boat[aria-pressed="true"] { border-color: var(--c-acc) }
+.ctl .boat .dotc { width: 10px; height: 10px; border-radius: 50% }
+.ctl .boat b { display: block; font-size: .95rem }
+.ctl .boat small { font: 500 .72rem var(--mono); color: var(--c-mut) }
+.ctl .boat .n { font: 600 1.3rem var(--mono); text-align: right }
+.ctl .boat .n small { display: block; font-size: .68rem }
+.ctl .alerts { display: grid; gap: 6px; max-height: 340px; overflow: auto }
+.ctl .al { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; font-size: .86rem; padding: 8px 10px; border-radius: 10px; background: #0d1427; border-left: 3px solid var(--c-warn) }
+.ctl .al.crit { border-left-color: var(--c-crit) }
+.ctl .al code { font: 500 .75rem var(--mono); color: var(--c-mut) }
+.ctl .al a, .ctl .al button { color: var(--c-acc); font: 600 .78rem var(--body); background: none; border: 0; cursor: pointer; text-decoration: none; padding: 0 }
+.ctl .note { font: 500 .72rem var(--mono); color: var(--c-mut); margin: 8px 0 0; background: none; border: 0; padding: 0; border-radius: 0 }
 .rates p { margin: 0; font-size: .85rem; color: var(--muted) }
 @media (max-width: 760px) {
   .grid2 { grid-template-columns: 1fr }
@@ -248,6 +289,7 @@ td.row-acts .link { display: block; margin: 2px 0 }
   <img src="../logo-white.png" alt="Pesto Sea Group">
   <div class="name">PIMPI<small>Pacchi e posta · Pesto Sea Group</small></div>
   <nav class="tabs" aria-label="Sezioni">
+    <a href="#ctl" id="tabCtl">Controllo</a>
     <a href="#in" id="tabIn">Ingresso</a>
     <a href="#mag" id="tabMag">Magazzino</a>
     <a href="#yachts" id="tabYachts">Yacht</a>
@@ -256,6 +298,39 @@ td.row-acts .link { display: block; margin: 2px 0 }
 </div></header>
 
 <main class="wrap">
+  <!-- CONTROLLO -->
+  <section id="ctlView" hidden>
+    <div class="ctl">
+      <div class="hd">
+        <div><h2>Pesto Sea Group · Controllo pacchi</h2><small>Magazzino Genova · <span id="cYachts">0</span> yacht · aggiornato <span id="cTime">–</span></small></div>
+        <div class="posture">Stato magazzino <span class="chip ok" id="cPosture">Regolare</span></div>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><span>In magazzino</span><b id="kIn">0</b><i id="kInBar"></i><em id="kInSub">colli presenti</em></div>
+        <div class="kpi"><span>Arrivati oggi</span><b id="kToday">0</b><i id="kTodayBar"></i><em id="kTodaySub">ultimi 7 giorni: 0</em></div>
+        <div class="kpi" id="kOldBox"><span>In attesa da oltre 7 gg</span><b id="kOld">0</b><i id="kOldBar"></i><em id="kOldSub">oltre 14 gg: 0</em></div>
+        <div class="kpi"><span>Storage maturato</span><b id="kSto">€0</b><i id="kStoBar"></i><em>sui colli ora in magazzino</em></div>
+        <div class="kpi"><span>Canoni flat / mese</span><b id="kFlat">€0</b><i id="kFlatBar"></i><em id="kFlatSub">0 yacht con flat</em></div>
+      </div>
+      <div class="grid2">
+        <div class="panel">
+          <h3>Mappa yacht · Genova <small id="cMapSub"></small>
+            <span class="legend"><span><i style="background:var(--c-ok)"></i>Regolare</span><span><i style="background:var(--c-warn)"></i>Attenzione</span><span><i style="background:var(--c-crit)"></i>Critico</span></span></h3>
+          <svg class="map" id="cMap" viewBox="0 0 800 330" role="img" aria-label="Schema del porto di Genova con gli yacht"></svg>
+          <p class="note">Schema non in scala. Ogni yacht compare nell'ormeggio scelto nel tab Yacht; il colore indica da quanto aspettano i suoi pacchi.</p>
+        </div>
+        <div class="panel">
+          <h3>Yacht con pacchi <small id="cBoatSub"></small></h3>
+          <div class="boats" id="cBoats"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Avvisi <small id="cAlSub"></small></h3>
+        <div class="alerts" id="cAlerts"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- INGRESSO -->
   <section id="inView" class="col">
     <div class="shoot">
@@ -365,7 +440,7 @@ td.row-acts .link { display: block; margin: 2px 0 }
     </div>
     <div class="tablebox">
       <table>
-        <thead><tr><th>Yacht</th><th>Stazza GRT</th><th>Zona</th><th>Piano</th><th>Dal</th><th>Canone / mese</th><th>Pacchi in magazzino</th></tr></thead>
+        <thead><tr><th>Yacht</th><th>Stazza GRT</th><th>Ormeggio · zona</th><th>Piano</th><th>Dal</th><th>Canone / mese</th><th>Pacchi in magazzino</th></tr></thead>
         <tbody id="yachtRows"></tbody>
       </table>
       <div class="empty" id="yachtEmpty" hidden><b>Nessuno yacht ancora</b>Aggiungine uno qui sopra o registra un pacco.</div>
@@ -756,9 +831,9 @@ if (typeof module !== 'undefined') module.exports = Pricing;
   /* ---------- views ---------- */
   function route() {
     let v = location.hash.replace('#', '');
-    if (!['in', 'mag', 'yachts', 'rates'].includes(v)) v = window.innerWidth >= 900 ? 'mag' : 'in';
-    $('inView').hidden = v !== 'in'; $('magView').hidden = v !== 'mag'; $('ratesView').hidden = v !== 'rates'; $('yachtsView').hidden = v !== 'yachts';
-    [['tabIn', 'in'], ['tabMag', 'mag'], ['tabYachts', 'yachts'], ['tabRates', 'rates']].forEach(([id, k]) => k === v ? $(id).setAttribute('aria-current', 'page') : $(id).removeAttribute('aria-current'));
+    if (!['ctl', 'in', 'mag', 'yachts', 'rates'].includes(v)) v = window.innerWidth >= 900 ? 'ctl' : 'in';
+    $('inView').hidden = v !== 'in'; $('magView').hidden = v !== 'mag'; $('ratesView').hidden = v !== 'rates'; $('yachtsView').hidden = v !== 'yachts'; $('ctlView').hidden = v !== 'ctl';
+    [['tabCtl', 'ctl'], ['tabIn', 'in'], ['tabMag', 'mag'], ['tabYachts', 'yachts'], ['tabRates', 'rates']].forEach(([id, k]) => k === v ? $(id).setAttribute('aria-current', 'page') : $(id).removeAttribute('aria-current'));
     if (v === 'rates') fillRates();
   }
   window.addEventListener('hashchange', route); route();
@@ -1035,7 +1110,7 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     $('yachtList').innerHTML = names.map(n => `<option value="${esc(n)}">`).join('');
     const yf = $('yachtFilter'), cur = yf.value;
     yf.innerHTML = '<option value="">Tutti gli yacht</option>' + names.map(n => `<option${n === cur ? ' selected' : ''}>${esc(n)}</option>`).join('');
-    renderRecent(); renderMag(); renderYachts();
+    renderRecent(); renderMag(); renderYachts(); renderCtl();
   }
   function renderRecent() {
     const today = parcels().filter(r => String(r.at || '').slice(0, 10) === P.today() || r.date === P.today()).slice(0, 8);
@@ -1114,14 +1189,14 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     const ys = yachtRows(), stock = parcels().filter(r => r.state === 'in');
     let nFlat = 0, sum = 0, nCard = 0;
     $('yachtRows').innerHTML = ys.map(y => {
-      const plan = y.plan || '2w', zone = y.zone || 'A', grt = y.grt === '' || y.grt == null ? null : Number(y.grt);
+      const plan = y.plan || '2w', zone = berthOf(y).zone, grt = y.grt === '' || y.grt == null ? null : Number(y.grt);
       const fee = grt == null ? null : P.flatFee(grt, zone, plan, rates);
       if (plan === 'card') nCard++; else if (fee != null) { nFlat++; sum += fee; }
       const n = stock.filter(r => r.yacht === y.name).length;
       return `<tr data-name="${esc(y.name)}" data-id="${esc(y.id || '')}">
         <td class="y"><b>${esc(y.name)}</b></td>
         <td><input class="g" data-y="grt" inputmode="numeric" value="${grt == null ? '' : esc(grt)}" placeholder="GRT" aria-label="Stazza GRT"></td>
-        <td><select data-y="zone" aria-label="Zona"><option${zone === 'A' ? ' selected' : ''}>A</option><option${zone === 'B' ? ' selected' : ''}>B</option></select></td>
+        <td><select data-y="berth" aria-label="Ormeggio">${BERTHS.map(b => `<option value="${b.id}"${berthOf(y).id === b.id ? ' selected' : ''}>${b.name} · ${b.zone}</option>`).join('')}</select></td>
         <td><select data-y="plan" aria-label="Piano">${PLANS.map(([k, l]) => `<option value="${k}"${plan === k ? ' selected' : ''}>${l}</option>`).join('')}</select></td>
         <td><input type="date" data-y="since" value="${esc(y.since || '')}" aria-label="Inizio canone"></td>
         <td class="fee num">${plan === 'card' ? '<small>Ogni consegna a listino</small>' : fee == null ? '<small>Inserisci la stazza</small>' : `<b>${eur(fee)}</b><small>+ extra a listino</small>`}</td>
@@ -1135,6 +1210,7 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     const t = e.target.closest('[data-y]'); if (!t) return;
     const tr = t.closest('tr'), row = { name: tr.dataset.name };
     if (tr.dataset.id) row.id = tr.dataset.id;
+    if (t.dataset.y === 'berth') row.zone = BERTHS.find(b => b.id === t.value).zone;
     row[t.dataset.y] = t.dataset.y === 'grt' ? (num(t.value) == null ? '' : num(t.value)) : t.value;
     save('Yachts', row);
   });
@@ -1144,6 +1220,115 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     if (knownYacht(n)) { toast('Yacht già presente'); return; }
     $('yachtNew').value = ''; save('Yachts', { name: n, plan: '2w', zone: 'A', since: P.today() });
   });
+
+  /* ---------- control room ---------- */
+  // Schematic berths, west to east (not to scale); zone follows the PIMPI rate card
+  const BERTHS = [
+    { id: 'sestri', name: 'Sestri Ponente', zone: 'B', x: 80, y: 205 },
+    { id: 'marinage', name: 'Marina Genova', zone: 'B', x: 185, y: 222 },
+    { id: 'refit', name: 'Area refit GE', zone: 'A', x: 470, y: 224, up: true },
+    { id: 'amico', name: 'Cantiere Amico', zone: 'A', x: 540, y: 238 },
+    { id: 'molo', name: 'Molo Vecchio', zone: 'A', x: 620, y: 212, up: true },
+    { id: 'waterfront', name: 'Waterfront Marina', zone: 'A', x: 715, y: 230 },
+    { id: 'centro', name: 'Centro città', zone: 'A', x: 640, y: 120 },
+  ];
+  const OFFICE = { x: 560, y: 140 };
+  function berthOf(y) {
+    const b = BERTHS.find(b => b.id === (y && y.berth));
+    return b || BERTHS.find(b => b.id === ((y && y.zone) === 'B' ? 'marinage' : 'molo'));
+  }
+  const level = d => d > 14 ? 'crit' : d > 7 ? 'warn' : 'ok';
+  const COL = { ok: 'var(--c-ok)', warn: 'var(--c-warn)', crit: 'var(--c-crit)' };
+  let ctlYacht = '';
+  function renderCtl() {
+    if (!$('ctlView')) return;
+    const all = parcels(), stock = all.filter(r => r.state === 'in');
+    const ys = yachtRows(), today = P.today();
+    const week = all.filter(r => P.days(r.date, today) < 7).length;
+    const old7 = stock.filter(r => r.days > 7), old14 = stock.filter(r => r.days > 14);
+    let flatN = 0, flatSum = 0;
+    ys.forEach(y => { const plan = y.plan || '2w'; if (plan !== 'card' && y.grt !== '' && y.grt != null) { const f = P.flatFee(Number(y.grt), berthOf(y).zone, plan, rates); if (f != null) { flatN++; flatSum += f; } } });
+    const sto = stock.reduce((t, r) => t + (r.storage || 0), 0);
+    const pct = (a, b) => Math.max(2, Math.min(100, b ? a / b * 100 : 0)) + '%';
+    $('kIn').textContent = stock.length; $('kInBar').style.setProperty('--w', pct(stock.length, Math.max(stock.length, 50)));
+    $('kInSub').textContent = new Set(stock.map(r => r.yacht).filter(Boolean)).size + ' yacht con pacchi';
+    $('kToday').textContent = all.filter(r => r.date === today).length; $('kTodaySub').textContent = 'ultimi 7 giorni: ' + week;
+    $('kTodayBar').style.setProperty('--w', pct(all.filter(r => r.date === today).length, Math.max(week, 1)));
+    $('kOld').textContent = old7.length; $('kOldSub').textContent = 'oltre 14 gg: ' + old14.length;
+    $('kOldBar').style.setProperty('--w', pct(old7.length, Math.max(stock.length, 1)));
+    $('kOldBox').className = 'kpi' + (old14.length ? ' crit' : old7.length ? ' warn' : '');
+    $('kSto').textContent = '€' + money(sto).replace(/,00$/, ''); $('kStoBar').style.setProperty('--w', pct(sto, Math.max(sto, 500)));
+    $('kFlat').textContent = '€' + money(flatSum).replace(/,00$/, ''); $('kFlatSub').textContent = flatN + ' yacht con flat';
+    $('kFlatBar').style.setProperty('--w', pct(flatN, Math.max(ys.length, 1)));
+    const post = old14.length ? ['crit', 'Critico'] : old7.length ? ['warn', 'Attenzione'] : ['ok', 'Regolare'];
+    $('cPosture').className = 'chip ' + post[0]; $('cPosture').textContent = post[1];
+    $('cYachts').textContent = ys.length; $('cTime').textContent = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+    // per-yacht summary
+    const info = ys.map(y => {
+      const mine = stock.filter(r => r.yacht === y.name);
+      const oldest = mine.reduce((m, r) => Math.max(m, r.days), 0);
+      return { y, b: berthOf(y), n: mine.length, oldest, lv: mine.length ? level(oldest) : 'ok', sto: mine.reduce((t, r) => t + (r.storage || 0), 0) };
+    });
+    // map
+    const byBerth = {}; info.forEach(i => (byBerth[i.b.id] = byBerth[i.b.id] || []).push(i));
+    let svg = `<defs><linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0e1a36"/><stop offset="1" stop-color="#081022"/></linearGradient>
+      <pattern id="grd" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#16203d" stroke-width="1"/></pattern></defs>
+      <rect width="800" height="330" fill="url(#grd)"/>
+      <path d="M0 190 C 60 185, 120 198, 200 200 S 330 196, 400 200 S 520 196, 580 186 S 700 196, 800 188 L800 330 L0 330Z" fill="url(#sea)" stroke="#2b3a66" stroke-width="1.5"/>
+      <rect x="20" y="168" width="230" height="98" rx="12" fill="none" stroke="#f2b33d" stroke-opacity=".25" stroke-dasharray="4 5"/>
+      <text x="28" y="160" font-size="11" letter-spacing="2">ZONA B · 10–15 KM</text>
+      <rect x="430" y="90" width="350" height="176" rx="12" fill="none" stroke="#4fd18b" stroke-opacity=".25" stroke-dasharray="4 5"/>
+      <text x="438" y="82" font-size="11" letter-spacing="2">ZONA A · ~3 KM</text>
+      <text x="360" y="300" font-size="11" letter-spacing="3" opacity=".6">MAR LIGURE</text>`;
+    BERTHS.forEach(b => {
+      const list = byBerth[b.id] || [], n = list.reduce((t, i) => t + i.n, 0);
+      if (list.length || b.id === 'molo' || b.id === 'marinage') {
+        const lv = list.some(i => i.lv === 'crit') ? 'crit' : list.some(i => i.lv === 'warn') ? 'warn' : 'ok';
+        const d = `M${OFFICE.x} ${OFFICE.y} Q ${(OFFICE.x + b.x) / 2} ${Math.min(OFFICE.y, b.y) - 50}, ${b.x} ${b.y}`;
+        if (n) svg += `<path d="${d}" fill="none" stroke="${COL[lv]}" stroke-opacity=".55" stroke-width="1.5" stroke-dasharray="3 6"><animate attributeName="stroke-dashoffset" from="18" to="0" dur="1.2s" repeatCount="indefinite"/></path>`;
+      }
+    });
+    svg += `<g><rect x="${OFFICE.x - 7}" y="${OFFICE.y - 7}" width="14" height="14" rx="3" fill="#f2b33d"/><text x="${OFFICE.x + 12}" y="${OFFICE.y - 8}" font-size="11" fill="#e6eaf5">UFFICIO PESTO</text></g>`;
+    BERTHS.forEach(b => {
+      const list = byBerth[b.id] || [];
+      const n = list.reduce((t, i) => t + i.n, 0);
+      const lv = list.some(i => i.lv === 'crit') ? 'crit' : list.some(i => i.lv === 'warn') ? 'warn' : 'ok';
+      const sel = ctlYacht && list.some(i => i.y.name === ctlYacht);
+      svg += `<g data-berth="${b.id}" style="cursor:${list.length ? 'pointer' : 'default'}">
+        <circle cx="${b.x}" cy="${b.y}" r="${list.length ? 7 + Math.min(n, 12) : 4}" fill="${list.length ? COL[lv] : '#2b3a66'}" fill-opacity="${list.length ? .2 : 1}" stroke="${list.length ? COL[lv] : 'none'}" stroke-width="${sel ? 3 : 1.5}">
+        ${n && lv !== 'ok' ? `<animate attributeName="r" values="${7 + Math.min(n, 12)};${11 + Math.min(n, 12)};${7 + Math.min(n, 12)}" dur="1.8s" repeatCount="indefinite"/>` : ''}</circle>
+        ${list.length ? `<circle cx="${b.x}" cy="${b.y}" r="3.5" fill="${COL[lv]}"/>` : ''}
+        <text x="${b.x}" y="${b.y + (b.y < 200 || b.up ? -18 : 34)}" text-anchor="middle" font-size="10.5">${esc(b.name.toUpperCase())}</text>
+        ${list.length ? `<text x="${b.x}" y="${b.y + (b.y < 200 || b.up ? -32 : 48)}" text-anchor="middle" font-size="10.5" fill="${COL[lv]}">${list.length} yacht · ${n} colli</text>` : ''}</g>`;
+    });
+    $('cMap').innerHTML = svg;
+    $('cMapSub').textContent = info.length + ' yacht · ' + stock.length + ' colli';
+
+    const boats = info.filter(i => i.n).sort((a, b) => b.oldest - a.oldest || b.n - a.n);
+    $('cBoatSub').textContent = boats.length + ' su ' + info.length;
+    $('cBoats').innerHTML = boats.length ? boats.map(i => `<button type="button" class="boat" data-yacht="${esc(i.y.name)}" aria-pressed="${ctlYacht === i.y.name}">
+        <span class="dotc" style="background:${COL[i.lv]}"></span>
+        <span><b>${esc(i.y.name)}</b><small>${esc(i.b.name)} · zona ${i.b.zone} · ${PLANS.find(p => p[0] === (i.y.plan || '2w'))[1].toLowerCase()}</small></span>
+        <span class="n">${i.n}<small>più vecchio ${i.oldest} gg</small></span></button>`).join('')
+      : '<p class="note">Nessun pacco in magazzino.</p>';
+
+    const al = [];
+    stock.filter(r => !ctlYacht || r.yacht === ctlYacht).forEach(r => {
+      if (r.days > 7) al.push({ lv: level(r.days), r, t: `<b>${esc(r.yacht || 'Senza yacht')}</b> · ${esc(courierName(r.courier) || '?')} in magazzino da ${r.days} giorni${r.storage ? ' · ' + eur(r.storage) : ''}` });
+      if (!r.yacht) al.push({ lv: 'warn', r, t: 'Pacco senza yacht' });
+      if (!r.type) al.push({ lv: 'warn', r, t: `<b>${esc(r.yacht || 'Senza yacht')}</b> · tipologia da scegliere (storage non calcolato)` });
+    });
+    al.sort((a, b) => (a.lv === 'crit' ? 0 : 1) - (b.lv === 'crit' ? 0 : 1) || b.r.days - a.r.days);
+    $('cAlSub').textContent = (ctlYacht ? ctlYacht + ' · ' : '') + al.length + ' aperti' + (ctlYacht ? '' : '');
+    $('cAlerts').innerHTML = (ctlYacht ? `<div class="al" style="border-left-color:var(--c-acc)"><span>Filtro</span><span>Solo ${esc(ctlYacht)}</span><button type="button" data-clear="1">Mostra tutti</button></div>` : '')
+      + (al.length ? al.slice(0, 60).map(a => `<div class="al ${a.lv}"><code>${esc(fmtDate(a.r.date))}</code><span>${a.t}<br><code>${esc(a.r.tracking || 'senza tracking')}</code></span>
+        <span>${a.r.tracking ? `<a href="${esc(trackUrl(a.r))}" target="_blank" rel="noopener">Tracking ↗</a> ` : ''}<button type="button" data-edit="${esc(a.r.id)}">Apri</button></span></div>`).join('')
+        : '<p class="note">Nessun avviso: tutti i pacchi sono in regola.</p>');
+  }
+  $('cBoats').addEventListener('click', e => { const b = e.target.closest('[data-yacht]'); if (!b) return; ctlYacht = ctlYacht === b.dataset.yacht ? '' : b.dataset.yacht; renderCtl(); });
+  $('cMap').addEventListener('click', e => { const g = e.target.closest('[data-berth]'); if (!g) return; const i = yachtRows().filter(y => berthOf(y).id === g.dataset.berth && parcels().some(r => r.state === 'in' && r.yacht === y.name)); if (i.length) { ctlYacht = i.length === 1 && ctlYacht !== i[0].name ? i[0].name : ''; renderCtl(); } });
+  $('cAlerts').addEventListener('click', e => { if (e.target.closest('[data-clear]')) { ctlYacht = ''; renderCtl(); } const b = e.target.closest('[data-edit]'); if (b) editParcel(b.dataset.edit); });
 
   /* ---------- rates ---------- */
   const getK = (o, k) => k.split('.').reduce((x, p) => x == null ? x : x[p], o);
