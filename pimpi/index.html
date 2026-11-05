@@ -323,6 +323,11 @@ td.row-acts .link { display: block; margin: 2px 0 }
   td.row-acts .link { display: inline-block; margin-right: 12px }
 }
 /* login, office badge, live page additions */
+body.live { background: #0a0f1f }
+body.live main { max-width: none; padding: 0 }
+body.live .brand .wrap { max-width: none; padding-inline: max(16px, 2vw) }
+body.live .ctl { border-radius: 0; margin: 0; min-height: calc(100vh - 68px); padding: 20px max(16px, 2vw) 32px; align-content: start }
+@media (max-width: 700px) { body.live .ctl { padding-bottom: 96px } }
 .login { position: fixed; inset: 0; z-index: 30; background: var(--navy); color: var(--on-navy); display: grid; place-items: center; padding: 24px 16px; overflow: auto }
 .login form { width: min(400px, 100%); display: grid; gap: 14px }
 .login img { height: 64px; justify-self: start }
@@ -982,7 +987,7 @@ if (typeof module !== 'undefined') module.exports = Pricing;
     $('inView').hidden = v !== 'in'; $('magView').hidden = v !== 'mag'; $('ratesView').hidden = v !== 'rates'; $('yachtsView').hidden = v !== 'yachts'; $('ctlView').hidden = v !== 'ctl';
     [['tabCtl', 'ctl'], ['tabIn', 'in'], ['tabMag', 'mag'], ['tabYachts', 'yachts'], ['tabRates', 'rates']].forEach(([id, k]) => k === v ? $(id).setAttribute('aria-current', 'page') : $(id).removeAttribute('aria-current'));
     if (v === 'rates') fillRates();
-    curView = v;
+    curView = v; document.body.classList.toggle('live', v === 'ctl');
   }
   let curView = '';
   window.addEventListener('hashchange', route); route();
