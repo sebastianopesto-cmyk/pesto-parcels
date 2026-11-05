@@ -411,7 +411,7 @@ tr.exp td { background: color-mix(in srgb, var(--in-bg) 35%, transparent) }
       <div class="world">
         <div class="panel globeP">
           <h3>Pacchi nel mondo <small id="cWorldSub"></small>
-            <span class="legend"><span><i style="background:#5ab0ff"></i>In viaggio</span><span><i style="background:var(--c-warn)"></i>In consegna</span><span><i style="background:var(--c-ok)"></i>Arrivato</span><span><i style="background:var(--c-crit)"></i>Problema</span></span></h3>
+            <span class="legend"><span><i style="background:#5ab0ff"></i>In viaggio</span><span><i style="background:var(--c-warn)"></i>In consegna / da controllare</span><span><i style="background:var(--c-ok)"></i>Registrato in ufficio</span><span><i style="background:var(--c-crit)"></i>Problema</span></span></h3>
           <div class="gzoom" role="group" aria-label="Zoom globo"><button type="button" id="gIn" aria-label="Avvicina">+</button><button type="button" id="gOut" aria-label="Allontana">−</button><button type="button" id="gHome" title="Vai al mio ufficio">Ufficio</button><button type="button" id="gWorld" title="Tutto il mondo">Mondo</button></div>
           <div class="globe" id="globe" aria-label="Globo con i percorsi dei pacchi verso l'ufficio"></div>
           <p class="note" id="cWorldNote"></p>
@@ -971,7 +971,7 @@ if (typeof module !== 'undefined') module.exports = Pricing;
   // 17TRACK main statuses, in plain Italian
   const TSTAT = {
     InfoReceived: ['Etichetta creata', 'mut'], InTransit: ['In viaggio', ''], OutForDelivery: ['In consegna oggi', 'warn'],
-    AvailableForPickup: ['Al punto di ritiro', 'warn'], Delivered: ['Consegnato dal corriere', 'ok'], DeliveryFailure: ['Consegna fallita', 'crit'],
+    AvailableForPickup: ['Al punto di ritiro', 'warn'], Delivered: ['Corriere: consegnato, da registrare', 'warn'], DeliveryFailure: ['Consegna fallita', 'crit'],
     Exception: ['Problema', 'crit'], Expired: ['Scaduto', 'mut'], NotFound: ['Non ancora nel sistema', 'mut'],
   };
   const tstat = r => r.trackStatus ? (TSTAT[r.trackStatus] || [r.trackStatus, '']) : null;
@@ -1607,6 +1607,8 @@ if (typeof module !== 'undefined') module.exports = Pricing;
       if (!r.yacht) al.push({ lv: 'warn', r, t: 'Pacco senza yacht' });
       if (!r.type) al.push({ lv: 'warn', r, t: `<b>${esc(r.yacht || 'Senza yacht')}</b> · tipologia da scegliere (storage non calcolato)` });
     });
+    all.filter(r => r.state === 'expected' && r.trackStatus === 'Delivered' && (!ctlYacht || r.yacht === ctlYacht)).forEach(r =>
+      al.push({ lv: 'crit', r: { ...r, days: 99 }, t: `<b>${esc(r.yacht || 'Senza yacht')}</b> · ${esc(courierName(r.courier) || '?')} lo dà consegnato: cercalo in ufficio e registralo` }));
     al.sort((a, b) => (a.lv === 'crit' ? 0 : 1) - (b.lv === 'crit' ? 0 : 1) || b.r.days - a.r.days);
     $('cAlSub').textContent = (ctlYacht ? ctlYacht + ' · ' : '') + al.length + ' aperti' + (ctlYacht ? '' : '');
     $('cAlerts').innerHTML = (ctlYacht ? `<div class="al" style="border-left-color:var(--c-acc)"><span>Filtro</span><span>Solo ${esc(ctlYacht)}</span><button type="button" data-clear="1">Mostra tutti</button></div>` : '')
@@ -1661,7 +1663,8 @@ if (typeof module !== 'undefined') module.exports = Pricing;
       const from = (r.trackEvent && locate(evPlace)) || locate(r.trackEvent) || locate(r.sender);
       if (!from) { unknown.push(r); return; }
       const st = r.trackStatus || (r.state === 'in' ? 'here' : '');
-      const lv = st === 'Exception' || st === 'DeliveryFailure' ? 'crit' : st === 'OutForDelivery' || st === 'AvailableForPickup' ? 'warn' : r.state === 'in' || st === 'Delivered' ? 'ok' : 'go';
+      // only a parcel the office has registered counts as arrived; a courier's "delivered" still needs checking
+      const lv = st === 'Exception' || st === 'DeliveryFailure' ? 'crit' : r.state === 'in' ? 'ok' : st === 'OutForDelivery' || st === 'AvailableForPickup' || st === 'Delivered' ? 'warn' : 'go';
       routes.push({ r, from, to, lv, moving: r.state === 'expected' });
     });
     return { routes, unknown, demoMode };
